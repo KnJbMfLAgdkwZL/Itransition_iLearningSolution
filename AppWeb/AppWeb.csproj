@@ -7,7 +7,24 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Business\Business.csproj" />
+      <Folder Include="Business" />
+      <Folder Include="Business\Dto\Frontend\Forms" />
+      <Folder Include="Business\Dto\Options" />
+      <Folder Include="Business\Interfaces" />
+      <Folder Include="Business\Services" />
+      <Folder Include="DataAccess" />
+      <Folder Include="Database\DbContexts" />
+      <Folder Include="Database\Migrations" />
+      <Folder Include="Database\Models" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
+        <PrivateAssets>all</PrivateAssets>
+        <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      </PackageReference>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.2" />
     </ItemGroup>
 
 </Project>
