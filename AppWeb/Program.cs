@@ -1,7 +1,11 @@
-//using Microsoft.AspNetCore.Authentication.Cookies;
-//var services = builder.Services;
-//var configuration = builder.Configuration;
-/*services
+using Microsoft.AspNetCore.Authentication.Cookies;
+
+//services.AddMvc();
+//builder.Services.AddControllersWithViews();
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
     .AddAuthentication(options =>
     {
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -12,17 +16,11 @@
     })
     .AddGoogle(googleOptions =>
     {
-        googleOptions.ClientId = configuration["Authentication:Google:ClientId"];
-        googleOptions.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     });
-*/
-//services.AddMvc();
-//builder.Services.AddControllersWithViews();
-//app.UseAuthentication();
-//app.UseAuthorization();
 
 
-var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
@@ -34,6 +32,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllerRoute(
     name: "default",
