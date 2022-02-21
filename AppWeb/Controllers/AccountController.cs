@@ -17,15 +17,14 @@ public class AccountController : Controller
     [Route("google-login")]
     public IActionResult GoogleLogin()
     {
-        //var properties = new AuthenticationProperties {RedirectUri = Url.Action("GoogleResponse")};
-        //return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        return Ok("GoogleLogin");
+        var properties = new AuthenticationProperties {RedirectUri = Url.Action("GoogleResponse")};
+        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
     [Route("google-response")]
     public async Task<IActionResult> GoogleResponse()
     {
-        /*var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
         var claims = result.Principal.Identities
             .FirstOrDefault().Claims.Select(claim => new
@@ -35,8 +34,6 @@ public class AccountController : Controller
                 claim.Type,
                 claim.Value
             });
-
-        return Json(claims);*/
-        return Ok("GoogleResponse");
+        return Json(claims);
     }
 }

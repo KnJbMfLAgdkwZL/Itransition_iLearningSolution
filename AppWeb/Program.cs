@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 
+Environment.GetEnvironmentVariable("Google_ClientId");
+
 //services.AddMvc();
 //builder.Services.AddControllersWithViews();
 
@@ -12,16 +14,17 @@ builder.Services
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     })
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/account/google-login";
-    })
+    .AddCookie(options => { options.LoginPath = "/account/google-login"; })
     .AddGoogle(googleOptions =>
     {
-        googleOptions.ClientId = Environment.GetEnvironmentVariable("Google_ClientId");
-        googleOptions.ClientSecret = Environment.GetEnvironmentVariable("Google_ClientSecret");;
-    });
+        var googleClientId = Environment.GetEnvironmentVariable("Google_ClientId") ??
+                             builder.Configuration["Authentication:Google:ClientId"];
+        var googleClientSecret = Environment.GetEnvironmentVariable("Google_ClientSecret") ??
+                                 builder.Configuration["Authentication:Google:ClientSecret"];
 
+        googleOptions.ClientId = googleClientId;
+        googleOptions.ClientSecret = googleClientSecret;
+    });
 
 builder.Services.AddControllersWithViews();
 var app = builder.Build();
