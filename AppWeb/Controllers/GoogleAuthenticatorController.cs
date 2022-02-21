@@ -1,4 +1,4 @@
-/*using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
@@ -18,4 +18,4 @@ public class GoogleAuthenticatorController : Controller
     {
         return Ok("AuthorizedRedirect ok");
     }
-}*/
+}
