@@ -14,12 +14,12 @@ builder.Services
     })
     .AddCookie(options =>
     {
-        //options.LoginPath = "/account/google-login";
+        options.LoginPath = "/account/google-login";
     })
     .AddGoogle(googleOptions =>
     {
-        googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-        googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+        googleOptions.ClientId = Environment.GetEnvironmentVariable("Google_ClientId");
+        googleOptions.ClientSecret = Environment.GetEnvironmentVariable("Google_ClientSecret");;
     });
 
 
