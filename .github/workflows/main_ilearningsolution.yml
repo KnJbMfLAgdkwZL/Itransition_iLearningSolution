@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'iLearningSolution'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_3FC89EBBDB384FD59E61621B3E9235AD }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_9B30F83D6C0E463990BE75AC695228B8 }}
           package: .
