@@ -1,9 +1,9 @@
 using Database.DbContexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.EntityFrameworkCore;
 
-Environment.GetEnvironmentVariable("Google_ClientId");
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,25 +18,32 @@ builder.Services
     })
     .AddCookie(options =>
     {
+        //
         options.LoginPath = "/account/google-login";
     })
     .AddGoogle(googleOptions =>
     {
-        var googleClientId = Environment.GetEnvironmentVariable("Google_ClientId") ??
-                             builder.Configuration["Authentication:Google:ClientId"];
-        var googleClientSecret = Environment.GetEnvironmentVariable("Google_ClientSecret") ??
-                                 builder.Configuration["Authentication:Google:ClientSecret"];
-
-        googleOptions.ClientId = "21145603976-h7dpvcbb4bieeqqt0j0v2k25p6iv807e.apps.googleusercontent.com";
-        googleOptions.ClientSecret = "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";
-        //googleOptions.CallbackPath = "/account/googleresponse";
+        var clientId = Environment.GetEnvironmentVariable("Authentication:Google:ClientId") ??
+                       builder.Configuration["Authentication:Google:ClientId"];
+        var clientSecret = Environment.GetEnvironmentVariable("Authentication:Google:ClientSecret") ??
+                           builder.Configuration["Authentication:Google:ClientSecret"];
+        googleOptions.ClientId = clientId;
+        googleOptions.ClientSecret = clientSecret;
+    })
+    .AddFacebook(facebookOptions =>
+    {
+        var appId = Environment.GetEnvironmentVariable("Authentication:Facebook:AppId") ??
+                    builder.Configuration["Authentication:Facebook:AppId"];
+        var appSecret = Environment.GetEnvironmentVariable("Authentication:Facebook:AppSecret") ??
+                        builder.Configuration["Authentication:Facebook:AppSecret"];
+        facebookOptions.AppId = appId;
+        facebookOptions.AppSecret = appSecret;
     });
 
 // Options Database Context
 builder.Services.AddDbContext<MasterContext>(options =>
 {
-    var dbConnection = Environment.GetEnvironmentVariable("DBConnection") ??
-                       builder.Configuration["DBConnection"];
+    var dbConnection = Environment.GetEnvironmentVariable("DBConnection") ?? builder.Configuration["DBConnection"];
     options.UseSqlServer(dbConnection);
 });
 
@@ -59,10 +66,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();
