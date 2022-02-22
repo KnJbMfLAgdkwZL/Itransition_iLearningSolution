@@ -12,7 +12,7 @@ public class AccountController : Controller
     {
         //var redirectUrl = this.Url.Action("GoogleResponse", "Account", null, Request.Scheme);
 
-        const string redirectUrl = "http://ilearningsolution.herokuapp.com/signin-google";
+        const string redirectUrl = "https://ilearningsolution.herokuapp.com/signin-google";
         
         var properties = new AuthenticationProperties
         {
