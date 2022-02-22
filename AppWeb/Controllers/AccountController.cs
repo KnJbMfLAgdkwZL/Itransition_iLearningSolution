@@ -6,13 +6,23 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
+[Route("account")]
 public class AccountController : Controller
 {
+    [Route("googlelogin")]
     public async Task GoogleLogin()
     {
+        var fullUrl = Url.Action("GoogleResponse", "Account", new { }, Request.Scheme);
+        var url = Url.Action("GoogleResponse", "Account");
+
+        Console.WriteLine();
+        Console.WriteLine(fullUrl);
+        Console.WriteLine(url);
+        Console.WriteLine();
+
         await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
         {
-            RedirectUri = Url.Action("GoogleResponse", "Account")
+            RedirectUri = url
         });
 
         /*var redirectUrl = this.Url.Action("GoogleResponse", "Account");
@@ -23,6 +33,7 @@ public class AccountController : Controller
         //return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
+    [Route("googleresponse")]
     public async Task<IActionResult> GoogleResponse()
     {
         var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
