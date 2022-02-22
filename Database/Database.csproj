@@ -6,4 +6,10 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="DbContexts" />
+      <Folder Include="Migrations" />
+      <Folder Include="Models" />
+    </ItemGroup>
+
 </Project>

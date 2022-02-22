@@ -7,18 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Business" />
-      <Folder Include="Business\Dto\Frontend\Forms" />
-      <Folder Include="Business\Dto\Options" />
-      <Folder Include="Business\Interfaces" />
-      <Folder Include="Business\Services" />
-      <Folder Include="DataAccess" />
-      <Folder Include="Database\DbContexts" />
-      <Folder Include="Database\Migrations" />
-      <Folder Include="Database\Models" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="6.0.2" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.2" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.2">
@@ -29,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Business\Business.csproj" />
       <ProjectReference Include="..\TestLibrary\TestLibrary.csproj" />
     </ItemGroup>
 

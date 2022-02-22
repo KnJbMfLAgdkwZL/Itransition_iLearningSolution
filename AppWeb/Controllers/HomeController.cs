@@ -31,7 +31,15 @@ public class HomeController : Controller
 
     public IActionResult Test()
     {
-        var str = TestLibrary.Class1.GetStr();
+        var str1 = Business.BusinessLayer.GetStr();
+        var str2 = DataAccess.DataAccessLayer.GetStr();
+        var str3 = Database.DatabaseLayer.GetStr();
+
+        var strAll = Business.BusinessLayer.GetStrAll();
+
+        var str = $"{str1} {str2} {str3} {strAll}";
+
+
         return Ok(str);
     }
 }
