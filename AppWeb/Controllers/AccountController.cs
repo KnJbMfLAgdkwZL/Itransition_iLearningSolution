@@ -11,8 +11,13 @@ namespace AppWeb.Controllers;
 public class AccountController : Controller
 {
     [Route("googlelogin")]
-    public async Task GoogleLogin()
+    public async Task<ViewResult> GoogleLogin()
     {
+        
+        
+
+        return View();
+        /*
         var fullUrl = Url.Action("GoogleResponse", "Account", new { }, "https");
         //var url = Url.Action("GoogleResponse", "Account");
 
@@ -32,6 +37,7 @@ public class AccountController : Controller
             RedirectUri = redirectUrl,
         };*/
         //return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+
     }
 
     [Route("googleresponse")]
