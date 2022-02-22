@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
 namespace AppWeb.Controllers;
 
@@ -12,17 +13,17 @@ public class AccountController : Controller
     [Route("googlelogin")]
     public async Task GoogleLogin()
     {
-        var fullUrl = Url.Action("GoogleResponse", "Account", new { }, Request.Scheme);
-        var url = Url.Action("GoogleResponse", "Account");
+        var fullUrl = Url.Action("GoogleResponse", "Account", new { }, "https");
+        //var url = Url.Action("GoogleResponse", "Account");
 
         Console.WriteLine();
         Console.WriteLine(fullUrl);
-        Console.WriteLine(url);
+        //Console.WriteLine(url);
         Console.WriteLine();
-
+        
         await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
         {
-            RedirectUri = url
+            RedirectUri = fullUrl
         });
 
         /*var redirectUrl = this.Url.Action("GoogleResponse", "Account");
