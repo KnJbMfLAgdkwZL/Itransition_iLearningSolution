@@ -22,8 +22,9 @@ builder.Services
         var googleClientSecret = Environment.GetEnvironmentVariable("Google_ClientSecret") ??
                                  builder.Configuration["Authentication:Google:ClientSecret"];
 
-        googleOptions.ClientId = googleClientId;
-        googleOptions.ClientSecret = googleClientSecret;
+        googleOptions.ClientId = "21145603976-h7dpvcbb4bieeqqt0j0v2k25p6iv807e.apps.googleusercontent.com";
+        googleOptions.ClientSecret = "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";
+        //googleOptions.CallbackPath = "/account/googleresponse";
     });
 
 builder.Services.AddControllersWithViews();
@@ -39,7 +40,11 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
 app.Run();

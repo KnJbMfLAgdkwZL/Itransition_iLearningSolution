@@ -11,29 +11,39 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
-[AllowAnonymous, Route("account")]
+[Route("Account")]
 public class AccountController : Controller
 {
-    [Route("google-login")]
+    [Route("GoogleLogin")]
     public IActionResult GoogleLogin()
     {
-        var properties = new AuthenticationProperties {RedirectUri = Url.Action("GoogleResponse")};
+        var properties = new AuthenticationProperties {RedirectUri = Url.Action("googleresponse")};
         return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
-    [Route("google-response")]
+    [AllowAnonymous]
+    [HttpPost]
+    public IActionResult ExternalLogin(string provider, string returnUrl)
+    {
+        var redirectUrl = Url.Action("googleresponse", "Account", new {ReturnUrl = returnUrl});
+        var properties = new AuthenticationProperties
+        {
+            RedirectUri = redirectUrl,
+        };
+        return new ChallengeResult(provider, properties);
+    }
+
+    [Route("GoogleResponse")]
     public async Task<IActionResult> GoogleResponse()
     {
         var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-
-        var claims = result.Principal.Identities
-            .FirstOrDefault().Claims.Select(claim => new
-            {
-                claim.Issuer,
-                claim.OriginalIssuer,
-                claim.Type,
-                claim.Value
-            });
+        var claims = result.Principal?.Identities.FirstOrDefault()?.Claims.Select(claim => new
+        {
+            claim.Issuer,
+            claim.OriginalIssuer,
+            claim.Type,
+            claim.Value
+        });
         return Json(claims);
     }
 }
