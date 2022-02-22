@@ -10,7 +10,8 @@ public class AccountController : Controller
 {
     public IActionResult GoogleLogin()
     {
-        var redirectUrl = Url.Action("GoogleResponse", "Account");
+        var redirectUrl = this.Url.Action("GoogleResponse", "Account", null, Request.Scheme);
+        Console.WriteLine(redirectUrl);
         var properties = new AuthenticationProperties
         {
             RedirectUri = redirectUrl,
@@ -33,7 +34,8 @@ public class AccountController : Controller
 
     public IActionResult FacebookLogin()
     {
-        var redirectUrl = Url.Action("FacebookResponse", "Account");
+        var redirectUrl = this.Url.Action("FacebookResponse", "Account", null, Request.Scheme);
+        Console.WriteLine(redirectUrl);
         var properties = new AuthenticationProperties
         {
             RedirectUri = redirectUrl,
