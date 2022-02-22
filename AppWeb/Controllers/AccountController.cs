@@ -10,8 +10,10 @@ public class AccountController : Controller
 {
     public IActionResult GoogleLogin()
     {
-        var redirectUrl = this.Url.Action("GoogleResponse", "Account", null, Request.Scheme);
-        Console.WriteLine(redirectUrl);
+        //var redirectUrl = this.Url.Action("GoogleResponse", "Account", null, Request.Scheme);
+
+        const string redirectUrl = "http://ilearningsolution.herokuapp.com/signin-google";
+        
         var properties = new AuthenticationProperties
         {
             RedirectUri = redirectUrl,
