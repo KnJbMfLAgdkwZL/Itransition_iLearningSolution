@@ -8,14 +8,19 @@ namespace AppWeb.Controllers;
 
 public class AccountController : Controller
 {
-    public IActionResult GoogleLogin()
+    public async Task GoogleLogin()
     {
-        var redirectUrl = this.Url.Action("GoogleResponse", "Account");
+        await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
+        {
+            RedirectUri = Url.Action("GoogleResponse", "Account")
+        });
+
+        /*var redirectUrl = this.Url.Action("GoogleResponse", "Account");
         var properties = new AuthenticationProperties
         {
             RedirectUri = redirectUrl,
-        };
-        return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        };*/
+        //return Challenge(properties, GoogleDefaults.AuthenticationScheme);
     }
 
     public async Task<IActionResult> GoogleResponse()
@@ -34,7 +39,6 @@ public class AccountController : Controller
     public IActionResult FacebookLogin()
     {
         var redirectUrl = this.Url.Action("FacebookResponse", "Account");
-        Console.WriteLine(redirectUrl);
         var properties = new AuthenticationProperties
         {
             RedirectUri = redirectUrl,
