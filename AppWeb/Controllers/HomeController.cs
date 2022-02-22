@@ -1,16 +1,19 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using AppWeb.Models;
+using Database.DbContexts;
 
 namespace AppWeb.Controllers;
 
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
+    private MasterContext _db;
 
-    public HomeController(ILogger<HomeController> logger)
+    public HomeController(ILogger<HomeController> logger, MasterContext db)
     {
         _logger = logger;
+        this._db = db;
     }
 
     public IActionResult Index()
@@ -31,15 +34,7 @@ public class HomeController : Controller
 
     public IActionResult Test()
     {
-        var str1 = Business.BusinessLayer.GetStr();
-        var str2 = DataAccess.DataAccessLayer.GetStr();
-        var str3 = Database.DatabaseLayer.GetStr();
-
-        var strAll = Business.BusinessLayer.GetStrAll();
-
-        var str = $"{str1} {str2} {str3} {strAll}";
-
-
+        var str = _db.Test.FirstOrDefault(test => test.Id == 1)?.Name;
         return Ok(str);
     }
 }

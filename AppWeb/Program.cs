@@ -1,10 +1,12 @@
+using Database.DbContexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.EntityFrameworkCore;
 
 Environment.GetEnvironmentVariable("Google_ClientId");
 
-//services.AddMvc();
-//builder.Services.AddControllersWithViews();
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +16,10 @@ builder.Services
         options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
     })
-    .AddCookie(options => { options.LoginPath = "/account/google-login"; })
+    .AddCookie(options =>
+    {
+        options.LoginPath = "/account/google-login";
+    })
     .AddGoogle(googleOptions =>
     {
         var googleClientId = Environment.GetEnvironmentVariable("Google_ClientId") ??
@@ -27,7 +32,20 @@ builder.Services
         //googleOptions.CallbackPath = "/account/googleresponse";
     });
 
+// Options Database Context
+builder.Services.AddDbContext<MasterContext>(options =>
+{
+    var dbConnection = Environment.GetEnvironmentVariable("DBConnection") ??
+                       builder.Configuration["DBConnection"];
+    options.UseSqlServer(dbConnection);
+});
+
 builder.Services.AddControllersWithViews();
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
