@@ -1,9 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
-using System.ComponentModel;
-using System.Reflection;
-using System.ComponentModel.Design;
 
 namespace AppWeb.Controllers;
 
@@ -21,19 +17,27 @@ public class AccountController : Controller
         var url = $"http://ulogin.ru/token.php?token={token}&host={httpHost}";
 
         var http = new HttpClient();
-        var json = await http.GetAsync(url).Result.Content.ReadAsStringAsync();
+        var httpResponse = await http.GetAsync(url);
+        var json = await httpResponse.Content.ReadAsStringAsync();
 
-        var data = JsonConvert.DeserializeObject<dynamic>(json);
+        var user = JsonConvert.DeserializeObject<UserInfo>(json);
 
-        foreach (PropertyDescriptor prop in TypeDescriptor.GetProperties(data))
-        {
-            var name = prop.Name;
-            var val = prop.GetValue(data);
-            Console.WriteLine($"{name}: {val}");
-        }
+        Console.WriteLine(user.Network);
+        Console.WriteLine(user.Uid);
+        Console.WriteLine(user.Email);
+        Console.WriteLine(user.First_name);
+        Console.WriteLine(user.Last_name);
         Console.WriteLine();
-        Console.WriteLine();
 
-        return Json(json);
+        return Json(user);
     }
+}
+
+class UserInfo
+{
+    public string Network { set; get; } = string.Empty;
+    public string Uid { set; get; } = string.Empty;
+    public string Email { set; get; } = string.Empty;
+    public string First_name { set; get; } = string.Empty;
+    public string Last_name { set; get; } = string.Empty;
 }

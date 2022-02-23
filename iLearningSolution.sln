@@ -2,8 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppWeb", "AppWeb\AppWeb.csproj", "{58CE4D20-3041-4D0D-93D1-97DED3855BA7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLibrary", "TestLibrary\TestLibrary.csproj", "{D3B407F9-FF4D-41DD-AE4C-BF852BDAD7D6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Business", "Business\Business.csproj", "{15925D13-2B91-432D-96B4-072ADC32B96B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataAccess", "DataAccess\DataAccess.csproj", "{136BA281-2E4A-4528-9D32-F9453875CB48}"
@@ -20,10 +18,6 @@ Global
 		{58CE4D20-3041-4D0D-93D1-97DED3855BA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{58CE4D20-3041-4D0D-93D1-97DED3855BA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{58CE4D20-3041-4D0D-93D1-97DED3855BA7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D3B407F9-FF4D-41DD-AE4C-BF852BDAD7D6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D3B407F9-FF4D-41DD-AE4C-BF852BDAD7D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D3B407F9-FF4D-41DD-AE4C-BF852BDAD7D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D3B407F9-FF4D-41DD-AE4C-BF852BDAD7D6}.Release|Any CPU.Build.0 = Release|Any CPU
 		{15925D13-2B91-432D-96B4-072ADC32B96B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{15925D13-2B91-432D-96B4-072ADC32B96B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{15925D13-2B91-432D-96B4-072ADC32B96B}.Release|Any CPU.ActiveCfg = Release|Any CPU
