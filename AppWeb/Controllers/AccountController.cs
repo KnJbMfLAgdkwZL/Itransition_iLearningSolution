@@ -3,68 +3,28 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Server.Kestrel.Core.Internal.Http;
 
 namespace AppWeb.Controllers;
 
-[Route("account")]
 public class AccountController : Controller
 {
-    [Route("googlelogin")]
-    public async Task<ViewResult> GoogleLogin()
+    public IActionResult Login([FromQuery] string type = "Google")
     {
-        
-        
-
-        return View();
-        /*
-        var fullUrl = Url.Action("GoogleResponse", "Account", new { }, "https");
-        //var url = Url.Action("GoogleResponse", "Account");
-
-        Console.WriteLine();
-        Console.WriteLine(fullUrl);
-        //Console.WriteLine(url);
-        Console.WriteLine();
-        
-        await HttpContext.ChallengeAsync(GoogleDefaults.AuthenticationScheme, new AuthenticationProperties()
+        var authenticationScheme = GoogleDefaults.AuthenticationScheme;
+        if (type == "Facebook")
         {
-            RedirectUri = fullUrl
-        });
+            authenticationScheme = FacebookDefaults.AuthenticationScheme;
+        }
 
-        /*var redirectUrl = this.Url.Action("GoogleResponse", "Account");
         var properties = new AuthenticationProperties
         {
-            RedirectUri = redirectUrl,
-        };*/
-        //return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-
-    }
-
-    [Route("googleresponse")]
-    public async Task<IActionResult> GoogleResponse()
-    {
-        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        var claims = result.Principal?.Identities.FirstOrDefault()?.Claims.Select(claim => new
-        {
-            claim.Issuer,
-            claim.OriginalIssuer,
-            claim.Type,
-            claim.Value
-        });
-        return Json(claims);
-    }
-
-    public IActionResult FacebookLogin()
-    {
-        var redirectUrl = this.Url.Action("FacebookResponse", "Account");
-        var properties = new AuthenticationProperties
-        {
-            RedirectUri = redirectUrl,
+            RedirectUri = Url.Action("LoginResponse", "Account", null, "https")
+            //RedirectUri = Url.Action("LoginResponse", "Account")
         };
-        return Challenge(properties, FacebookDefaults.AuthenticationScheme);
+        return Challenge(properties, authenticationScheme);
     }
 
-    public async Task<IActionResult> FacebookResponse()
+    public async Task<IActionResult> LoginResponse()
     {
         var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         var claims = result.Principal?.Identities.FirstOrDefault()?.Claims.Select(claim => new

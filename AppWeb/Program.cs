@@ -2,6 +2,8 @@ using Database.DbContexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication.Facebook;
+using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage;
+using Microsoft.AspNetCore.Mvc.Routing;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -18,8 +20,6 @@ builder.Services
     })
     .AddCookie(options =>
     {
-        //
-        options.LoginPath = "/account/google-login";
     })
     .AddGoogle(googleOptions =>
     {
@@ -29,6 +29,8 @@ builder.Services
                            builder.Configuration["Authentication:Google:ClientSecret"];
         googleOptions.ClientId = clientId;
         googleOptions.ClientSecret = clientSecret;
+        
+        googleOptions.CallbackPath = "/signin-google";
     })
     .AddFacebook(facebookOptions =>
     {
@@ -38,6 +40,8 @@ builder.Services
                         builder.Configuration["Authentication:Facebook:AppSecret"];
         facebookOptions.AppId = appId;
         facebookOptions.AppSecret = appSecret;
+        
+        facebookOptions.CallbackPath = "/signin-facebook";
     });
 
 // Options Database Context
@@ -48,6 +52,16 @@ builder.Services.AddDbContext<MasterContext>(options =>
 });
 
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(1);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+builder.Services.AddScoped<ProtectedSessionStorage>();
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,6 +79,7 @@ app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
