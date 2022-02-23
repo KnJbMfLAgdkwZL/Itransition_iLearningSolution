@@ -1,51 +1,39 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using System;
+using System.ComponentModel;
+using System.Reflection;
+using System.ComponentModel.Design;
 
 namespace AppWeb.Controllers;
 
 public class AccountController : Controller
 {
-    public IActionResult Login([FromQuery] string type = "Google")
+    public IActionResult Login()
     {
-        ViewData["type"] = type;
         return View();
     }
 
     [HttpPost]
-    public IActionResult LoginResponse([FromBody] [Required] ToolButtonAction data)
-    {
-        Console.WriteLine(data.Id);
-        Console.WriteLine(data.Name);
-        Console.WriteLine(data.Type);
-        Console.WriteLine(data.ImageUrl);
-        Console.WriteLine(data.Email);
-
-
-        return Ok("sadfsdasa");
-    }
-
-    [HttpPost]
-    public async Task<IActionResult> SomeResponse([FromForm] string token)
+    public async Task<IActionResult> LoginResponse([FromForm] string token)
     {
         var httpHost = HttpContext.Request.Host.Value;
         var url = $"http://ulogin.ru/token.php?token={token}&host={httpHost}";
 
         var http = new HttpClient();
-        var data = await http.GetAsync(url).Result.Content.ReadAsStringAsync();
-        
-        var request = JsonConvert.DeserializeObject<dynamic>(data);
+        var json = await http.GetAsync(url).Result.Content.ReadAsStringAsync();
 
+        var data = JsonConvert.DeserializeObject<dynamic>(json);
 
-        return Json(data);
+        foreach (PropertyDescriptor prop in TypeDescriptor.GetProperties(data))
+        {
+            var name = prop.Name;
+            var val = prop.GetValue(data);
+            Console.WriteLine($"{name}: {val}");
+        }
+        Console.WriteLine();
+        Console.WriteLine();
+
+        return Json(json);
     }
-}
-
-public class ToolButtonAction
-{
-    [Required] public string Id { get; set; } = string.Empty;
-    [Required] public string Name { get; set; } = string.Empty;
-    [Required] public string ImageUrl { get; set; } = string.Empty;
-    [Required] public string Email { get; set; } = string.Empty;
-    [Required] public string Type { get; set; } = string.Empty;
 }
