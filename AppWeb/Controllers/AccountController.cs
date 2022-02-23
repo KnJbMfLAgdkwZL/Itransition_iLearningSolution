@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.Facebook;
+using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AppWeb.Controllers;
 
@@ -10,30 +8,44 @@ public class AccountController : Controller
 {
     public IActionResult Login([FromQuery] string type = "Google")
     {
-        var authenticationScheme = GoogleDefaults.AuthenticationScheme;
-        if (type == "Facebook")
-        {
-            authenticationScheme = FacebookDefaults.AuthenticationScheme;
-        }
-
-        var properties = new AuthenticationProperties
-        {
-            RedirectUri = Url.Action("LoginResponse", "Account", null, "https")
-            //RedirectUri = Url.Action("LoginResponse", "Account")
-        };
-        return Challenge(properties, authenticationScheme);
+        ViewData["type"] = type;
+        return View();
     }
 
-    public async Task<IActionResult> LoginResponse()
+    [HttpPost]
+    public IActionResult LoginResponse([FromBody] [Required] ToolButtonAction data)
     {
-        var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-        var claims = result.Principal?.Identities.FirstOrDefault()?.Claims.Select(claim => new
-        {
-            claim.Issuer,
-            claim.OriginalIssuer,
-            claim.Type,
-            claim.Value
-        });
-        return Json(claims);
+        Console.WriteLine(data.Id);
+        Console.WriteLine(data.Name);
+        Console.WriteLine(data.Type);
+        Console.WriteLine(data.ImageUrl);
+        Console.WriteLine(data.Email);
+
+
+        return Ok("sadfsdasa");
     }
+
+    [HttpPost]
+    public async Task<IActionResult> SomeResponse([FromForm] string token)
+    {
+        var httpHost = HttpContext.Request.Host.Value;
+        var url = $"http://ulogin.ru/token.php?token={token}&host={httpHost}";
+
+        var http = new HttpClient();
+        var data = await http.GetAsync(url).Result.Content.ReadAsStringAsync();
+        
+        var request = JsonConvert.DeserializeObject<dynamic>(data);
+
+
+        return Json(data);
+    }
+}
+
+public class ToolButtonAction
+{
+    [Required] public string Id { get; set; } = string.Empty;
+    [Required] public string Name { get; set; } = string.Empty;
+    [Required] public string ImageUrl { get; set; } = string.Empty;
+    [Required] public string Email { get; set; } = string.Empty;
+    [Required] public string Type { get; set; } = string.Empty;
 }

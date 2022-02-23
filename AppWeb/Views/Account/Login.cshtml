@@ -1,0 +1,88 @@
+@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>title</h2>
+
+
+<h2>@ViewData["type"]</h2>
+
+@if (ViewData["type"].ToString() == "Google")
+{
+    /*
+    <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <meta name="google-signin-client_id" content="256468709305-4t7m02eai108qf7mjj5mj6k77h3j89ql.apps.googleusercontent.com">
+    <div class="g-signin2" data-onsuccess="Google_signIn"></div>
+    <script>
+function Google_signIn(googleUser) {
+    let profile = googleUser.getBasicProfile();
+    let loggedUser = JSON.stringify({
+        Id: profile.getId(),
+        Name: profile.getName(),
+        ImageUrl: profile.getImageUrl(),
+        Email: profile.getEmail(),
+        Type: "Google"
+    })
+    
+    console.log(loggedUser)
+    
+    @{
+        var url = Url.Action("LoginResponse", "Account");
+    }
+    fetch("@url", {
+        method: "POST", headers: {'Content-Type': 'application/json'}, 
+        body: loggedUser
+    }).then(res => {
+        console.log(res)
+        //location.reload()
+    })
+    
+    
+}
+</script>
+*/
+}
+
+@if (ViewData["type"].ToString() == "Facebook")
+{
+    /*
+     * <div class="fb-login-button" data-show-faces="true" data-width="400" data-max-rows="1" data-registration-url=""></div>
+
+<div id="fb-root"></div>
+<script>
+    window.fbAsyncInit = function () {
+        FB.Event.subscribe('auth.authResponseChange', function (response) {
+            if (response.status === "connected") {
+                chatClient.setCustomAuthentication("token=" + response.authResponse.accessToken, 2);
+                chatClient.connect(true);
+            }
+        });
+    };
+
+    (function (d, s, id) {
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) return;
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/all.js#xfbml=1&appId=" + "685557499307325";
+        fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+</script>
+
+     */
+}
+
+
+<script src="//ulogin.ru/js/ulogin.js"></script>
+<div id="uLogin"
+     data-ulogin="
+            display=panel;
+            theme=classic;
+            fields=identity,first_name,last_name,network,email;
+            providers=google,facebook,mailru,yandex,odnoklassniki,mailru,liveid,vkontakte;
+            hidden=other;
+            redirect_uri=https%3A%2F%2Flocalhost%3A7039%2FAccount%2FSomeResponse;
+            mobilebuttons=0;">
+</div>

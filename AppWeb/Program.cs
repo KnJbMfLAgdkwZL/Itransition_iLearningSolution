@@ -29,8 +29,6 @@ builder.Services
                            builder.Configuration["Authentication:Google:ClientSecret"];
         googleOptions.ClientId = clientId;
         googleOptions.ClientSecret = clientSecret;
-        
-        googleOptions.CallbackPath = "/signin-google";
     })
     .AddFacebook(facebookOptions =>
     {
@@ -40,8 +38,6 @@ builder.Services
                         builder.Configuration["Authentication:Facebook:AppSecret"];
         facebookOptions.AppId = appId;
         facebookOptions.AppSecret = appSecret;
-        
-        facebookOptions.CallbackPath = "/signin-facebook";
     });
 
 // Options Database Context
