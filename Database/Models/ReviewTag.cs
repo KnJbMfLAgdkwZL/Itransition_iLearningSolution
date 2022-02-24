@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Database.Interfaces;
 
-namespace Database.Models
+namespace Database.Models;
+
+public partial class ReviewTag : IEntity
 {
-    public partial class ReviewTag
-    {
-        public int Id { get; set; }
-        public int ReviewId { get; set; }
-        public int TagId { get; set; }
+    public int Id { get; set; }
+    public int ReviewId { get; set; }
+    public int TagId { get; set; }
 
-        public virtual Review Review { get; set; } = null!;
-        public virtual Tag Tag { get; set; } = null!;
-    }
+    public virtual Review Review { get; set; } = null!;
+    public virtual Tag Tag { get; set; } = null!;
 }

@@ -1,20 +1,14 @@
-/*
 using DataAccess.Interfaces;
 using Database.Interfaces;
-using Database.Models;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.Linq.Expressions;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Threading;
-using System;
+using Database.DbContexts;
 
 namespace DataAccess.Repositories;
 
 public class GeneralRepository<T> : IGeneralRepository<T> where T : class
 {
-    private readonly DbSet<T> _table = null;
+    private readonly DbSet<T> _table;
     private readonly MasterContext _masterContext;
 
     public GeneralRepository(MasterContext masterContext)
@@ -35,7 +29,7 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     {
         await using var transaction = await _masterContext.Database.BeginTransactionAsync(token);
         var result = await GetOneAsync(condition, token);
-        T modelRes = null;
+        T modelRes = null!;
         if (result == null)
         {
             modelRes = await AddAsync(model, token);
@@ -77,7 +71,7 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     {
         await using var transaction = await _masterContext.Database.BeginTransactionAsync(token);
         var result = await GetOneAsync(condition, token);
-        T modelRes = null;
+        T modelRes = null!;
         if (result != null)
         {
             modelRes = await RemoveAsync(result, token);
@@ -119,18 +113,34 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
             .ToListAsync(token);
     }
 
-    public async Task<T> GetOneAsync(Expression<Func<T, bool>> condition, CancellationToken token)
+    public async Task<List<T>> GetAllIncludeManyAsync<TKey>(Expression<Func<T, bool>> condition,
+        IEnumerable<Expression<Func<T, TKey>>> includes, CancellationToken token)
+    {
+        var r = _table.Where(condition);
+        r = includes.Aggregate(r, (current, include) => current.Include(include));
+        return await r.ToListAsync(token);
+    }
+
+    public async Task<T?> GetOneAsync(Expression<Func<T, bool>> condition, CancellationToken token)
     {
         return await _table.Where(condition).FirstOrDefaultAsync(token);
     }
 
-    public async Task<T> GetOneIncludeAsync<TKey>(Expression<Func<T, bool>> condition,
+    public async Task<T?> GetOneIncludeAsync<TKey>(Expression<Func<T, bool>> condition,
         Expression<Func<T, TKey>> include, CancellationToken token)
     {
         return await _table
             .Where(condition)
             .Include(include)
             .FirstOrDefaultAsync(token);
+    }
+
+    public async Task<T?> GetOneIncludeManyAsync<TKey>(Expression<Func<T, bool>> condition,
+        IEnumerable<Expression<Func<T, TKey>>> includes, CancellationToken token)
+    {
+        var r = _table.Where(condition);
+        r = includes.Aggregate(r, (current, include) => current.Include(include));
+        return await r.FirstOrDefaultAsync(token);
     }
 
     public async Task<double?> AverageAsync(Expression<Func<T, bool>> condition, Expression<Func<T, int?>> selector,
@@ -143,4 +153,4 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     {
         _masterContext.Entry(model).State = EntityState.Detached;
     }
-}*/
+}

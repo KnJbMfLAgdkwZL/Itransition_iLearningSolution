@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Database.Interfaces;
 
-namespace Database.Models
+namespace Database.Models;
+
+public partial class Role : IEntity
 {
-    public partial class Role
+    public Role()
     {
-        public Role()
-        {
-            User = new HashSet<User>();
-        }
-
-        public int Id { get; set; }
-        public string Name { get; set; } = null!;
-
-        public virtual ICollection<User> User { get; set; }
+        User = new HashSet<User>();
     }
+
+    public int Id { get; set; }
+    public string Name { get; set; } = null!;
+
+    public virtual ICollection<User> User { get; set; }
 }

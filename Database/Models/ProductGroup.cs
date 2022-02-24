@@ -1,18 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Database.Interfaces;
 
-namespace Database.Models
+namespace Database.Models;
+
+public partial class ProductGroup : IEntity
 {
-    public partial class ProductGroup
+    public ProductGroup()
     {
-        public ProductGroup()
-        {
-            Review = new HashSet<Review>();
-        }
-
-        public int Id { get; set; }
-        public string Name { get; set; } = null!;
-
-        public virtual ICollection<Review> Review { get; set; }
+        Review = new HashSet<Review>();
     }
+
+    public int Id { get; set; }
+    public string Name { get; set; } = null!;
+
+    public virtual ICollection<Review> Review { get; set; }
 }
