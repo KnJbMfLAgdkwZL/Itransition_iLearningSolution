@@ -18,22 +18,27 @@ public class AccountController : Controller
 
         var http = new HttpClient();
         var httpResponse = await http.GetAsync(url);
+        
         var json = await httpResponse.Content.ReadAsStringAsync();
+        var user = JsonConvert.DeserializeObject<UserSocial>(json);
+        
+        if (user != null)
+        {
+            Console.WriteLine(user.Network);
+            Console.WriteLine(user.Uid);
+            Console.WriteLine(user.Email);
+            Console.WriteLine(user.First_name);
+            Console.WriteLine(user.Last_name);
+            Console.WriteLine();
 
-        var user = JsonConvert.DeserializeObject<UserInfo>(json);
+            return Ok();
+        }
 
-        Console.WriteLine(user.Network);
-        Console.WriteLine(user.Uid);
-        Console.WriteLine(user.Email);
-        Console.WriteLine(user.First_name);
-        Console.WriteLine(user.Last_name);
-        Console.WriteLine();
-
-        return Json(user);
+        return BadRequest();
     }
 }
 
-class UserInfo
+class UserSocial
 {
     public string Network { set; get; } = string.Empty;
     public string Uid { set; get; } = string.Empty;
