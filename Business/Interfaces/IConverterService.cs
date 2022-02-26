@@ -1,5 +1,5 @@
 namespace Business.Interfaces;
-public interface IConverterServices
+public interface IConverterService
 {
     Database.Models.UserSocial? UserSociaModel(string json);
     Dto.UserSocial? UserSociaDto(string json);

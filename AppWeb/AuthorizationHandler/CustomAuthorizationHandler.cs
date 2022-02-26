@@ -7,11 +7,11 @@ namespace AppWeb.AuthorizationHandler;
 
 public class CustomAuthorizationHandler : IAuthorizationHandler
 {
-    private readonly IAccountServices _accountServices;
+    private readonly IAccountService _accountService;
 
-    public CustomAuthorizationHandler(IAccountServices accountServices)
+    public CustomAuthorizationHandler(IAccountService accountService)
     {
-        _accountServices = accountServices;
+        _accountService = accountService;
     }
 
     public async Task HandleAsync(AuthorizationHandlerContext context)
@@ -25,7 +25,7 @@ public class CustomAuthorizationHandler : IAuthorizationHandler
         var claimNetwork = context.User.FindFirst("Network");
         var network = claimNetwork == null ? string.Empty : claimNetwork.Value;
 
-        if (await _accountServices.GetUserSocial(uid, email, network))
+        if (await _accountService.GetUserSocial(uid, email, network))
         {
             context.Succeed(new AssertionRequirement(handlerContext => handlerContext.HasSucceeded));
             return;

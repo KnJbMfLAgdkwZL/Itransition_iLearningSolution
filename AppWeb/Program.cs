@@ -39,8 +39,8 @@ builder.Services.AddTransient<IAuthorizationHandler, CustomAuthorizationHandler>
 builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
 
 // Services
-builder.Services.AddScoped<IConverterServices, ConverterServices>();
-builder.Services.AddScoped<IAccountServices, AccountServices>();
+builder.Services.AddScoped<IConverterService, ConverterService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
 
 
 // Add services to the container.

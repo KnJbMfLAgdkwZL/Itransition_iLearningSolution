@@ -8,20 +8,20 @@ using Microsoft.AspNetCore.Http;
 
 namespace Business.Services;
 
-public class AccountServices : IAccountServices
+public class AccountService : IAccountService
 {
-    private readonly IConverterServices _converterServices;
+    private readonly IConverterService _converterService;
     private readonly IGeneralRepository<UserSocial> _userSocialRepository;
 
-    public AccountServices(IConverterServices converterServices, IGeneralRepository<UserSocial> userSocialRepository)
+    public AccountService(IConverterService converterService, IGeneralRepository<UserSocial> userSocialRepository)
     {
-        _converterServices = converterServices;
+        _converterService = converterService;
         _userSocialRepository = userSocialRepository;
     }
 
     public async Task<bool> LoginOrRegister(string json, HttpContext httpContext, CancellationToken token)
     {
-        var userSocial = _converterServices.UserSociaModel(json);
+        var userSocial = _converterService.UserSociaModel(json);
         if (!Check(userSocial))
         {
             return false;

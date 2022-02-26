@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Business.Services;
 
-public class ConverterServices : IConverterServices
+public class ConverterService : IConverterService
 {
     public Database.Models.UserSocial? UserSociaModel(string json)
     {

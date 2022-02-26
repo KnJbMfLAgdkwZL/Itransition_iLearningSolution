@@ -8,11 +8,11 @@ namespace AppWeb.Controllers;
 
 public class AccountController : Controller
 {
-    private IAccountServices _accountServices;
+    private IAccountService _accountService;
 
-    public AccountController(IAccountServices accountServices)
+    public AccountController(IAccountService accountService)
     {
-        _accountServices = accountServices;
+        _accountService = accountService;
     }
 
     [AllowAnonymous]
@@ -38,7 +38,7 @@ public class AccountController : Controller
         var httpResponse = await http.GetAsync(url);
         var json = await httpResponse.Content.ReadAsStringAsync();
 
-        if (await _accountServices.LoginOrRegister(json, HttpContext, cancellationToken))
+        if (await _accountService.LoginOrRegister(json, HttpContext, cancellationToken))
         {
             return RedirectToAction("Index", "Home");
         }
