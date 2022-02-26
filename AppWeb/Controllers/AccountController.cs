@@ -1,48 +1,54 @@
+using Business.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
 namespace AppWeb.Controllers;
 
 public class AccountController : Controller
 {
+    private IAccountServices _accountServices;
+
+    public AccountController(IAccountServices accountServices)
+    {
+        _accountServices = accountServices;
+    }
+
+    [AllowAnonymous]
+    [HttpGet("AccessDenied")]
+    public async Task<IActionResult> AccessDenied()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return Ok("AccessDenied");
+    }
+
     public IActionResult Login()
     {
         return View();
     }
 
     [HttpPost]
-    public async Task<IActionResult> LoginResponse([FromForm] string token)
+    public async Task<IActionResult> LoginResponse([FromForm] string token, CancellationToken cancellationToken)
     {
         var httpHost = HttpContext.Request.Host.Value;
         var url = $"http://ulogin.ru/token.php?token={token}&host={httpHost}";
 
         var http = new HttpClient();
         var httpResponse = await http.GetAsync(url);
-        
         var json = await httpResponse.Content.ReadAsStringAsync();
-        var user = JsonConvert.DeserializeObject<UserSocial>(json);
-        
-        if (user != null)
-        {
-            Console.WriteLine(user.Network);
-            Console.WriteLine(user.Uid);
-            Console.WriteLine(user.Email);
-            Console.WriteLine(user.First_name);
-            Console.WriteLine(user.Last_name);
-            Console.WriteLine();
 
-            return Ok();
+        if (await _accountServices.LoginOrRegister(json, HttpContext, cancellationToken))
+        {
+            return RedirectToAction("Index", "Home");
         }
 
         return BadRequest();
     }
-}
 
-class UserSocial
-{
-    public string Network { set; get; } = string.Empty;
-    public string Uid { set; get; } = string.Empty;
-    public string Email { set; get; } = string.Empty;
-    public string First_name { set; get; } = string.Empty;
-    public string Last_name { set; get; } = string.Empty;
+    public async Task<IActionResult> LogoutAsync()
+    {
+        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        return RedirectToAction("Index", "Home");
+    }
 }

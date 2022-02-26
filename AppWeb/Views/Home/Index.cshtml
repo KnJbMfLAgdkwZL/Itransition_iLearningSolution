@@ -13,3 +13,27 @@
 <a asp-controller="Account" asp-action="Login">Login</a>
 
 <br/>
+
+<a asp-controller="Account" asp-action="Logout">Logout</a>
+
+<br/>
+
+
+@{
+    var name = User.Identity?.Name;
+
+    var uid = User.FindFirst("Uid")?.Value;
+    var email = User.FindFirst("Email")?.Value;
+    var network = User.FindFirst("Network")?.Value;
+
+}
+
+<div>
+    Uid: @uid
+</div>
+<div>
+    Email: @email
+</div>
+<div>
+    Network: @network
+</div>
