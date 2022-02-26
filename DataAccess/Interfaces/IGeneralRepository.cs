@@ -16,6 +16,9 @@ public interface IGeneralRepository<T>
     Task<List<T>> GetAllAsync<TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> orderBy,
         CancellationToken token);
 
+    Task<List<T>> GetAllAsyncDescending<TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> orderBy,
+        CancellationToken token);
+
     Task<List<T>> GetAllIncludeAsync<TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> include,
         CancellationToken token);
 

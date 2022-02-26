@@ -1,13 +1,22 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using AppWeb.Models;
+using Business.Interfaces;
 
 namespace AppWeb.Controllers;
 
 public class HomeController : Controller
 {
-    public IActionResult Index()
+    private readonly IReviewService _reviewService;
+
+    public HomeController(IReviewService reviewService)
     {
+        _reviewService = reviewService;
+    }
+
+    public async Task<IActionResult> Index()
+    {
+        ViewData["MainPageData"] = await _reviewService.GetMainPageData();
         return View();
     }
 

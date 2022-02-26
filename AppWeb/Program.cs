@@ -42,6 +42,8 @@ builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepositor
 builder.Services.AddScoped<IConverterService, ConverterService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<ITagService, TagService>();
 
 // Add services to the container.
 builder.Services.AddControllers();

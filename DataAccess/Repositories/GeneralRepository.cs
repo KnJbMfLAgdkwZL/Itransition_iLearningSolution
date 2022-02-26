@@ -104,6 +104,12 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
         return await _table.Where(condition).OrderBy(orderBy).ToListAsync(token);
     }
 
+    public async Task<List<T>> GetAllAsyncDescending<TKey>(Expression<Func<T, bool>> condition,
+        Expression<Func<T, TKey>> orderBy, CancellationToken token)
+    {
+        return await _table.Where(condition).OrderByDescending(orderBy).ToListAsync(token);
+    }
+
     public async Task<List<T>> GetAllIncludeAsync<TKey>(Expression<Func<T, bool>> condition,
         Expression<Func<T, TKey>> include, CancellationToken token)
     {
