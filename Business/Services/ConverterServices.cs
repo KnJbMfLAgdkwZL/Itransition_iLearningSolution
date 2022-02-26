@@ -1,14 +1,7 @@
+using Business.Interfaces;
 using Newtonsoft.Json;
 
 namespace Business.Services;
-
-public interface IConverterServices
-{
-    Database.Models.UserSocial? UserSociaModel(string json);
-    Dto.UserSocial? UserSociaDto(string json);
-    Dto.UserSocial? UserSociaModelToDto(Database.Models.UserSocial userSocial);
-    Database.Models.UserSocial? UserSociaDtoToMode(Dto.UserSocial userSocial);
-}
 
 public class ConverterServices : IConverterServices
 {

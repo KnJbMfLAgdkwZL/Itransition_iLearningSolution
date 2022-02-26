@@ -1,18 +1,12 @@
 using System.Security.Claims;
+using Business.Interfaces;
 using DataAccess.Interfaces;
-using DataAccess.Repositories;
 using Database.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 
 namespace Business.Services;
-
-public interface IAccountServices
-{
-    Task<bool> LoginOrRegister(string json, HttpContext httpContext, CancellationToken token);
-    Task<bool> GetUserSocial(string uid, string email, string network);
-}
 
 public class AccountServices : IAccountServices
 {
