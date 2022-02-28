@@ -1,5 +1,4 @@
 using Business.Interfaces;
-using Business.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 
@@ -7,11 +6,11 @@ namespace AppWeb.AuthorizationHandler;
 
 public class CustomAuthorizationHandler : IAuthorizationHandler
 {
-    private readonly IAccountService _accountService;
+    private readonly IUserSocialService _userSocialService;
 
-    public CustomAuthorizationHandler(IAccountService accountService)
+    public CustomAuthorizationHandler(IUserSocialService userSocialService)
     {
-        _accountService = accountService;
+        _userSocialService = userSocialService;
     }
 
     public async Task HandleAsync(AuthorizationHandlerContext context)
@@ -25,7 +24,7 @@ public class CustomAuthorizationHandler : IAuthorizationHandler
         var claimNetwork = context.User.FindFirst("Network");
         var network = claimNetwork == null ? string.Empty : claimNetwork.Value;
 
-        if (await _accountService.GetUserSocial(uid, email, network))
+        if (await _userSocialService.Get(uid, email, network) != null)
         {
             context.Succeed(new AssertionRequirement(handlerContext => handlerContext.HasSucceeded));
             return;

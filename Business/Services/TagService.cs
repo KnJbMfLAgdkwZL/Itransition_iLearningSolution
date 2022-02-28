@@ -6,16 +6,16 @@ namespace Business.Services;
 
 public class TagService : ITagService
 {
-    private readonly IGeneralRepository<Tag> _reviewRepository;
+    private readonly IGeneralRepository<Tag> _tagRepository;
 
-    public TagService(IGeneralRepository<Tag> reviewRepository)
+    public TagService(IGeneralRepository<Tag> tagRepository)
     {
-        _reviewRepository = reviewRepository;
+        _tagRepository = tagRepository;
     }
 
     public async Task<List<Tag>> GetTopTags()
     {
-        var r = await _reviewRepository.GetAllAsyncDescending(t =>
+        var r = await _tagRepository.GetAllAsyncDescending(t =>
                 t.Name != String.Empty,
             t =>
                 t.Amount,

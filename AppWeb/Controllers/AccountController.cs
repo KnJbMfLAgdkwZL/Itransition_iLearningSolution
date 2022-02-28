@@ -1,25 +1,41 @@
 using Business.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
 public class AccountController : Controller
 {
-    private IAccountService _accountService;
+    private readonly IAccountService _accountService;
+    private readonly IUserSocialService _userSocialService;
 
-    public AccountController(IAccountService accountService)
+    public AccountController(IAccountService accountService, IUserSocialService userSocialService)
     {
         _accountService = accountService;
+        _userSocialService = userSocialService;
     }
 
-    [AllowAnonymous]
-    [HttpGet("AccessDenied")]
     public async Task<IActionResult> AccessDenied()
     {
-        await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        var claimUid = User.FindFirst("Uid");
+        var uid = claimUid == null ? string.Empty : claimUid.Value;
+
+        var claimEmail = User.FindFirst("Email");
+        var email = claimEmail == null ? string.Empty : claimEmail.Value;
+
+        var claimNetwork = User.FindFirst("Network");
+        var network = claimNetwork == null ? string.Empty : claimNetwork.Value;
+
+        if (uid != string.Empty && email != string.Empty && network != string.Empty)
+        {
+            if (await _userSocialService.Get(uid, email, network) == null)
+            {
+                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+                return Ok("AccessDenied Logout");
+            }
+        }
+
         return Ok("AccessDenied");
     }
 

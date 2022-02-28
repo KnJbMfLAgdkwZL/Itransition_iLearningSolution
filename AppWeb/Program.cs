@@ -20,6 +20,7 @@ builder.Services.AddDbContext<MasterContext>(options =>
 });
 
 // Security
+builder.Services.AddTransient<IAuthorizationHandler, CustomAuthorizationHandler>();
 builder.Services.AddAuthentication(options =>
     {
         //
@@ -33,17 +34,26 @@ builder.Services.AddAuthentication(options =>
         options.ExpireTimeSpan = TimeSpan.FromHours(12);
     });
 builder.Services.AddAuthorization();
-builder.Services.AddTransient<IAuthorizationHandler, CustomAuthorizationHandler>();
 
 // DataAccess Repositories
 builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
 
 // Services
+builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IProductGroupService, ProductGroupService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
+builder.Services.AddScoped<IReviewLikeService, ReviewLikeService>();
+builder.Services.AddScoped<IReviewTagService, ReviewTagService>();
+builder.Services.AddScoped<IReviewUserRatingService, ReviewUserRatingService>();
+builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IStatusReviewService, StatusReviewService>();
+builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IUserSocialService, UserSocialService>();
+
 builder.Services.AddScoped<IConverterService, ConverterService>();
 builder.Services.AddScoped<IAccountService, AccountService>();
 
-builder.Services.AddScoped<IReviewService, ReviewService>();
-builder.Services.AddScoped<ITagService, TagService>();
 
 // Add services to the container.
 builder.Services.AddControllers();

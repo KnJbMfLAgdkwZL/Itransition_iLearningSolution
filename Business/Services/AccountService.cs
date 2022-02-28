@@ -1,6 +1,5 @@
 using System.Security.Claims;
 using Business.Interfaces;
-using DataAccess.Interfaces;
 using Database.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -11,40 +10,52 @@ namespace Business.Services;
 public class AccountService : IAccountService
 {
     private readonly IConverterService _converterService;
-    private readonly IGeneralRepository<UserSocial> _userSocialRepository;
+    private readonly IUserSocialService _userSocialService;
+    private readonly IUserService _userService;
 
-    public AccountService(IConverterService converterService, IGeneralRepository<UserSocial> userSocialRepository)
+    public AccountService(IConverterService converterService, IUserSocialService userSocialService,
+        IUserService userService)
     {
         _converterService = converterService;
-        _userSocialRepository = userSocialRepository;
+        _userSocialService = userSocialService;
+        _userService = userService;
     }
 
     public async Task<bool> LoginOrRegister(string json, HttpContext httpContext, CancellationToken token)
     {
         var userSocial = _converterService.UserSociaModel(json);
-        if (!Check(userSocial))
+        if (_userSocialService.Check(userSocial) == false)
         {
             return false;
         }
 
-        await _userSocialRepository.AddIfNotExistAsync(us =>
-            us.Uid == userSocial!.Uid &&
-            us.Email == userSocial.Email &&
-            us.Network == userSocial.Network, userSocial!, token);
+        var userSocialRes = await _userSocialService.LoginOrRegister(userSocial!);
+        var nickname = "Anonymous";
+        if (userSocialRes.FirstName != string.Empty && userSocialRes.LastName != string.Empty)
+        {
+            nickname = $"{userSocialRes.FirstName} {userSocialRes.LastName}";
+        }
+
+        var lastLoginDate = DateTime.Now;
+        var user = new User()
+        {
+            SocialId = userSocialRes.Id,
+            RoleId = 1,
+            RegistrationDate = DateTime.Now,
+            Avatar = "Default",
+            ReviewsLikes = 0,
+            Nickname = nickname,
+            LastLoginDate = lastLoginDate
+        };
+        var userRes = await _userService.LoginOrRegister(user);
+        if (userRes.Id > 0)
+        {
+            userRes.LastLoginDate = lastLoginDate;
+            await _userService.Update(userRes);
+        }
 
         await AuthenticateAsync(userSocial!, httpContext);
-
         return true;
-    }
-
-    public async Task<bool> GetUserSocial(string uid, string email, string network)
-    {
-        var res = await _userSocialRepository.GetOneAsync(us =>
-                us.Uid == uid &&
-                us.Email == email &&
-                us.Network == network
-            , CancellationToken.None);
-        return res != null;
     }
 
     private async Task AuthenticateAsync(UserSocial userSocial, HttpContext httpContext)
@@ -58,15 +69,5 @@ public class AccountService : IAccountService
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
         await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
-    }
-
-    private bool Check(UserSocial? userSocial)
-    {
-        if (userSocial == null)
-        {
-            return false;
-        }
-
-        return userSocial.Uid != string.Empty && userSocial.Email != string.Empty;
     }
 }

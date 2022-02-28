@@ -28,15 +28,9 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
         CancellationToken token)
     {
         await using var transaction = await _masterContext.Database.BeginTransactionAsync(token);
-        var result = await GetOneAsync(condition, token);
-        T modelRes = null!;
-        if (result == null)
-        {
-            modelRes = await AddAsync(model, token);
-        }
-
+        var result = await GetOneAsync(condition, token) ?? await AddAsync(model, token);
         await transaction.CommitAsync(token);
-        return modelRes;
+        return result;
     }
 
     public async Task<T> AddOrUpdateAsync(Expression<Func<T, bool>> condition, T model, CancellationToken token)

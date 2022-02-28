@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Business.Dto.Frontend.Form;
+namespace Business.Dto.Frontend.FromForm;
 
-public class Review
+public class ReviewForm
 {
     [Required(ErrorMessage = "Required ProductType")]
     public int ProductId { get; set; }

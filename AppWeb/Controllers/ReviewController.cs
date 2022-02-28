@@ -1,4 +1,4 @@
-using Business.Dto.Frontend.Form;
+using Business.Dto.Frontend.FromForm;
 using Business.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,9 +26,9 @@ public class ReviewController : Controller
     }
 
     [HttpPost]
-    public IActionResult Create([FromForm] Review review)
+    public async Task<IActionResult> Create([FromForm] ReviewForm reviewForm)
     {
-        
-        return Json(review);
+        await _reviewService.Create(reviewForm);
+        return Json(reviewForm);
     }
 }

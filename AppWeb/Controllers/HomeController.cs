@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AppWeb.Models;
 using Business.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace AppWeb.Controllers;
 
@@ -20,6 +21,7 @@ public class HomeController : Controller
         return View();
     }
 
+    [Authorize]
     public IActionResult Privacy()
     {
         return View();
