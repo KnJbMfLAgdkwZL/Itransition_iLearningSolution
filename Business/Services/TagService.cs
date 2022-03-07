@@ -16,11 +16,30 @@ public class TagService : ITagService
     public async Task<List<Tag>> GetTopTags()
     {
         var r = await _tagRepository.GetAllAsyncDescending(t =>
-                t.Name != String.Empty,
+                t.Name != string.Empty,
             t =>
                 t.Amount,
             CancellationToken.None
         );
         return r.Take(20).ToList();
+    }
+
+    public async Task<Tag> AddOrIncrement(string name)
+    {
+        var tag = await _tagRepository.GetOneAsync(t => t.Name == name, CancellationToken.None);
+        if (tag != null)
+        {
+            tag.Amount++;
+            await _tagRepository.UpdateAsync(tag, CancellationToken.None);
+        }
+        else
+        {
+            tag = await _tagRepository.AddAsync(new Tag()
+            {
+                Name = name,
+                Amount = 1
+            }, CancellationToken.None);
+        }
+        return tag;
     }
 }

@@ -1,6 +1,7 @@
+using Business.Dto;
 using Business.Interfaces;
 using DataAccess.Interfaces;
-using Database.Models;
+using UserSocial = Database.Models.UserSocial;
 
 namespace Business.Services;
 
@@ -34,12 +35,12 @@ public class UserSocialService : IUserSocialService
             userSocial!, CancellationToken.None);
     }
 
-    public async Task<UserSocial?> Get(string uid, string email, string network)
+    public async Task<UserSocial?> Get(UserClaims userClaims)
     {
         return await _userSocialRepository.GetOneAsync(us =>
-                us.Uid == uid &&
-                us.Email == email &&
-                us.Network == network,
+                us.Uid == userClaims.Uid &&
+                us.Email == userClaims.Email &&
+                us.Network == userClaims.Network,
             CancellationToken.None);
     }
 }

@@ -9,27 +9,23 @@ public class AccountController : Controller
 {
     private readonly IAccountService _accountService;
     private readonly IUserSocialService _userSocialService;
+    private readonly IUserClaimsService _userClaimsService;
 
-    public AccountController(IAccountService accountService, IUserSocialService userSocialService)
+    public AccountController(IAccountService accountService, IUserSocialService userSocialService,
+        IUserClaimsService userClaimsService)
     {
         _accountService = accountService;
         _userSocialService = userSocialService;
+        _userClaimsService = userClaimsService;
     }
 
     public async Task<IActionResult> AccessDenied()
     {
-        var claimUid = User.FindFirst("Uid");
-        var uid = claimUid == null ? string.Empty : claimUid.Value;
+        var userClaims = _userClaimsService.GetClaims(HttpContext);
 
-        var claimEmail = User.FindFirst("Email");
-        var email = claimEmail == null ? string.Empty : claimEmail.Value;
-
-        var claimNetwork = User.FindFirst("Network");
-        var network = claimNetwork == null ? string.Empty : claimNetwork.Value;
-
-        if (uid != string.Empty && email != string.Empty && network != string.Empty)
+        if (userClaims.Uid != string.Empty && userClaims.Email != string.Empty && userClaims.Network != string.Empty)
         {
-            if (await _userSocialService.Get(uid, email, network) == null)
+            if (await _userSocialService.Get(userClaims) == null)
             {
                 await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
                 return Ok("AccessDenied Logout");

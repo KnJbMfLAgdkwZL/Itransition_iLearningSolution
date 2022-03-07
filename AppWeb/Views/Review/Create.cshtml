@@ -1,3 +1,5 @@
+@using System.Collections
+@using Database.Models
 @model dynamic
 
 @{
@@ -12,24 +14,39 @@
       asp-anti-forgery="true"
       name="Review" id="ReviewCreateForm">
 
-    Product:
-    <select name="ProductId">
-        <option value="1">Кино</option>
-        <option value="2">Книги</option>
-        <option value="3">Игры</option>
+    StatusReview:
+    <select name="StatusReviewId">
+        @{
+            var statusReviews = (List<StatusReview>) ViewData["statusReviews"]!;
+            foreach (var v in statusReviews)
+            {
+                <option value="@v.Id">@v.Name</option>
+            }
+        }
     </select>
     <br/>
 
+    Product:
+    <select name="ProductId">
+        @{
+            var productGroups = (List<ProductGroup>) ViewData["productGroups"]!;
+            foreach (var v in productGroups)
+            {
+                <option value="@v.Id">@v.Name</option>
+            }
+        }
+    </select>
+    <br/>
     ProductName:
-    <input type="text" name="ProductName"/>
+    <input type="text" name="ProductName" maxlength="50"/>
     <br/>
 
     Title:
-    <input type="text" name="Title"/>
+    <input type="text" name="Title" maxlength="100"/>
     <br/>
 
     Content:
-    <textarea name="Content"></textarea>
+    <textarea name="Content" maxlength="30000"></textarea>
     <br/>
 
     AuthorAssessment:
@@ -42,6 +59,69 @@
     </select>
     <br/>
 
-    <input type="submit" value="Create"/>
+    <input type="hidden" name="TagsInput" id="tagsInput" value="[]"/>
 
+    <input type="submit" id="Create" value="Create"/>
 </form>
+
+
+<div id="tags">
+
+</div>
+
+<input type="text" id="tagAdd"/>
+
+<script>
+let tags = document.getElementById("tags")
+let tagsValues = []
+let tagAdd = document.getElementById("tagAdd")
+let tagsInput = document.getElementById("tagsInput")
+
+function AddTags(values) {
+    for (let v of values) {
+        if (v) {
+            tagsValues.push(v)
+        }
+    }
+    tagsValues = tagsValues.filter(function (item, pos) {
+        return tagsValues.indexOf(item) === pos;
+    })
+    tags.innerHTML = ''
+    for (let v of tagsValues) {
+        tags.innerHTML += `<div class="tag" onclick="tagOnclick(this)">${v}</div>`
+    }
+    tagsInput.value = JSON.stringify(tagsValues)
+}
+
+tagAdd.onkeydown = function (e) {
+    if (tagAdd.value.length > 20) {
+        e.preventDefault()
+    }
+    
+    if (e.key === ' ') {
+        let tags = tagAdd.value.split(' ')
+        AddTags(tags)
+        tagAdd.value = ''
+    }
+}
+
+function tagOnclick(element) {
+    let value = element.innerHTML
+
+    let index = tagsValues.indexOf(value);
+    if (index > -1) {
+        tagsValues.splice(index, 1)
+    }
+    element.remove()
+    tagsInput.value = JSON.stringify(tagsValues)
+}
+</script>
+
+<style>
+    .tag
+    {
+        background: lightgray;
+        display: inline-block;
+        margin-right: 5px;
+    }
+</style>

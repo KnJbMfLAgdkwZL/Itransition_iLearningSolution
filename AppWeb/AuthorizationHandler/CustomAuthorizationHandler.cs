@@ -7,24 +7,18 @@ namespace AppWeb.AuthorizationHandler;
 public class CustomAuthorizationHandler : IAuthorizationHandler
 {
     private readonly IUserSocialService _userSocialService;
+    private readonly IUserClaimsService _userClaimsService;
 
-    public CustomAuthorizationHandler(IUserSocialService userSocialService)
+    public CustomAuthorizationHandler(IUserSocialService userSocialService, IUserClaimsService userClaimsService)
     {
         _userSocialService = userSocialService;
+        _userClaimsService = userClaimsService;
     }
 
     public async Task HandleAsync(AuthorizationHandlerContext context)
     {
-        var claimUid = context.User.FindFirst("Uid");
-        var uid = claimUid == null ? string.Empty : claimUid.Value;
-
-        var claimEmail = context.User.FindFirst("Email");
-        var email = claimEmail == null ? string.Empty : claimEmail.Value;
-
-        var claimNetwork = context.User.FindFirst("Network");
-        var network = claimNetwork == null ? string.Empty : claimNetwork.Value;
-
-        if (await _userSocialService.Get(uid, email, network) != null)
+        var userClaims = _userClaimsService.GetClaims(context);
+        if (await _userSocialService.Get(userClaims) != null)
         {
             context.Succeed(new AssertionRequirement(handlerContext => handlerContext.HasSucceeded));
             return;

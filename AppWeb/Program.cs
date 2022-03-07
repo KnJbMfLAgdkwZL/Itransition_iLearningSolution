@@ -39,21 +39,20 @@ builder.Services.AddAuthorization();
 builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepository<>));
 
 // Services
+builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
+builder.Services.AddScoped<IConverterService, ConverterService>();
 builder.Services.AddScoped<IProductGroupService, ProductGroupService>();
-builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IReviewLikeService, ReviewLikeService>();
+builder.Services.AddScoped<IReviewService, ReviewService>();
 builder.Services.AddScoped<IReviewTagService, ReviewTagService>();
 builder.Services.AddScoped<IReviewUserRatingService, ReviewUserRatingService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IStatusReviewService, StatusReviewService>();
 builder.Services.AddScoped<ITagService, TagService>();
+builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserSocialService, UserSocialService>();
-
-builder.Services.AddScoped<IConverterService, ConverterService>();
-builder.Services.AddScoped<IAccountService, AccountService>();
-
 
 // Add services to the container.
 builder.Services.AddControllers();

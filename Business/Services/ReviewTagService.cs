@@ -12,4 +12,14 @@ public class ReviewTagService : IReviewTagService
     {
         _reviewTagRepository = reviewTagRepository;
     }
+
+    public async Task AddTagToReview(int reviewId, int tagId)
+    {
+        await _reviewTagRepository.AddIfNotExistAsync(t => t.ReviewId == reviewId && t.TagId == tagId,
+            new ReviewTag()
+            {
+                ReviewId = reviewId,
+                TagId = tagId
+            }, CancellationToken.None);
+    }
 }
