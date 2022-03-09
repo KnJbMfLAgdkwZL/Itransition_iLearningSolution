@@ -69,6 +69,9 @@
 
 </div>
 
+<span id="TagsRecoms">
+</span>
+
 <input type="text" id="tagAdd"/>
 
 <script>
@@ -80,8 +83,14 @@ let tagsInput = document.getElementById("tagsInput")
 function AddTags(values) {
     for (let v of values) {
         if (v) {
-            tagsValues.push(v)
+            AddTag(v)
         }
+    }
+}
+
+function AddTag(v) {
+    if (v) {
+        tagsValues.push(v)
     }
     tagsValues = tagsValues.filter(function (item, pos) {
         return tagsValues.indexOf(item) === pos;
@@ -124,4 +133,22 @@ function tagOnclick(element) {
         display: inline-block;
         margin-right: 5px;
     }
+</style>
+
+
+<style>
+#TagsRecoms{
+    display: none;
+    position: absolute;
+    background: lightblue;
+    margin: 10px;
+}
+.TagsRecom
+{
+    cursor: pointer;
+    padding: 5px;
+}
+.TagsRecom:hover{
+    background: lightgray;
+}
 </style>

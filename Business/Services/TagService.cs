@@ -1,6 +1,7 @@
 using Business.Interfaces;
 using DataAccess.Interfaces;
 using Database.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Business.Services;
 
@@ -21,7 +22,17 @@ public class TagService : ITagService
                 t.Amount,
             CancellationToken.None
         );
-        return r.Take(20).ToList();
+        return r.Take(50).ToList();
+    }
+
+    public async Task<List<Tag>> GetTopTags(string search)
+    {
+        var r = await _tagRepository.GetAllAsyncDescending(t =>
+                EF.Functions.Like(t.Name, $"%{search}%"),
+            t => t.Amount,
+            CancellationToken.None
+        );
+        return r.Take(5).ToList();
     }
 
     public async Task<Tag> AddOrIncrement(string name)
@@ -40,6 +51,7 @@ public class TagService : ITagService
                 Amount = 1
             }, CancellationToken.None);
         }
+
         return tag;
     }
 }
