@@ -10,4 +10,5 @@ public interface IReviewService
     Task<List<Review>> GetNewReviews();
     Task<List<Review>> GetTopReviews();
     Task<Review?> Create(ReviewForm reviewForm, HttpContext context);
+    Task<Review?> Get(int id);
 }

@@ -2,6 +2,7 @@ using Business.Interfaces;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace AppWeb.Controllers;
 
@@ -37,7 +38,8 @@ public class AccountController : Controller
 
     public IActionResult Login()
     {
-        return View();
+        return RedirectToAction("LoginTmp", "Account");
+        //return View();
     }
 
     [HttpPost]
@@ -62,5 +64,24 @@ public class AccountController : Controller
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return RedirectToAction("Index", "Home");
+    }
+
+    public async Task<IActionResult> LoginTmp(CancellationToken cancellationToken) //TEMP LOGIN
+    {
+        var userLogin = new
+        {
+            uid = "102323882587819167548",
+            email = "zipocat@gmail.com",
+            network = "google",
+            first_name = "Zippo",
+            last_name = "Cat"
+        };
+        var json = JsonConvert.SerializeObject(userLogin);
+        if (await _accountService.LoginOrRegister(json, HttpContext, cancellationToken))
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        return BadRequest();
     }
 }

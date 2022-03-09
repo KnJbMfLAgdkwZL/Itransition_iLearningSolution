@@ -11,13 +11,15 @@ public class ReviewController : Controller
     private readonly IReviewService _reviewService;
     private readonly IProductGroupService _productGroupService;
     private readonly IStatusReviewService _statusReviewService;
+    private readonly IReviewTagService _reviewTagService;
 
     public ReviewController(IReviewService reviewService, IProductGroupService productGroupService,
-        IStatusReviewService statusReviewService)
+        IStatusReviewService statusReviewService, IReviewTagService reviewTagService)
     {
         _reviewService = reviewService;
         _productGroupService = productGroupService;
         _statusReviewService = statusReviewService;
+        _reviewTagService = reviewTagService;
     }
 
     public IActionResult Index()
@@ -41,6 +43,7 @@ public class ReviewController : Controller
     {
         if (!ModelState.IsValid)
         {
+            return BadRequest();
         }
 
         var review = await _reviewService.Create(reviewForm, HttpContext);
@@ -49,13 +52,19 @@ public class ReviewController : Controller
             return BadRequest();
         }
 
-        var settings = new JsonSerializerSettings()
+        return RedirectToAction("Get", "Review", new {id = review.Id});
+    }
+
+    public async Task<IActionResult> Get([FromRoute] int id)
+    {
+        var review = await _reviewService.Get(id);
+        if (review == null)
         {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Error = (sender, args) => { args.ErrorContext.Handled = true; },
-        };
-        var strJson = JsonConvert.SerializeObject(review, Formatting.Indented, settings);
-        //redirect review.Id 
-        return Ok(strJson);
+            return BadRequest();
+        }
+
+        ViewData["review"] = review;
+        ViewData["tags"] = await _reviewTagService.GetTagsNames(review.Id);
+        return View();
     }
 }

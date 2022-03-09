@@ -1,6 +1,8 @@
+using System.Linq.Expressions;
 using Business.Dto.Frontend.FromForm;
 using Business.Interfaces;
 using DataAccess.Interfaces;
+using Database.Interfaces;
 using Database.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -113,5 +115,27 @@ public class ReviewService : IReviewService
         }
 
         return review;
+    }
+
+    public async Task<Review?> Get(int id)
+    {
+        /*await _reviewRepository.GetOneIncludeAsync(review => review.Id > 0,
+            review => review.Author,
+            CancellationToken.None
+        );*/
+        var status = await _statusReviewService.Get("Deleted");
+        return await _reviewRepository.GetOneIncludeManyAsync(r =>
+                r.Id == id &&
+                r.StatusId != status!.Id,
+            new List<Expression<Func<Review, object>>>()
+            {
+                r => r.Author,
+                r => r.Product,
+                r => r.Status,
+                r => r.Comment,
+                r => r.ReviewLike,
+                r => r.ReviewTag,
+                r => r.ReviewUserRating
+            }, CancellationToken.None);
     }
 }

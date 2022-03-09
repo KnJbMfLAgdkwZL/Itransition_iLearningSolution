@@ -1,0 +1,51 @@
+@using Database.Models
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    var review = (Review) ViewData["review"]!;
+    var tags = (List<ReviewTag>) ViewData["tags"]!;
+
+}
+
+<input type="hidden" id="Id" name="Id" value="@review.Id"/>
+<h2>@review.Title</h2>
+<h4>@review.ProductName</h4>
+
+<a href="/@review.AuthorId" id="Author">@review.Author.Nickname</a>
+
+<a href="/@review.ProductId" id="Product">@review.Product.Name</a>
+
+<div id="Content">@review.Content</div>
+
+@if (review.CreationDate != review.RedactionDate)
+{
+    //m.RedactionDate
+}
+else if (review.CreationDate != review.DeletionDate)
+{
+    //@m.DeletionDate
+}
+else
+{
+    //m.CreationDate
+}
+
+AuthorAssessment = @review.AuthorAssessment
+AverageUserRating = @review.AverageUserRating
+
+@if (review.Status.Name == "Common")
+{
+    Comments:
+    foreach (var v in review.Comment)
+    {
+        //v.Content;
+    }
+}
+
+ReviewLike: @review.ReviewLike.Count
+
+ReviewTag:
+@foreach (var v in tags)
+{
+    <span>@v.Tag.Name</span>
+}

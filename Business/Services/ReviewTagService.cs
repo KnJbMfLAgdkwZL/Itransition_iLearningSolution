@@ -22,4 +22,10 @@ public class ReviewTagService : IReviewTagService
                 TagId = tagId
             }, CancellationToken.None);
     }
+
+    public async Task<List<ReviewTag>> GetTagsNames(int reviewId)
+    {
+        return await _reviewTagRepository.GetAllIncludeAsync(t => t.ReviewId == reviewId, t => t.Tag,
+            CancellationToken.None);
+    }
 }

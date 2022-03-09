@@ -1,23 +1,41 @@
-﻿@{
+﻿@using Database.Models
+@{
+    var mainPageData = (Dictionary<string, object>) ViewData["MainPageData"]!;
+
+    var newReviews = (List<Review>) mainPageData["NewReviews"];
+    var topReviews = (List<Review>) mainPageData["TopReviews"];
+    var topTags = (List<Tag>) mainPageData["TopTags"];
+
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    second commit
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
-
+NewReviews: <br/>
+@foreach (var v in newReviews)
+{
+    <div>@v.Id | @v.Title | @v.AverageUserRating | @v.CreationDate</div>
+}
 <br/>
 
+TopReviews: <br/>
+@foreach (var v in topReviews)
+{
+    <div>@v.Id | @v.Title | @v.AverageUserRating | @v.CreationDate</div>
+}
+<br/>
+
+TopTags: <br/>
+@foreach (var v in topTags)
+{
+    <div>@v.Id | @v.Name | @v.Amount</div>
+}
+<br/>
+
+
+<br/>
 <a asp-controller="Account" asp-action="Login">Login</a>
-
 <br/>
-
 <a asp-controller="Account" asp-action="Logout">Logout</a>
-
 <br/>
-
 
 @{
     var name = User.Identity?.Name;
@@ -25,23 +43,12 @@
     var uid = User.FindFirst("Uid")?.Value;
     var email = User.FindFirst("Email")?.Value;
     var network = User.FindFirst("Network")?.Value;
-
 }
 
-<div>
-    Uid: @uid
-</div>
-<div>
-    Email: @email
-</div>
-<div>
-    Network: @network
-</div>
-
+<div>Uid: @uid</div>
+<div>Email: @email</div>
+<div>Network: @network</div>
 
 <div>
-    <div>
-        Review:
-    </div>
-    <a asp-controller="Review" asp-action="Create">Create</a>
+    <a asp-controller="Review" asp-action="Create">Create Review</a>
 </div>
