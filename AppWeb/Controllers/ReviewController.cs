@@ -12,14 +12,17 @@ public class ReviewController : Controller
     private readonly IProductGroupService _productGroupService;
     private readonly IStatusReviewService _statusReviewService;
     private readonly IReviewTagService _reviewTagService;
+    private readonly IReviewLikeService _reviewLikeService;
 
     public ReviewController(IReviewService reviewService, IProductGroupService productGroupService,
-        IStatusReviewService statusReviewService, IReviewTagService reviewTagService)
+        IStatusReviewService statusReviewService, IReviewTagService reviewTagService,
+        IReviewLikeService reviewLikeService)
     {
         _reviewService = reviewService;
         _productGroupService = productGroupService;
         _statusReviewService = statusReviewService;
         _reviewTagService = reviewTagService;
+        _reviewLikeService = reviewLikeService;
     }
 
     public IActionResult Index()
@@ -65,6 +68,8 @@ public class ReviewController : Controller
 
         ViewData["review"] = review;
         ViewData["tags"] = await _reviewTagService.GetTagsNames(review.Id);
+        ViewData["IsUserLike"] = await _reviewLikeService.IsTrue(id, HttpContext);
+
         return View();
     }
 }

@@ -4,7 +4,7 @@
     Layout = "_Layout";
     var review = (Review) ViewData["review"]!;
     var tags = (List<ReviewTag>) ViewData["tags"]!;
-
+    var isUserLike = (bool) ViewData["IsUserLike"]!;
 }
 
 <input type="hidden" id="Id" name="Id" value="@review.Id"/>
@@ -49,3 +49,48 @@ ReviewTag:
 {
     <span>@v.Tag.Name</span>
 }
+
+
+@if (User.Identity != null && User.Identity.IsAuthenticated)
+{
+    <img id="Like" class="like" src="" alt=""/>
+    
+    <style>
+        .like {
+            width: 20px;
+            cursor: pointer;
+        }
+    </style>
+    
+    <script>
+        let like = document.getElementById("Like")
+        let isUserLike = @isUserLike.ToString().ToLower()
+        
+        let likeSrc = "/like_white.svg";
+        if (isUserLike) {
+            likeSrc = "/like_black.svg";
+        }
+        like.src = likeSrc
+        
+        like.onclick = function () {
+            let fetchHref = "/Like/Add?reviewId=@review.Id"
+            if (isUserLike) {
+                fetchHref = "/Like/Remove?reviewId=@review.Id"
+            }
+            fetch(fetchHref, {
+                method: "GET"
+            }).then((response) => {
+                if (response.ok) {
+                    if (isUserLike) {
+                        like.src = "/like_white.svg"
+                    } else {
+                        like.src = "/like_black.svg"
+                    }
+                    isUserLike = !isUserLike
+                }
+            })
+        }
+    </script>
+}
+
+
