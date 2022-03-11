@@ -138,4 +138,14 @@ public class ReviewService : IReviewService
                 r => r.ReviewUserRating
             }, CancellationToken.None);
     }
+
+    public async Task CalculateAverageUserAssessment(int id)
+    {
+        var review = await _reviewRepository.GetOneAsync(v => v.Id == id, CancellationToken.None);
+        if (review != null)
+        {
+            review.AverageUserRating = (float) await _reviewUserRatingService.GetAverageAssessment(review.Id);
+            await _reviewRepository.UpdateAsync(review, CancellationToken.None);
+        }
+    }
 }

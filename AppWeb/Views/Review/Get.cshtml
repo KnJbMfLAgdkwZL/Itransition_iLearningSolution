@@ -53,15 +53,28 @@ ReviewTag:
 
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
+    <select name="UserRating" id="UserRating">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+        <option value="4">4</option>
+        <option value="5">5</option>
+    </select>
+    <script>
+        let userRating = document.getElementById("UserRating")
+        userRating.onchange = function () {
+            fetch(`/ReviewUserRating/Set?reviewId=@review.Id&assessment=${this.value}`, {method: "GET"})
+        }
+    </script>
+
+
     <img id="Like" class="like" src="" alt=""/>
-    
     <style>
         .like {
             width: 20px;
             cursor: pointer;
         }
     </style>
-    
     <script>
         let like = document.getElementById("Like")
         let isUserLike = @isUserLike.ToString().ToLower()
@@ -92,5 +105,3 @@ ReviewTag:
         }
     </script>
 }
-
-

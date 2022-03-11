@@ -15,7 +15,7 @@ public class ReviewUserRatingService : IReviewUserRatingService
 
     public async Task AddAssessment(int reviewId, int userId, int assessment)
     {
-        await _reviewUserRatingRepository.AddIfNotExistAsync(r =>
+        await _reviewUserRatingRepository.AddOrUpdateAsync(r =>
                 r.ReviewId == reviewId && r.UserId == userId,
             new ReviewUserRating()
             {
@@ -23,5 +23,12 @@ public class ReviewUserRatingService : IReviewUserRatingService
                 UserId = userId,
                 Assessment = (byte) assessment
             }, CancellationToken.None);
+    }
+
+    public async Task<double> GetAverageAssessment(int reviewId)
+    {
+        var ratings = await _reviewUserRatingRepository.GetAllAsync(
+            v => v.ReviewId == reviewId, CancellationToken.None);
+        return ratings.Average(v => v.Assessment);
     }
 }
