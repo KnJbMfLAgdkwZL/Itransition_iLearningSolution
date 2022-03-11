@@ -1,8 +1,8 @@
-using Business.Interfaces;
+using Business.Interfaces.Model;
 using DataAccess.Interfaces;
 using Database.Models;
 
-namespace Business.Services;
+namespace Business.Services.ModelServices;
 
 public class ReviewTagService : IReviewTagService
 {
@@ -15,7 +15,7 @@ public class ReviewTagService : IReviewTagService
 
     public async Task AddTagToReview(int reviewId, int tagId)
     {
-        await _reviewTagRepository.AddIfNotExistAsync(t => t.ReviewId == reviewId && t.TagId == tagId,
+        await _reviewTagRepository.AddIfNotExistAsync(tag => tag.ReviewId == reviewId && tag.TagId == tagId,
             new ReviewTag()
             {
                 ReviewId = reviewId,
@@ -25,7 +25,7 @@ public class ReviewTagService : IReviewTagService
 
     public async Task<List<ReviewTag>> GetTagsNames(int reviewId)
     {
-        return await _reviewTagRepository.GetAllIncludeAsync(t => t.ReviewId == reviewId, t => t.Tag,
+        return await _reviewTagRepository.GetAllIncludeAsync(tag => tag.ReviewId == reviewId, t => t.Tag,
             CancellationToken.None);
     }
 }

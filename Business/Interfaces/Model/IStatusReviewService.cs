@@ -1,6 +1,6 @@
 using Database.Models;
 
-namespace Business.Interfaces;
+namespace Business.Interfaces.Model;
 
 public interface IStatusReviewService
 {

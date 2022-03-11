@@ -1,8 +1,8 @@
-using Business.Interfaces;
+using Business.Interfaces.Model;
 using DataAccess.Interfaces;
 using Database.Models;
 
-namespace Business.Services;
+namespace Business.Services.ModelServices;
 
 public class RoleService : IRoleService
 {

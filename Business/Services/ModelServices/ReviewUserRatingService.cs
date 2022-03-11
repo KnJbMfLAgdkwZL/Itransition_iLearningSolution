@@ -1,8 +1,8 @@
-using Business.Interfaces;
+using Business.Interfaces.Model;
 using DataAccess.Interfaces;
 using Database.Models;
 
-namespace Business.Services;
+namespace Business.Services.ModelServices;
 
 public class ReviewUserRatingService : IReviewUserRatingService
 {
@@ -15,8 +15,8 @@ public class ReviewUserRatingService : IReviewUserRatingService
 
     public async Task AddAssessment(int reviewId, int userId, int assessment)
     {
-        await _reviewUserRatingRepository.AddOrUpdateAsync(r =>
-                r.ReviewId == reviewId && r.UserId == userId,
+        await _reviewUserRatingRepository.AddOrUpdateAsync(
+            rating => rating.ReviewId == reviewId && rating.UserId == userId,
             new ReviewUserRating()
             {
                 ReviewId = reviewId,
@@ -25,10 +25,10 @@ public class ReviewUserRatingService : IReviewUserRatingService
             }, CancellationToken.None);
     }
 
-    public async Task<double> GetAverageAssessment(int reviewId)
+    public async Task<float> GetAverageAssessment(int reviewId)
     {
         var ratings = await _reviewUserRatingRepository.GetAllAsync(
-            v => v.ReviewId == reviewId, CancellationToken.None);
-        return ratings.Average(v => v.Assessment);
+            rating => rating.ReviewId == reviewId, CancellationToken.None);
+        return (float) ratings.Average(v => v.Assessment);
     }
 }

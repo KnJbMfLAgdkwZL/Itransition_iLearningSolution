@@ -1,5 +1,6 @@
 using Business.Dto.Frontend.FromForm;
 using Business.Interfaces;
+using Business.Interfaces.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -13,16 +14,28 @@ public class ReviewController : Controller
     private readonly IStatusReviewService _statusReviewService;
     private readonly IReviewTagService _reviewTagService;
     private readonly IReviewLikeService _reviewLikeService;
+    private readonly IReviewUserRatingService _reviewUserRatingService;
+    private readonly ITagService _tagService;
+
+    private readonly IUserSocialService _userSocialService;
+    private readonly IUserClaimsService _userClaimsService;
+    private readonly IUserService _userService;
 
     public ReviewController(IReviewService reviewService, IProductGroupService productGroupService,
         IStatusReviewService statusReviewService, IReviewTagService reviewTagService,
-        IReviewLikeService reviewLikeService)
+        IReviewLikeService reviewLikeService, IUserClaimsService userClaimsService, IUserService userService,
+        IUserSocialService userSocialService, IReviewUserRatingService reviewUserRatingService, ITagService tagService)
     {
         _reviewService = reviewService;
         _productGroupService = productGroupService;
         _statusReviewService = statusReviewService;
         _reviewTagService = reviewTagService;
         _reviewLikeService = reviewLikeService;
+        _userClaimsService = userClaimsService;
+        _userService = userService;
+        _userSocialService = userSocialService;
+        _reviewUserRatingService = reviewUserRatingService;
+        _tagService = tagService;
     }
 
     public IActionResult Index()
@@ -46,21 +59,61 @@ public class ReviewController : Controller
     {
         if (!ModelState.IsValid)
         {
-            return BadRequest();
+            return BadRequest("Form not Valid");
         }
 
-        var review = await _reviewService.Create(reviewForm, HttpContext);
+        if (!await _productGroupService.Check(reviewForm.ProductId))
+        {
+            return BadRequest("Wrong ProductGroup");
+        }
+
+        if (!await _statusReviewService.Check(reviewForm.StatusReviewId))
+        {
+            return BadRequest("Wrong StatusReview");
+        }
+
+
+        var userClaims = _userClaimsService.GetClaims(HttpContext);
+        var userSocial = await _userSocialService.Get(userClaims);
+        if (userSocial == null)
+        {
+            return BadRequest("UserSocial not found");
+        }
+
+        var user = await _userService.GetUserBySocialId(userSocial.Id);
+        if (user == null)
+        {
+            return BadRequest("User not found");
+        }
+
+        reviewForm.AuthorId = user.Id;
+        var review = await _reviewService.Create(reviewForm);
         if (review == null)
         {
             return BadRequest();
         }
+
+
+        await _reviewUserRatingService.AddAssessment(review.Id, review.AuthorId, review.AuthorAssessment);
+
+
+        var tags = JsonConvert.DeserializeObject<List<string>>(reviewForm.TagsInput);
+        if (tags != null)
+        {
+            foreach (var tagName in tags)
+            {
+                var tag = await _tagService.AddOrIncrement(tagName);
+                await _reviewTagService.AddTagToReview(review.Id, tag.Id);
+            }
+        }
+
 
         return RedirectToAction("Get", "Review", new {id = review.Id});
     }
 
     public async Task<IActionResult> Get([FromRoute] int id)
     {
-        var review = await _reviewService.Get(id);
+        var review = await _reviewService.GetOneIncludes(id);
         if (review == null)
         {
             return BadRequest();
@@ -68,7 +121,18 @@ public class ReviewController : Controller
 
         ViewData["review"] = review;
         ViewData["tags"] = await _reviewTagService.GetTagsNames(review.Id);
-        ViewData["IsUserLike"] = await _reviewLikeService.IsTrue(id, HttpContext);
+        ViewData["IsUserLike"] = false;
+
+        var userClaims = _userClaimsService.GetClaims(HttpContext);
+        var userSocial = await _userSocialService.Get(userClaims);
+        if (userSocial != null)
+        {
+            var user = await _userService.GetUserBySocialId(userSocial.Id);
+            if (user != null)
+            {
+                ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReview(user.Id, id);
+            }
+        }
 
         return View();
     }

@@ -1,29 +1,26 @@
 ﻿using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using AppWeb.Models;
-using Business.Interfaces;
-using Microsoft.AspNetCore.Authorization;
+using Business.Interfaces.Model;
 
 namespace AppWeb.Controllers;
 
 public class HomeController : Controller
 {
     private readonly IReviewService _reviewService;
+    private readonly ITagService _tagService;
 
-    public HomeController(IReviewService reviewService)
+    public HomeController(IReviewService reviewService, ITagService tagService)
     {
         _reviewService = reviewService;
+        _tagService = tagService;
     }
 
     public async Task<IActionResult> Index()
     {
-        ViewData["MainPageData"] = await _reviewService.GetMainPageData();
-        return View();
-    }
-
-    [Authorize]
-    public IActionResult Privacy()
-    {
+        ViewData["NewReviews"] = await _reviewService.GetNewReviews();
+        ViewData["TopReviews"] = await _reviewService.GetTopReviews();
+        ViewData["TopTags"] = await _tagService.GetTopTags();
         return View();
     }
 

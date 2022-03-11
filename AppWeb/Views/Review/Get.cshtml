@@ -62,7 +62,7 @@ ReviewTag:
     </select>
     <script>
         let userRating = document.getElementById("UserRating")
-        userRating.onchange = function () {
+        userRating.onclick = function () {
             fetch(`/ReviewUserRating/Set?reviewId=@review.Id&assessment=${this.value}`, {method: "GET"})
         }
     </script>

@@ -1,10 +1,8 @@
 ﻿@using Database.Models
 @{
-    var mainPageData = (Dictionary<string, object>) ViewData["MainPageData"]!;
-
-    var newReviews = (List<Review>) mainPageData["NewReviews"];
-    var topReviews = (List<Review>) mainPageData["TopReviews"];
-    var topTags = (List<Tag>) mainPageData["TopTags"];
+    var newReviews = (List<Review>) ViewData["NewReviews"]!;
+    var topReviews = (List<Review>) ViewData["TopReviews"]!;
+    var topTags = (List<Tag>) ViewData["TopTags"]!;
 
     ViewData["Title"] = "Home Page";
 }

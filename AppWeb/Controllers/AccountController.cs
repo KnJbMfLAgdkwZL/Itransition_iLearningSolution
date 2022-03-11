@@ -1,4 +1,5 @@
 using Business.Interfaces;
+using Business.Interfaces.Model;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;

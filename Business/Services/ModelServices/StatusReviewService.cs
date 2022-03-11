@@ -1,8 +1,8 @@
-using Business.Interfaces;
+using Business.Interfaces.Model;
 using DataAccess.Interfaces;
 using Database.Models;
 
-namespace Business.Services;
+namespace Business.Services.ModelServices;
 
 public class StatusReviewService : IStatusReviewService
 {
@@ -15,17 +15,16 @@ public class StatusReviewService : IStatusReviewService
 
     public async Task<StatusReview?> Get(string name)
     {
-        return await _statusReviewRepository.GetOneAsync(r =>
-            r.Name == name, CancellationToken.None);
+        return await _statusReviewRepository.GetOneAsync(review => review.Name == name, CancellationToken.None);
     }
 
     public async Task<List<StatusReview>> GetAll()
     {
-        return await _statusReviewRepository.GetAllAsync(r => r.Name != "Deleted", CancellationToken.None);
+        return await _statusReviewRepository.GetAllAsync(review => review.Id > 0, CancellationToken.None);
     }
 
     public async Task<bool> Check(int id)
     {
-        return await _statusReviewRepository.GetOneAsync(group => group.Id == id, CancellationToken.None) != null;
+        return await _statusReviewRepository.GetOneAsync(review => review.Id == id, CancellationToken.None) != null;
     }
 }

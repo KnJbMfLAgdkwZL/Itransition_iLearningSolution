@@ -1,9 +1,9 @@
 using Database.Models;
 
-namespace Business.Interfaces;
+namespace Business.Interfaces.Model;
 
 public interface IProductGroupService
 {
-    Task<bool> Check(int productId);
+    Task<bool> Check(int id);
     Task<List<ProductGroup>> GetAll();
 }

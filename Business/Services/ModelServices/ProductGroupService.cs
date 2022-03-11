@@ -1,8 +1,8 @@
-using Business.Interfaces;
+using Business.Interfaces.Model;
 using DataAccess.Interfaces;
 using Database.Models;
 
-namespace Business.Services;
+namespace Business.Services.ModelServices;
 
 public class ProductGroupService : IProductGroupService
 {
@@ -13,15 +13,13 @@ public class ProductGroupService : IProductGroupService
         _reviewRepository = reviewRepository;
     }
 
-    public async Task<bool> Check(int productId)
+    public async Task<bool> Check(int id)
     {
-        return await _reviewRepository
-            .GetOneAsync(group => group.Id == productId, CancellationToken.None) != null;
+        return await _reviewRepository.GetOneAsync(product => product.Id == id, CancellationToken.None) != null;
     }
 
     public async Task<List<ProductGroup>> GetAll()
     {
-        return await _reviewRepository
-            .GetAllAsync(group => group.Id > 0, CancellationToken.None);
+        return await _reviewRepository.GetAllAsync(product => product.Id > 0, CancellationToken.None);
     }
 }

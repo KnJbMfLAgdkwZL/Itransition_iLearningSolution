@@ -27,4 +27,5 @@ public class ReviewForm
     public byte AuthorAssessment { get; set; }
 
     public string TagsInput { get; set; } = string.Empty;
+    public int AuthorId { get; set; } = 0;
 }

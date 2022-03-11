@@ -1,7 +1,7 @@
 using Business.Dto;
 using UserSocial = Database.Models.UserSocial;
 
-namespace Business.Interfaces;
+namespace Business.Interfaces.Model;
 
 public interface IUserSocialService
 {

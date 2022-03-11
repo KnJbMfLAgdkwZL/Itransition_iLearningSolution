@@ -1,4 +1,4 @@
-namespace Business.Interfaces;
+namespace Business.Interfaces.Model;
 
 public interface ICommentService
 {

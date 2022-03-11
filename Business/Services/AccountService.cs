@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using Business.Interfaces;
+using Business.Interfaces.Model;
 using Database.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;

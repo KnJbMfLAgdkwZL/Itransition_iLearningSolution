@@ -1,9 +1,9 @@
 using Business.Dto;
-using Business.Interfaces;
+using Business.Interfaces.Model;
 using DataAccess.Interfaces;
 using UserSocial = Database.Models.UserSocial;
 
-namespace Business.Services;
+namespace Business.Services.ModelServices;
 
 public class UserSocialService : IUserSocialService
 {
@@ -28,19 +28,19 @@ public class UserSocialService : IUserSocialService
 
     public async Task<UserSocial> LoginOrRegister(UserSocial userSocial)
     {
-        return await _userSocialRepository.AddIfNotExistAsync(us =>
-                us.Uid == userSocial!.Uid &&
-                us.Email == userSocial.Email &&
-                us.Network == userSocial.Network,
+        return await _userSocialRepository.AddIfNotExistAsync(social =>
+                social.Uid == userSocial!.Uid &&
+                social.Email == userSocial.Email &&
+                social.Network == userSocial.Network,
             userSocial!, CancellationToken.None);
     }
 
     public async Task<UserSocial?> Get(UserClaims userClaims)
     {
-        return await _userSocialRepository.GetOneAsync(us =>
-                us.Uid == userClaims.Uid &&
-                us.Email == userClaims.Email &&
-                us.Network == userClaims.Network,
+        return await _userSocialRepository.GetOneAsync(userSocial =>
+                userSocial.Uid == userClaims.Uid &&
+                userSocial.Email == userClaims.Email &&
+                userSocial.Network == userClaims.Network,
             CancellationToken.None);
     }
 }

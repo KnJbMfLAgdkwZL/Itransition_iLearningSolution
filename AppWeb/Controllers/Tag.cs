@@ -1,4 +1,4 @@
-using Business.Interfaces;
+using Business.Interfaces.Model;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
