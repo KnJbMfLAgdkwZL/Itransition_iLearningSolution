@@ -116,12 +116,49 @@ public class ReviewController : Controller
         return RedirectToAction("Get", "Review", new {id = review.Id});
     }
 
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> Edit([FromRoute] int id)
+    {
+        var user = GetAuthorizedUser(out var error);
+        if (user == null)
+        {
+            return error!;
+        }
+
+        var review = await _reviewService.GetOneIncludes(id);
+        if (review == null)
+        {
+            return BadRequest("Wrong reviewId");
+        }
+
+        //check is user review!
+
+        ViewData["productGroups"] = await _productGroupService.GetAll();
+        ViewData["statusReviews"] = await _statusReviewService.GetAll();
+        ViewData["review"] = review;
+
+        var tags = await _reviewTagService.GetTagsNames(review.Id);
+        var tagsNames = tags.Select(tag => tag.Tag.Name).ToList();
+        ViewData["tags"] = JsonConvert.SerializeObject(tagsNames);
+
+        return View();
+    }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> Edit([FromForm] ReviewForm reviewForm)
+    {
+        return Ok();
+        //return RedirectToAction("Get", "Review", new {id = review.Id});
+    }
+
     public async Task<IActionResult> Get([FromRoute] int id)
     {
         var review = await _reviewService.GetOneIncludes(id);
         if (review == null)
         {
-            return BadRequest();
+            return BadRequest("Wrong reviewId");
         }
 
         ViewData["review"] = review;

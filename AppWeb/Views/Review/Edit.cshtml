@@ -1,26 +1,37 @@
 @using Database.Models
-@model dynamic
-
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
+    var review = (Review) ViewData["review"]!;
+    var tags = (string) ViewData["tags"]!;
     var statusReviews = (List<StatusReview>) ViewData["statusReviews"]!;
     var productGroups = (List<ProductGroup>) ViewData["productGroups"]!;
 }
 
-<h2>Review Create</h2>
+<h2>Review Edit</h2>
 
-<form asp-action="Create" asp-controller="Review"
+<pre>
+@tags
+</pre>
+
+<form asp-action="Edit" asp-controller="Review"
       method="POST"
       asp-anti-forgery="true"
-      name="Review" id="ReviewCreateForm">
+      name="Review" id="ReviewEditForm">
 
     StatusReview:
     <select name="StatusReviewId">
         @{
             foreach (var v in statusReviews)
             {
-                <option value="@v.Id">@v.Name</option>
+                if (v.Id == review.StatusId)
+                {
+                    <option selected="" value="@v.Id">@v.Name</option>
+                }
+                else
+                {
+                    <option value="@v.Id">@v.Name</option>
+                }
             }
         }
     </select>
@@ -31,36 +42,51 @@
         @{
             foreach (var v in productGroups)
             {
-                <option value="@v.Id">@v.Name</option>
+                if (v.Id == review.ProductId)
+                {
+                    <option selected="" value="@v.Id">@v.Name</option>
+                }
+                else
+                {
+                    <option value="@v.Id">@v.Name</option>
+                }
             }
         }
     </select>
     <br/>
     ProductName:
-    <input type="text" name="ProductName" maxlength="50"/>
+    <input type="text" name="ProductName" maxlength="50" value="@review.ProductName"/>
     <br/>
 
     Title:
-    <input type="text" name="Title" maxlength="100"/>
+    <input type="text" name="Title" maxlength="100" value="@review.Title"/>
     <br/>
 
     Content:
-    <textarea name="Content" maxlength="30000"></textarea>
+    <textarea name="Content" maxlength="30000">@review.Content</textarea>
     <br/>
 
     AuthorAssessment:
     <select name="AuthorAssessment">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
+        @{
+            for (var i = 1; i <= 5; i++)
+            {
+                if (i == review.AuthorAssessment)
+                {
+                    <option selected="" value="@i">@i</option>
+                }
+                else
+                {
+                    <option value="@i">@i</option>
+                }
+            }
+        }
     </select>
     <br/>
 
-    <input type="hidden" name="TagsInput" id="tagsInput" value="[]"/>
+    <input type="hidden" name="TagsInput" id="tagsInput" value="@tags"/>
 
-    <input type="submit" id="Create" value="Create"/>
+    <input type="submit" id="Edit" value="Edit"/>
 </form>
 
 
@@ -78,6 +104,8 @@ let tags = document.getElementById("tags")
 let tagsValues = []
 let tagAdd = document.getElementById("tagAdd")
 let tagsInput = document.getElementById("tagsInput")
+
+AddTags(JSON.parse(tagsInput.value))
 
 function AddTags(values) {
     for (let v of values) {
@@ -110,6 +138,8 @@ tagAdd.onkeydown = function (e) {
         let tags = tagAdd.value.split(' ')
         AddTags(tags)
         tagAdd.value = ''
+        TagsRecomHide()
+        e.preventDefault()
     }
 }
 

@@ -24,6 +24,13 @@ public class TagController : Controller
         };
         var jsonResponse = JsonConvert.SerializeObject(tags, Formatting.Indented, settings);
 
+        foreach (var tag in tags)
+        {
+            Console.Write(tag.Name);
+            Console.Write(" ");
+        }
+        Console.WriteLine();
+
         return Ok(jsonResponse);
     }
 }

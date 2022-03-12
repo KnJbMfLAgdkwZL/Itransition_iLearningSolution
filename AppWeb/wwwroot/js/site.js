@@ -19,6 +19,8 @@ function GetTags() {
                 let cord = getCaretGlobalCoordinates(this)
                 TagsRecomSetCord(cord)
                 TagsRecomShow(data)
+            } else {
+                TagsRecomHide()
             }
         })
     }
@@ -49,7 +51,7 @@ tagAdd.onblur = function () {
 
 function TagsRecomClick(el) {
     AddTag(el.innerHTML)
-    
+
     tagAdd.value = ''
     TagsRecomHide()
 }
