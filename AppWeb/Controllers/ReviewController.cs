@@ -65,7 +65,10 @@ public class ReviewController : Controller
     public async Task<IActionResult> Create()
     {
         ViewData["productGroups"] = await _productGroupService.GetAll();
-        ViewData["statusReviews"] = await _statusReviewService.GetAll();
+
+        var statusReviews = await _statusReviewService.GetAll();
+        ViewData["statusReviews"] = statusReviews.Where(status => status.Name != "Deleted").ToList();
+
         return View();
     }
 
@@ -143,8 +146,23 @@ public class ReviewController : Controller
             return BadRequest("You are not the author of this review");
         }
 
+        var statusReview = await _statusReviewService.Get("Deleted");
+        if (statusReview == null)
+        {
+            return BadRequest("StatusReview Deleted not found");
+        }
+
+        if (review.StatusId == statusReview.Id)
+        {
+            return BadRequest("Review Deleted");
+        }
+
+
         ViewData["productGroups"] = await _productGroupService.GetAll();
-        ViewData["statusReviews"] = await _statusReviewService.GetAll();
+
+        var statusReviews = await _statusReviewService.GetAll();
+        ViewData["statusReviews"] = statusReviews.Where(status => status.Name != "Deleted").ToList();
+
         ViewData["review"] = review;
 
         var tags = await _reviewTagService.GetTagsNames(review.Id);
@@ -196,6 +214,18 @@ public class ReviewController : Controller
             return BadRequest("You are not the author of this review");
         }
 
+        var statusReview = await _statusReviewService.Get("Deleted");
+        if (statusReview == null)
+        {
+            return BadRequest("StatusReview Deleted not found");
+        }
+
+        if (review.StatusId == statusReview.Id)
+        {
+            return BadRequest("Review Deleted");
+        }
+
+
         var updatedReview = await _reviewService.Update(reviewForm, review);
         if (updatedReview == null)
         {
@@ -230,6 +260,18 @@ public class ReviewController : Controller
             return BadRequest("Wrong reviewId");
         }
 
+        var statusReview = await _statusReviewService.Get("Deleted");
+        if (statusReview == null)
+        {
+            return BadRequest("StatusReview Deleted not found");
+        }
+
+        if (review.StatusId == statusReview.Id)
+        {
+            return BadRequest("Review Deleted");
+        }
+
+
         ViewData["review"] = review;
         ViewData["tags"] = await _reviewTagService.GetTagsNames(review.Id);
         ViewData["IsUserLike"] = false;
@@ -239,6 +281,44 @@ public class ReviewController : Controller
         {
             ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReview(user.Id, id);
         }
+
+        return View();
+    }
+
+
+    [Authorize]
+    public async Task<IActionResult> Delete([FromRoute] int id)
+    {
+        var user = GetAuthorizedUser(out var error);
+        if (user == null)
+        {
+            return error!;
+        }
+
+        var review = await _reviewService.GetOneIncludes(id);
+        if (review == null)
+        {
+            return BadRequest("Wrong reviewId");
+        }
+
+        if (review.AuthorId != user.Id)
+        {
+            return BadRequest("You are not the author of this review");
+        }
+
+        var statusReview = await _statusReviewService.Get("Deleted");
+        if (statusReview == null)
+        {
+            return BadRequest("StatusReview Deleted not found");
+        }
+
+        if (review.StatusId == statusReview.Id)
+        {
+            return BadRequest("Review Deleted");
+        }
+
+        review.StatusId = statusReview.Id;
+        var updatedReview = await _reviewService.Update(review);
 
         return View();
     }

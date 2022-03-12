@@ -10,9 +10,13 @@
 
 <h2>Review Edit</h2>
 
-<pre>
-@tags
-</pre>
+<a asp-controller="Review"
+   asp-action="Delete"
+   asp-route-id="@review.Id">
+    Delete
+</a>
+
+<br/>
 
 <form asp-action="Edit" asp-controller="Review"
       method="POST"

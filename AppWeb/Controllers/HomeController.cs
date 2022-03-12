@@ -9,18 +9,32 @@ public class HomeController : Controller
 {
     private readonly IReviewService _reviewService;
     private readonly ITagService _tagService;
+    private readonly IStatusReviewService _statusReviewService;
 
-    public HomeController(IReviewService reviewService, ITagService tagService)
+    public HomeController(IReviewService reviewService, ITagService tagService,
+        IStatusReviewService statusReviewService)
     {
         _reviewService = reviewService;
         _tagService = tagService;
+        _statusReviewService = statusReviewService;
     }
 
     public async Task<IActionResult> Index()
     {
-        ViewData["NewReviews"] = await _reviewService.GetNewReviews();
-        ViewData["TopReviews"] = await _reviewService.GetTopReviews();
+        var status = await _statusReviewService.Get("Deleted");
+        if (status == null)
+        {
+            return BadRequest("StatusReview Deleted not found");
+        }
+
+        var newReviews = await _reviewService.GetNewReviews();
+        ViewData["NewReviews"] = newReviews.Where(review => review.StatusId != status.Id).ToList();
+
+        var topReviews = await _reviewService.GetTopReviews();
+        ViewData["TopReviews"] = topReviews.Where(review => review.StatusId != status.Id).ToList();
+
         ViewData["TopTags"] = await _tagService.GetTopTags();
+
         return View();
     }
 

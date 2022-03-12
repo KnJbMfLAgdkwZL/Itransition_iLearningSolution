@@ -69,6 +69,11 @@ public class ReviewService : IReviewService
         return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
     }
 
+    public async Task<Review> Update(Review review)
+    {
+        return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
+    }
+
     public async Task<Review?> Delete(Review review, int deleteStatusId)
     {
         review.StatusId = deleteStatusId;
@@ -76,7 +81,6 @@ public class ReviewService : IReviewService
 
         return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
     }
-
 
     public async Task<Review?> GetOneIncludes(int id)
     {
