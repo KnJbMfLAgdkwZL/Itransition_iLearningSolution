@@ -1,5 +1,6 @@
 using Business.Interfaces;
 using Business.Interfaces.Model;
+using Database.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,30 +24,66 @@ public class LikeController : Controller
         _userSocialService = userSocialService;
     }
 
-    [Authorize]
-    public async Task<IActionResult> Add([FromQuery] int reviewId)
+    private User? GetAuthorizedUser(out IActionResult? error)
     {
         var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = await _userSocialService.Get(userClaims);
+        var userSocial = _userSocialService.Get(userClaims).Result;
         if (userSocial == null)
         {
-            return BadRequest("UserSocial not found");
+            error = BadRequest("UserSocial not found");
+            return null;
         }
 
-        var user = await _userService.GetUserBySocialId(userSocial.Id);
+        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
         if (user == null)
         {
-            return BadRequest("User not found");
+            error = BadRequest("User not found");
+            return null;
         }
 
-        var review = await _reviewService.GetOne(reviewId);
+        error = null;
+        return user;
+    }
+
+    private Review? GetOneReview(int reviewId, out IActionResult? error)
+    {
+        var review = _reviewService.GetOne(reviewId).Result;
         if (review == null)
         {
-            return BadRequest("Review not found");
+            error = BadRequest("Review not found");
         }
 
-        await _reviewLikeService.Add(reviewId, user.Id);
-        
+        error = null;
+        return review;
+    }
+
+    private async Task<IActionResult> AddOrRemove(int reviewId, string action)
+    {
+        var user = GetAuthorizedUser(out var error);
+        if (user == null)
+        {
+            return error!;
+        }
+
+        var review = GetOneReview(reviewId, out var errorReview);
+        if (review == null)
+        {
+            return errorReview!;
+        }
+
+        if (action == "Add")
+        {
+            await _reviewLikeService.Add(reviewId, user.Id);
+        }
+        else if (action == "Remove")
+        {
+            await _reviewLikeService.Remove(reviewId, user.Id);
+        }
+        else
+        {
+            return BadRequest();
+        }
+
         var count = await _reviewLikeService.GetLikesCount(reviewId);
         await _userService.UpdateReviewsLikes(user.Id, count);
 
@@ -54,32 +91,14 @@ public class LikeController : Controller
     }
 
     [Authorize]
+    public async Task<IActionResult> Add([FromQuery] int reviewId)
+    {
+        return await AddOrRemove(reviewId, "Add");
+    }
+
+    [Authorize]
     public async Task<IActionResult> Remove([FromQuery] int reviewId)
     {
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = await _userSocialService.Get(userClaims);
-        if (userSocial == null)
-        {
-            return BadRequest("UserSocial not found");
-        }
-
-        var user = await _userService.GetUserBySocialId(userSocial.Id);
-        if (user == null)
-        {
-            return BadRequest("User not found");
-        }
-
-        var review = await _reviewService.GetOne(reviewId);
-        if (review == null)
-        {
-            return BadRequest("Review not found");
-        }
-
-        await _reviewLikeService.Remove(reviewId, user.Id);
-        
-        var count = await _reviewLikeService.GetLikesCount(reviewId);
-        await _userService.UpdateReviewsLikes(user.Id, count);
-
-        return Ok();
+        return await AddOrRemove(reviewId, "Remove");
     }
 }

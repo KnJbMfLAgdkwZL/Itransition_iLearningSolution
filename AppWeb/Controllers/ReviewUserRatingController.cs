@@ -1,5 +1,6 @@
 using Business.Interfaces;
 using Business.Interfaces.Model;
+using Database.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,20 +25,34 @@ public class ReviewUserRatingController : Controller
         _userSocialService = userSocialService;
     }
 
+    private User? GetAuthorizedUser(out IActionResult? error)
+    {
+        var userClaims = _userClaimsService.GetClaims(HttpContext);
+        var userSocial = _userSocialService.Get(userClaims).Result;
+        if (userSocial == null)
+        {
+            error = BadRequest("UserSocial not found");
+            return null;
+        }
+
+        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
+        if (user == null)
+        {
+            error = BadRequest("User not found");
+            return null;
+        }
+
+        error = null;
+        return user;
+    }
+
     [Authorize]
     public async Task<IActionResult> Set([FromQuery] int reviewId, [FromQuery] int assessment)
     {
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = await _userSocialService.Get(userClaims);
-        if (userSocial == null)
-        {
-            return BadRequest("UserSocial not found");
-        }
-
-        var user = await _userService.GetUserBySocialId(userSocial.Id);
+        var user = GetAuthorizedUser(out var error);
         if (user == null)
         {
-            return BadRequest("User not found");
+            return error!;
         }
 
         var review = await _reviewService.GetOne(reviewId);

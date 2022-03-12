@@ -1,6 +1,7 @@
 using Business.Dto.Frontend.FromForm;
 using Business.Interfaces;
 using Business.Interfaces.Model;
+using Database.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -38,10 +39,25 @@ public class ReviewController : Controller
         _tagService = tagService;
     }
 
-    public IActionResult Index()
+    private User? GetAuthorizedUser(out IActionResult? error)
     {
-        //return View();
-        return Ok();
+        var userClaims = _userClaimsService.GetClaims(HttpContext);
+        var userSocial = _userSocialService.Get(userClaims).Result;
+        if (userSocial == null)
+        {
+            error = BadRequest("UserSocial not found");
+            return null;
+        }
+
+        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
+        if (user == null)
+        {
+            error = BadRequest("User not found");
+            return null;
+        }
+
+        error = null;
+        return user;
     }
 
     [Authorize]
@@ -72,18 +88,10 @@ public class ReviewController : Controller
             return BadRequest("Wrong StatusReview");
         }
 
-
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = await _userSocialService.Get(userClaims);
-        if (userSocial == null)
-        {
-            return BadRequest("UserSocial not found");
-        }
-
-        var user = await _userService.GetUserBySocialId(userSocial.Id);
+        var user = GetAuthorizedUser(out var error);
         if (user == null)
         {
-            return BadRequest("User not found");
+            return error!;
         }
 
         reviewForm.AuthorId = user.Id;
@@ -93,9 +101,7 @@ public class ReviewController : Controller
             return BadRequest();
         }
 
-
         await _reviewUserRatingService.AddAssessment(review.Id, review.AuthorId, review.AuthorAssessment);
-
 
         var tags = JsonConvert.DeserializeObject<List<string>>(reviewForm.TagsInput);
         if (tags != null)
@@ -106,7 +112,6 @@ public class ReviewController : Controller
                 await _reviewTagService.AddTagToReview(review.Id, tag.Id);
             }
         }
-
 
         return RedirectToAction("Get", "Review", new {id = review.Id});
     }
@@ -123,15 +128,10 @@ public class ReviewController : Controller
         ViewData["tags"] = await _reviewTagService.GetTagsNames(review.Id);
         ViewData["IsUserLike"] = false;
 
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = await _userSocialService.Get(userClaims);
-        if (userSocial != null)
+        var user = GetAuthorizedUser(out var error);
+        if (user != null)
         {
-            var user = await _userService.GetUserBySocialId(userSocial.Id);
-            if (user != null)
-            {
-                ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReview(user.Id, id);
-            }
+            ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReview(user.Id, id);
         }
 
         return View();
