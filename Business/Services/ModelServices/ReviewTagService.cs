@@ -23,6 +23,21 @@ public class ReviewTagService : IReviewTagService
             }, CancellationToken.None);
     }
 
+    public async Task DeleteTags(int reviewId)
+    {
+        var tags = await _reviewTagRepository.GetAllAsync(tag => tag.ReviewId == reviewId, CancellationToken.None);
+        foreach (var tag in tags)
+        {
+            await _reviewTagRepository.RemoveAsync(tag, CancellationToken.None);
+            /*await _reviewTagRepository.RemoveIfExistAsync(reviewTag =>
+                    reviewTag.Id == tag.Id &&
+                    reviewTag.ReviewId == tag.ReviewId &&
+                    reviewTag.TagId == tag.TagId, CancellationToken.None
+            );*/
+        }
+    }
+
+
     public async Task<List<ReviewTag>> GetTagsNames(int reviewId)
     {
         return await _reviewTagRepository.GetAllIncludeAsync(tag => tag.ReviewId == reviewId, t => t.Tag,

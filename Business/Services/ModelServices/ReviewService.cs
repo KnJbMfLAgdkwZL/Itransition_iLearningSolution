@@ -55,6 +55,29 @@ public class ReviewService : IReviewService
         return await _reviewRepository.AddAsync(review, CancellationToken.None);
     }
 
+    public async Task<Review?> Update(ReviewForm reviewForm, Review review)
+    {
+        review.ProductName = reviewForm.ProductName;
+        review.Title = reviewForm.Title;
+        review.Content = reviewForm.Content;
+        review.AuthorAssessment = reviewForm.AuthorAssessment;
+        review.ProductId = reviewForm.ProductId;
+        review.StatusId = reviewForm.StatusReviewId;
+        review.RedactionDate = DateTime.Now;
+
+        //add images <= 3
+        return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
+    }
+
+    public async Task<Review?> Delete(Review review, int deleteStatusId)
+    {
+        review.StatusId = deleteStatusId;
+        review.DeletionDate = DateTime.Now;
+
+        return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
+    }
+
+
     public async Task<Review?> GetOneIncludes(int id)
     {
         var includes = new List<Expression<Func<Review, object>>>()

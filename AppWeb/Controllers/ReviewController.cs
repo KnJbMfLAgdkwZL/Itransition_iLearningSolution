@@ -88,6 +88,12 @@ public class ReviewController : Controller
             return BadRequest("Wrong StatusReview");
         }
 
+        var status = await _statusReviewService.Get("Deleted");
+        if (status != null && status.Id == reviewForm.StatusReviewId)
+        {
+            return BadRequest("Wrong StatusReview");
+        }
+
         var user = GetAuthorizedUser(out var error);
         if (user == null)
         {
@@ -132,7 +138,10 @@ public class ReviewController : Controller
             return BadRequest("Wrong reviewId");
         }
 
-        //check is user review!
+        if (review.AuthorId != user.Id)
+        {
+            return BadRequest("You are not the author of this review");
+        }
 
         ViewData["productGroups"] = await _productGroupService.GetAll();
         ViewData["statusReviews"] = await _statusReviewService.GetAll();
@@ -149,8 +158,68 @@ public class ReviewController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit([FromForm] ReviewForm reviewForm)
     {
-        return Ok();
-        //return RedirectToAction("Get", "Review", new {id = review.Id});
+        if (!ModelState.IsValid)
+        {
+            return BadRequest("Form not Valid");
+        }
+
+        if (!await _productGroupService.Check(reviewForm.ProductId))
+        {
+            return BadRequest("Wrong ProductGroup");
+        }
+
+        if (!await _statusReviewService.Check(reviewForm.StatusReviewId))
+        {
+            return BadRequest("Wrong StatusReview");
+        }
+
+        var status = await _statusReviewService.Get("Deleted");
+        if (status != null && status.Id == reviewForm.StatusReviewId)
+        {
+            return BadRequest("Wrong StatusReview");
+        }
+
+        var user = GetAuthorizedUser(out var error);
+        if (user == null)
+        {
+            return error!;
+        }
+
+        var review = await _reviewService.GetOneIncludes(reviewForm.Id);
+        if (review == null)
+        {
+            return BadRequest("Wrong reviewId");
+        }
+
+        if (!(reviewForm.AuthorId == user.Id && user.Id == review.AuthorId))
+        {
+            return BadRequest("You are not the author of this review");
+        }
+
+        var updatedReview = await _reviewService.Update(reviewForm, review);
+        if (updatedReview == null)
+        {
+            return BadRequest();
+        }
+
+
+        await _reviewUserRatingService.AddAssessment(updatedReview.Id, updatedReview.AuthorId,
+            updatedReview.AuthorAssessment);
+
+        await _reviewTagService.DeleteTags(updatedReview.Id);
+
+        var tags = JsonConvert.DeserializeObject<List<string>>(reviewForm.TagsInput);
+        if (tags != null)
+        {
+            foreach (var tagName in tags)
+            {
+                var tag = await _tagService.AddOrIncrement(tagName);
+
+                await _reviewTagService.AddTagToReview(review.Id, tag.Id);
+            }
+        }
+
+        return RedirectToAction("Get", "Review", new {id = review.Id});
     }
 
     public async Task<IActionResult> Get([FromRoute] int id)

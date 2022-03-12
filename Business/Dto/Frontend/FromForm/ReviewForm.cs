@@ -4,6 +4,8 @@ namespace Business.Dto.Frontend.FromForm;
 
 public class ReviewForm
 {
+    public int Id { get; set; }
+
     [Required(ErrorMessage = "Required ProductType")]
     public int StatusReviewId { get; set; }
 
