@@ -14,6 +14,7 @@ public interface IReviewService
     Task<Review?> GetOneIncludes(int id);
     Task<Review?> GetOne(int id);
     Task<List<Review>> GetAll(int userId);
+    Task<List<Review>> GetAllIncludes(int userId);
     Task<int?> GetUserId(int reviewId);
     Task UpdateAverageUserRating(int id, float averageUserRating);
 }

@@ -1,0 +1,176 @@
+@using Database.Models
+@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    var reviews = (List<Review>) ViewData["reviews"]!;
+    var productGroups = (Dictionary<int, ProductGroup>) ViewData["productGroups"]!;
+}
+
+<h2>User Personal Page</h2>
+
+<h4>Reviews:</h4>
+
+<style>
+table {
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th {
+  cursor: pointer;
+}
+
+th, td {
+  text-align: left;
+  padding: 16px;
+}
+
+tr:nth-child(even) {
+  background-color: #E7E9EB;
+}
+.SearchInput {
+  background-image: url('/searchicon.png');
+  background-position: 10px 10px;
+  background-repeat: no-repeat;
+  font-size: 16px;
+  padding: 12px 20px 12px 40px;
+  border: 1px solid #ddd;
+  margin-bottom: 12px;
+}
+</style>
+
+
+<p>
+    <strong>Click the headers to sort the table.</strong>
+</p>
+<p>The first time you click, the sorting direction is ascending (A to Z).</p>
+<p>Click again, and the sorting direction will be descending (Z to A):</p>
+
+
+<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Product"/>
+<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Status"/>
+<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Name"/>
+<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Title"/>
+<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Creation"/>
+<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Redaction"/>
+<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Author Assessment"/>
+<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="User Assessment"/>
+
+<table id="myTable">
+    <tr>
+        <th onclick="sortTable(0)">Product</th>
+        <th onclick="sortTable(1)">Status</th>
+        <th onclick="sortTable(2)">ProductName</th>
+        <th onclick="sortTable(3)">Title</th>
+        <th onclick="sortTable(4)">CreationDate</th>
+        <th onclick="sortTable(5)">RedactionDate</th>
+        <th onclick="sortTable(6)">AuthorAssessment</th>
+        <th onclick="sortTable(7)">AverageUserRating</th>
+    </tr>
+    @foreach (var review in reviews)
+    {
+        <tr>
+            <td>@productGroups[review.ProductId].Name</td>
+            <td>@review.Status.Name</td>
+            <td>@review.ProductName</td>
+            <td>@review.Title</td>
+            <td>@review.CreationDate</td>
+            <td>@review.RedactionDate</td>
+            <td>@review.AuthorAssessment</td>
+            <td>@review.AverageUserRating</td>
+        </tr>
+    }
+
+
+</table>
+
+
+<script>
+function myFunction() {
+    let searchInputs = document.getElementsByClassName("SearchInput")
+    let table = document.getElementById("myTable");
+    let trAll = table.getElementsByTagName("tr");
+
+    for (let tr of trAll) {
+        tr.style.display = "";
+    }
+    
+    for (let index = 0; index < searchInputs.length; index++) {
+        let filter = searchInputs[index].value.toLowerCase()
+        if (filter <= 0) {
+            continue
+        }
+
+        for (let tr of trAll) {
+            let td = tr.getElementsByTagName("td")[index];
+            if (td) {
+                let txtValue = td.textContent || td.innerText;
+                if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                    //tr.style.display = "";
+                } else {
+                    tr.style.display = "none";
+                }
+            }
+        }
+
+    }
+}
+
+function sortTable(n) {
+    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("myTable");
+    switching = true;
+    //Set the sorting direction to ascending:
+    dir = "asc";
+    /*Make a loop that will continue until
+    no switching has been done:*/
+    while (switching) {
+        //start by saying: no switching is done:
+        switching = false;
+        rows = table.rows;
+        /*Loop through all table rows (except the
+        first, which contains table headers):*/
+        for (i = 1; i < (rows.length - 1); i++) {
+            //start by saying there should be no switching:
+            shouldSwitch = false;
+            /*Get the two elements you want to compare,
+            one from current row and one from the next:*/
+            x = rows[i].getElementsByTagName("TD")[n];
+            y = rows[i + 1].getElementsByTagName("TD")[n];
+            /*check if the two rows should switch place,
+            based on the direction, asc or desc:*/
+            if (dir == "asc") {
+                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+                    //if so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                }
+            } else if (dir == "desc") {
+                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+                    //if so, mark as a switch and break the loop:
+                    shouldSwitch = true;
+                    break;
+                }
+            }
+        }
+        if (shouldSwitch) {
+            /*If a switch has been marked, make the switch
+            and mark that a switch has been done:*/
+            rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+            switching = true;
+            //Each time a switch is done, increase this count by 1:
+            switchcount++;
+        } else {
+            /*If no switching has been done AND the direction is "asc",
+            set the direction to "desc" and run the while loop again.*/
+            if (switchcount == 0 && dir == "asc") {
+                dir = "desc";
+                switching = true;
+            }
+        }
+    }
+}
+</script>

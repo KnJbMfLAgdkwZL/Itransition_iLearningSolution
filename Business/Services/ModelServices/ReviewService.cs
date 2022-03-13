@@ -111,6 +111,27 @@ public class ReviewService : IReviewService
         return await _reviewRepository.GetAllAsync(review => review.AuthorId == userId, CancellationToken.None);
     }
 
+    public async Task<List<Review>> GetAllIncludes(int userId)
+    {
+        var includes = new List<Expression<Func<Review, object>>>()
+        {
+            review => review.Author,
+            review => review.Product,
+            review => review.Status,
+            review => review.Comment,
+            review => review.ReviewLike,
+            review => review.ReviewTag,
+            review => review.ReviewUserRating
+        };
+
+        await _reviewRepository.GetOneIncludeManyAsync(
+            review => review.AuthorId == userId,
+            includes,
+            CancellationToken.None);
+
+        return await _reviewRepository.GetAllAsync(review => review.AuthorId == userId, CancellationToken.None);
+    }
+
     public async Task<int?> GetUserId(int reviewId)
     {
         var reviewModel = await _reviewRepository.GetOneAsync(review => review.Id == reviewId, CancellationToken.None);
