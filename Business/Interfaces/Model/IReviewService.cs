@@ -13,8 +13,10 @@ public interface IReviewService
     Task<Review?> Delete(Review review, int deleteStatusId);
     Task<Review?> GetOneIncludes(int id);
     Task<Review?> GetOne(int id);
-    Task<List<Review>> GetAll(int userId);
+    Task<List<Review>> GetAllByUserId(int userId);
+    Task<List<Review>> GetByProductId(int productId, int takeNum);
     Task<List<Review>> GetAllIncludes(int userId);
     Task<int?> GetUserId(int reviewId);
     Task UpdateAverageUserRating(int id, float averageUserRating);
+    Task<List<Review>> FullTextSearchQuery(string search);
 }

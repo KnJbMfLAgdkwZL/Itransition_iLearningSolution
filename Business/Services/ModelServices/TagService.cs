@@ -53,4 +53,9 @@ public class TagService : ITagService
 
         return tagModel;
     }
+
+    public async Task<List<Tag>> FullTextSearchQuery(string search)
+    {
+        return await _tagRepository.FullTextSearchQueryAsync(search, CancellationToken.None);
+    }
 }

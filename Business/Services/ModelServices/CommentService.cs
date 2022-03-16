@@ -12,4 +12,9 @@ public class CommentService : ICommentService
     {
         _commentRepository = commentRepository;
     }
+
+    public async Task<List<Comment>> FullTextSearchQuery(string search)
+    {
+        return await _commentRepository.FullTextSearchQueryAsync(search, CancellationToken.None);
+    }
 }

@@ -106,9 +106,17 @@ public class ReviewService : IReviewService
         return await _reviewRepository.GetOneAsync(review => review.Id == id, CancellationToken.None);
     }
 
-    public async Task<List<Review>> GetAll(int userId)
+    public async Task<List<Review>> GetAllByUserId(int userId)
     {
         return await _reviewRepository.GetAllAsync(review => review.AuthorId == userId, CancellationToken.None);
+    }
+
+    public async Task<List<Review>> GetByProductId(int productId, int takeNum)
+    {
+        var reviews = await _reviewRepository.GetAllAsync(review => review.ProductId == productId,
+            CancellationToken.None);
+        var orderedEnumerable = reviews.OrderBy(review => review.AverageUserRating);
+        return orderedEnumerable.Take(takeNum).ToList();
     }
 
     public async Task<List<Review>> GetAllIncludes(int userId)
@@ -147,5 +155,10 @@ public class ReviewService : IReviewService
             review.AverageUserRating = averageUserRating;
             await _reviewRepository.UpdateAsync(review, CancellationToken.None);
         }
+    }
+
+    public async Task<List<Review>> FullTextSearchQuery(string search)
+    {
+        return await _reviewRepository.FullTextSearchQueryAsync(search, CancellationToken.None);
     }
 }

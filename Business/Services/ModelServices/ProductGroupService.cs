@@ -6,20 +6,24 @@ namespace Business.Services.ModelServices;
 
 public class ProductGroupService : IProductGroupService
 {
-    private readonly IGeneralRepository<ProductGroup> _reviewRepository;
+    private readonly IGeneralRepository<ProductGroup> _productGroupRepository;
 
     public ProductGroupService(IGeneralRepository<ProductGroup> reviewRepository)
     {
-        _reviewRepository = reviewRepository;
+        _productGroupRepository = reviewRepository;
     }
 
     public async Task<bool> Check(int id)
     {
-        return await _reviewRepository.GetOneAsync(product => product.Id == id, CancellationToken.None) != null;
+        return await _productGroupRepository.GetOneAsync(product => product.Id == id, CancellationToken.None) != null;
     }
 
     public async Task<List<ProductGroup>> GetAll()
     {
-        return await _reviewRepository.GetAllAsync(product => product.Id > 0, CancellationToken.None);
+        return await _productGroupRepository.GetAllAsync(product => product.Id > 0, CancellationToken.None);
+    }
+    public async Task<List<ProductGroup>> FullTextSearchQuery(string search)
+    {
+        return await _productGroupRepository.FullTextSearchQueryAsync(search, CancellationToken.None);
     }
 }

@@ -28,6 +28,18 @@
     </nav>
 </header>
 <div class="container">
+    <div class="pb-3 searchForm">
+
+        <form asp-action="FullTextSearch" asp-controller="Search"
+              method="POST"
+              asp-anti-forgery="true"
+              name="FullTextSearchForm" id="FullTextSearchForm">
+
+            <input type="text" name="search" maxlength="100" placeholder="Search"/>
+
+        </form>
+
+    </div>
     <main role="main" class="pb-3">
         @RenderBody()
     </main>

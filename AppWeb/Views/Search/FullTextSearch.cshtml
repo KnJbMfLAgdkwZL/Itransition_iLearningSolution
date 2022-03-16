@@ -1,0 +1,22 @@
+@model System.Collections.Generic.List<Database.Models.Review>
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+}
+
+<h2>Searc Result</h2>
+
+@foreach (var review in Model)
+{
+    <div>Id: @review.Id</div>
+    <div>ProductId: @review.ProductId</div>
+    <div>AuthorId: @review.AuthorId</div>
+    <div>StatusId: @review.StatusId</div>
+    <div>ProductName: @review.ProductName</div>
+    <div>Title: @review.Title</div>
+    <div>Content: @review.Content</div>
+    <div>AuthorAssessment: @review.AuthorAssessment</div>
+    <div>AverageUserRating: @review.AverageUserRating</div>
+    <hr/>
+}

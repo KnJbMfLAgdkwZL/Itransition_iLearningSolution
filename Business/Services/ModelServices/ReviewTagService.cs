@@ -29,18 +29,18 @@ public class ReviewTagService : IReviewTagService
         foreach (var tag in tags)
         {
             await _reviewTagRepository.RemoveAsync(tag, CancellationToken.None);
-            /*await _reviewTagRepository.RemoveIfExistAsync(reviewTag =>
-                    reviewTag.Id == tag.Id &&
-                    reviewTag.ReviewId == tag.ReviewId &&
-                    reviewTag.TagId == tag.TagId, CancellationToken.None
-            );*/
         }
     }
-
 
     public async Task<List<ReviewTag>> GetTagsNames(int reviewId)
     {
         return await _reviewTagRepository.GetAllIncludeAsync(tag => tag.ReviewId == reviewId, t => t.Tag,
+            CancellationToken.None);
+    }
+
+    public async Task<List<ReviewTag>> GetAllReviews(int tagId)
+    {
+        return await _reviewTagRepository.GetAllIncludeAsync(tag => tag.TagId == tagId, t => t.Review,
             CancellationToken.None);
     }
 }

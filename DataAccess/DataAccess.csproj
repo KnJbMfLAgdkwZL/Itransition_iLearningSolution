@@ -10,4 +10,8 @@
       <ProjectReference Include="..\Database\Database.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Korzh.EasyQuery.Linq" Version="7.2.1" />
+    </ItemGroup>
+
 </Project>

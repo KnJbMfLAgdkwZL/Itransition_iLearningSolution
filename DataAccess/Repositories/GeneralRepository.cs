@@ -3,6 +3,7 @@ using Database.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 using Database.DbContexts;
+using Korzh.EasyQuery.Linq;
 
 namespace DataAccess.Repositories;
 
@@ -152,5 +153,10 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     public void DetachEntity(T model)
     {
         _masterContext.Entry(model).State = EntityState.Detached;
+    }
+
+    public async Task<List<T>> FullTextSearchQueryAsync(string search, CancellationToken token)
+    {
+        return await _table.FullTextSearchQuery(search).Take(100).ToListAsync(token);
     }
 }
