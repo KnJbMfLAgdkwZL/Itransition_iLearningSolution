@@ -133,8 +133,8 @@ public class SearchController : Controller
         }
     }
 
-    [HttpPost]
-    public async Task<IActionResult> FullTextSearch([FromForm] string search)
+    [HttpGet]
+    public async Task<IActionResult> FullTextSearch([FromQuery] string search)
     {
         var searchResult = new Dictionary<int, Review>();
         await SearchReviews(search, searchResult);
