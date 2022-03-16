@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 
 namespace AppWeb.Controllers;
 
+[Authorize]
 public class ReviewController : Controller
 {
     private readonly IReviewService _reviewService;

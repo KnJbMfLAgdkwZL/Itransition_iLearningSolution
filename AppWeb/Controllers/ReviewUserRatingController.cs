@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
+[Authorize]
 public class ReviewUserRatingController : Controller
 {
     private readonly IReviewUserRatingService _reviewUserRatingService;

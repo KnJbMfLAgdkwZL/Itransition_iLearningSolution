@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
+[Authorize]
 public class LikeController : Controller
 {
     private readonly IReviewLikeService _reviewLikeService;
