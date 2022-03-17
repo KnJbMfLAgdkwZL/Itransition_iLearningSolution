@@ -64,44 +64,60 @@
     <input type="submit" id="Create" value="Create"/>
 </form>
 
+
+
+<form enctype="multipart/form-data" method="post" action="/Images/Upload">
+    <input name="file" type="file"/>
+    <input type="submit" value="Upload" />
+</form>
+
+ 
+
 <script src="https://cdn.tiny.cloud/1/gntgkxs4ydn0xy7uodmu2ozzzkx6hbyfkjfqrp4w42io86y9/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
 <script>
 tinymce.init({
-  selector: '#Content',
-  height: 500,
-  resize: false,
-  plugins: [
-    'advlist autolink lists link image charmap print preview anchor',
-    'searchreplace visualblocks code fullscreen',
-    'insertdatetime media table imagetools wordcount',
-    'powerpaste tinydrive'
-  ],
-  toolbar: 'insertfile undo redo | forecolor backcolor | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
-  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
-  tinydrive_dropbox_app_key: 'b84tcslnpm9nco2',
-  //automatic_uploads: false,
-  file_picker_types: 'image',
-  //images_upload_url: 'postAcceptor.php',
-  /*file_picker_callback: function(callback, value, meta) {
-      console.log(value)
-      console.log(meta)
-      // Provide file and text for the link dialog
-      if (meta.filetype == 'file') {
-        callback('mypage.html', {text: 'My text'});
-      }
-  
-      // Provide image and alt text for the image dialog
-      if (meta.filetype == 'image') {
-        callback('myimage.jpg', {alt: 'My alt text'});
-      }
-  
-      // Provide alternative source and posted for the media dialog
-      if (meta.filetype == 'media') {
-        callback('movie.mp4', {source2: 'alt.ogg', poster: 'image.jpg'});
-      }
-    }*/
-});
+    selector: '#Content',
+    height: 500,
+    resize: false,
+    plugins: ['advlist', 'anchor', 'autolink', 'charmap', 'code', 'fullscreen', 'image', 'imagetools', 'insertdatetime', 'link', 'lists', 'media', 'powerpaste', 'preview', 'print', 'searchreplace', 'table', 'visualblocks', 'wordcount'],
+    toolbar: 'insertfile undo redo | forecolor backcolor | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+    file_picker_types: 'image',
+    images_upload_handler: example_image_upload_handler,
+})
 
+function example_image_upload_handler(blobInfo, success, failure, progress) {
+    let xhr, formData;
+    xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+    xhr.open('POST', '/Images/Upload');
+    xhr.upload.onprogress = function (e) {
+        progress(e.loaded / e.total * 100);
+    };
+    xhr.onload = function () {
+        let json;
+        if (xhr.status === 403) {
+            failure('HTTP Error: ' + xhr.status, {remove: true});
+            return;
+        }
+        if (xhr.status < 200 || xhr.status >= 300) {
+            failure('HTTP Error: ' + xhr.status);
+            return;
+        }
+        json = JSON.parse(xhr.responseText);
+        if (!json || typeof json.location != 'string') {
+            failure('Invalid JSON: ' + xhr.responseText);
+            return;
+        }
+        success(json.location);
+    };
+    xhr.onerror = function () {
+        failure('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+    };
+    formData = new FormData();
+    formData.append('file', blobInfo.blob(), blobInfo.filename());
+    xhr.send(formData);
+}
 </script>
 
 

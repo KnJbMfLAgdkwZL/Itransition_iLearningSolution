@@ -1,4 +1,5 @@
 using AppWeb.AuthorizationHandler;
+using Business.Dto.Options;
 using Business.Interfaces;
 using Business.Interfaces.Model;
 using Business.Services;
@@ -13,6 +14,11 @@ using Microsoft.AspNetCore.Authorization;
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Options
+var uploadOptions = builder.Configuration.GetSection("UploadOptions");
+uploadOptions["DropBoxAccessToken"] ??= Environment.GetEnvironmentVariable("DropBoxAccessToken");
+builder.Services.Configure<UploadOptions>(uploadOptions);
 
 // Options Database Context
 builder.Services.AddDbContext<MasterContext>(options =>
@@ -55,6 +61,7 @@ builder.Services.AddScoped<ITagService, TagService>();
 builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserSocialService, UserSocialService>();
+builder.Services.AddScoped<IUploadService, UploadService>();
 
 // Add services to the container.
 builder.Services.AddControllers();
