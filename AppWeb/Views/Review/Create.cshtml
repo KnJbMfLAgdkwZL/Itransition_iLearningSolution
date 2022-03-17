@@ -44,8 +44,9 @@
     <input type="text" name="Title" maxlength="100"/>
     <br/>
 
+
     Content:
-    <textarea name="Content" maxlength="30000"></textarea>
+    <textarea name="Content"  id="Content" maxlength="30000"></textarea>
     <br/>
 
     AuthorAssessment:
@@ -62,6 +63,46 @@
 
     <input type="submit" id="Create" value="Create"/>
 </form>
+
+<script src="https://cdn.tiny.cloud/1/gntgkxs4ydn0xy7uodmu2ozzzkx6hbyfkjfqrp4w42io86y9/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+  selector: '#Content',
+  height: 500,
+  resize: false,
+  plugins: [
+    'advlist autolink lists link image charmap print preview anchor',
+    'searchreplace visualblocks code fullscreen',
+    'insertdatetime media table imagetools wordcount',
+    'powerpaste tinydrive'
+  ],
+  toolbar: 'insertfile undo redo | forecolor backcolor | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+  tinydrive_dropbox_app_key: 'b84tcslnpm9nco2',
+  //automatic_uploads: false,
+  file_picker_types: 'image',
+  //images_upload_url: 'postAcceptor.php',
+  /*file_picker_callback: function(callback, value, meta) {
+      console.log(value)
+      console.log(meta)
+      // Provide file and text for the link dialog
+      if (meta.filetype == 'file') {
+        callback('mypage.html', {text: 'My text'});
+      }
+  
+      // Provide image and alt text for the image dialog
+      if (meta.filetype == 'image') {
+        callback('myimage.jpg', {alt: 'My alt text'});
+      }
+  
+      // Provide alternative source and posted for the media dialog
+      if (meta.filetype == 'media') {
+        callback('movie.mp4', {source2: 'alt.ogg', poster: 'image.jpg'});
+      }
+    }*/
+});
+
+</script>
 
 
 <div id="tags">
