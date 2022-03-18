@@ -12,4 +12,9 @@ public class RoleService : IRoleService
     {
         _roleRepository = roleRepository;
     }
+
+    public async Task<Role?> GetRoleById(int id)
+    {
+        return await _roleRepository.GetOneAsync(role => role.Id == id, CancellationToken.None);
+    }
 }

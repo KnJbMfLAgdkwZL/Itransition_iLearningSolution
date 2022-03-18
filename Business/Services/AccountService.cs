@@ -13,13 +13,15 @@ public class AccountService : IAccountService
     private readonly IConverterService _converterService;
     private readonly IUserSocialService _userSocialService;
     private readonly IUserService _userService;
+    private readonly IRoleService _roleService;
 
     public AccountService(IConverterService converterService, IUserSocialService userSocialService,
-        IUserService userService)
+        IUserService userService, IRoleService roleService)
     {
         _converterService = converterService;
         _userSocialService = userSocialService;
         _userService = userService;
+        _roleService = roleService;
     }
 
     public async Task<bool> LoginOrRegister(string json, HttpContext httpContext, CancellationToken token)
@@ -55,17 +57,24 @@ public class AccountService : IAccountService
             await _userService.Update(userRes);
         }
 
-        await AuthenticateAsync(userSocial!, httpContext);
+        var role = await _roleService.GetRoleById(userRes.RoleId);
+        if (role == null)
+        {
+            return false;
+        }
+
+        await AuthenticateAsync(userSocial!, httpContext, role.Name);
         return true;
     }
 
-    private async Task AuthenticateAsync(UserSocial userSocial, HttpContext httpContext)
+    private async Task AuthenticateAsync(UserSocial userSocial, HttpContext httpContext, string role)
     {
         var claims = new List<Claim>
         {
             new("Uid", userSocial.Uid),
             new("Email", userSocial.Email),
-            new("Network", userSocial.Network)
+            new("Network", userSocial.Network),
+            new(ClaimsIdentity.DefaultRoleClaimType, role)
         };
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);

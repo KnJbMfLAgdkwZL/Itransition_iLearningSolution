@@ -28,6 +28,12 @@ public class UserService : IUserService
         return await _userRepository.GetOneAsync(user => user.SocialId == socialId, CancellationToken.None);
     }
 
+    public async Task<User?> GetUserBySocialIdWithRole(int socialId)
+    {
+        return await _userRepository.GetOneIncludeAsync(user => user.SocialId == socialId, user => user.Role,
+            CancellationToken.None);
+    }
+
     public async Task<User?> GetUserById(int id)
     {
         return await _userRepository.GetOneAsync(user => user.Id == id, CancellationToken.None);
