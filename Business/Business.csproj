@@ -15,7 +15,6 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication.Cookies" Version="2.2.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.2" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-      <PackageReference Include="PagedList" Version="1.17.0" />
     </ItemGroup>
 
 </Project>

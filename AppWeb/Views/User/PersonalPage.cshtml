@@ -61,18 +61,24 @@ tr:nth-child(even) {
 
 <table id="myTable">
     <tr>
-        <th onclick="sortTable(0)">Product</th>
-        <th onclick="sortTable(1)">Status</th>
-        <th onclick="sortTable(2)">ProductName</th>
-        <th onclick="sortTable(3)">Title</th>
-        <th onclick="sortTable(4)">CreationDate</th>
-        <th onclick="sortTable(5)">RedactionDate</th>
-        <th onclick="sortTable(6)">AuthorAssessment</th>
-        <th onclick="sortTable(7)">AverageUserRating</th>
+        <th onclick="sortTable(0)">Id</th>
+        <th onclick="sortTable(1)">Product</th>
+        <th onclick="sortTable(2)">Status</th>
+        <th onclick="sortTable(3)">ProductName</th>
+        <th onclick="sortTable(4)">Title</th>
+        <th onclick="sortTable(5)">CreationDate</th>
+        <th onclick="sortTable(6)">RedactionDate</th>
+        <th onclick="sortTable(7)">AuthorAssessment</th>
+        <th onclick="sortTable(8)">AverageUserRating</th>
     </tr>
     @foreach (var review in reviews)
     {
         <tr>
+            <td>
+                <a asp-controller="Review" asp-action="Edit" asp-route-id="@review.Id">
+                    @review.Id
+                </a>
+            </td>
             <td>@productGroups[review.ProductId].Name</td>
             <td>@review.Status.Name</td>
             <td>@review.ProductName</td>
@@ -83,8 +89,6 @@ tr:nth-child(even) {
             <td>@review.AverageUserRating</td>
         </tr>
     }
-
-
 </table>
 
 

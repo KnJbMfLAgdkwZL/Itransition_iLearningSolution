@@ -132,9 +132,10 @@ public class ReviewService : IReviewService
             review => review.ReviewUserRating
         };
 
-        return await _reviewRepository.GetAllIncludeManyAsync(
+        return await _reviewRepository.GetAllIncludeManyDescendingAsync(
             review => review.AuthorId == userId,
             includes,
+            review => review.CreationDate,
             CancellationToken.None);
     }
 

@@ -2,7 +2,6 @@ using System.Linq.Expressions;
 using Business.Interfaces.Model;
 using DataAccess.Interfaces;
 using Database.Models;
-using PagedList;
 
 namespace Business.Services.ModelServices;
 
@@ -59,7 +58,7 @@ public class UserService : IUserService
             user => user.Social
         };
         var users = await _userRepository.GetAllIncludeManyAsync(condition, includes, CancellationToken.None);
-        return users.ToPagedList(page, pageSize).ToList();
+        return users;//.ToPagedList(page, pageSize).ToList();
     }
 
     public async Task<User?> GetIncludesForAdmin(int id)

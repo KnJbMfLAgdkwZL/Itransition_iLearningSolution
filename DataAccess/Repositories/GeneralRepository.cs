@@ -121,6 +121,14 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
         r = includes.Aggregate(r, (current, include) => current.Include(include));
         return await r.ToListAsync(token);
     }
+    
+    public async Task<List<T>> GetAllIncludeManyDescendingAsync<TKey>(Expression<Func<T, bool>> condition,
+        IEnumerable<Expression<Func<T, TKey>>> includes, Expression<Func<T, TKey>> orderBy, CancellationToken token)
+    {
+        var r = _table.Where(condition);
+        r = includes.Aggregate(r, (current, include) => current.Include(include));
+        return await r.OrderByDescending(orderBy).ToListAsync(token);
+    }
 
     public async Task<T?> GetOneAsync(Expression<Func<T, bool>> condition, CancellationToken token)
     {

@@ -49,7 +49,7 @@ public class AdminController : Controller
         return user;
     }
 
-    public async Task<IActionResult> Users(int page = 1, int pageSize = 10)
+    public async Task<IActionResult> GetUsers(int page = 1, int pageSize = 10)
     {
         var users = await _userService.GetAllInclude(user => user.Id > 0, page, pageSize);
 
@@ -60,7 +60,7 @@ public class AdminController : Controller
         return View();
     }
 
-    public async Task<IActionResult> User([FromRoute] int id)
+    public async Task<IActionResult> GetUser([FromRoute] int id)
     {
         var user = await _userService.GetIncludesForAdmin(id);
         if (user == null)
@@ -74,7 +74,7 @@ public class AdminController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> User([FromForm] int id, [FromForm] string nickname, [FromForm] int roleId)
+    public async Task<IActionResult> UpdateUser([FromForm] int id, [FromForm] string nickname, [FromForm] int roleId)
     {
         var user = await _userService.GetUserById(id);
         if (user == null)
@@ -85,7 +85,7 @@ public class AdminController : Controller
         user.Nickname = nickname;
         user.RoleId = roleId;
         await _userService.Update(user);
-        return RedirectToAction("User", "Admin");
+        return RedirectToAction("GetUser", "Admin");
     }
 
     public async Task<IActionResult> GetAllUserReviews([FromRoute] int id)

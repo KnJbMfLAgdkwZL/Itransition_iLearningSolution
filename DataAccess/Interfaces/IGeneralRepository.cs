@@ -25,6 +25,9 @@ public interface IGeneralRepository<T>
     Task<List<T>> GetAllIncludeManyAsync<TKey>(Expression<Func<T, bool>> condition,
         IEnumerable<Expression<Func<T, TKey>>> includes, CancellationToken token);
 
+    Task<List<T>> GetAllIncludeManyDescendingAsync<TKey>(Expression<Func<T, bool>> condition,
+        IEnumerable<Expression<Func<T, TKey>>> includes, Expression<Func<T, TKey>> orderBy, CancellationToken token);
+
     Task<T?> GetOneAsync(Expression<Func<T, bool>> condition, CancellationToken token);
 
     Task<T?> GetOneIncludeAsync<TKey>(Expression<Func<T, bool>> condition, Expression<Func<T, TKey>> include,
