@@ -1,6 +1,8 @@
+using System.Linq.Expressions;
 using Business.Interfaces.Model;
 using DataAccess.Interfaces;
 using Database.Models;
+using PagedList;
 
 namespace Business.Services.ModelServices;
 
@@ -47,5 +49,28 @@ public class UserService : IUserService
             user.ReviewsLikes = count;
             await _userRepository.UpdateAsync(user, CancellationToken.None);
         }
+    }
+
+    public async Task<List<User>> GetAllInclude(Expression<Func<User, bool>> condition, int page, int pageSize)
+    {
+        var includes = new List<Expression<Func<User, object>>>()
+        {
+            user => user.Role,
+            user => user.Social
+        };
+        var users = await _userRepository.GetAllIncludeManyAsync(condition, includes, CancellationToken.None);
+        return users.ToPagedList(page, pageSize).ToList();
+    }
+
+    public async Task<User?> GetIncludesForAdmin(int id)
+    {
+        var includes = new List<Expression<Func<User, object>>>()
+        {
+            user => user.Role,
+            user => user.Social,
+            user => user.Comment,
+            user => user.Review
+        };
+        return await _userRepository.GetOneIncludeManyAsync(user => user.Id == id, includes, CancellationToken.None);
     }
 }

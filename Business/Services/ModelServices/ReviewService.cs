@@ -132,12 +132,10 @@ public class ReviewService : IReviewService
             review => review.ReviewUserRating
         };
 
-        await _reviewRepository.GetOneIncludeManyAsync(
+        return await _reviewRepository.GetAllIncludeManyAsync(
             review => review.AuthorId == userId,
             includes,
             CancellationToken.None);
-
-        return await _reviewRepository.GetAllAsync(review => review.AuthorId == userId, CancellationToken.None);
     }
 
     public async Task<int?> GetUserId(int reviewId)

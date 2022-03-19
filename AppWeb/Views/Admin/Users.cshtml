@@ -1,0 +1,70 @@
+@using Database.Models
+@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+
+    var users = (List<User>) ViewData["users"]!;
+}
+
+<style>
+.UsersTable {
+  border-spacing: 0;
+  width: 100%;
+  border: 1px solid #ddd;
+}
+
+th {
+  cursor: pointer;
+}
+
+th, td {
+  text-align: left;
+  padding: 5px;
+}
+
+tr:nth-child(even) {
+  background-color: #E7E9EB;
+}
+</style>
+
+<h2>Admin Users</h2>
+
+<table class="UsersTable">
+    <tr>
+        <th>Id</th>
+        <th>Nickname</th>
+        <th>ReviewsLikes</th>
+
+        <th>Role.Name</th>
+
+        <th>Email</th>
+        <th>Network</th>
+        <th>FirstName</th>
+        <th>LastName</th>
+
+        <th>LastLoginDate</th>
+        <th>RegistrationDate</th>
+    </tr>
+    @foreach (var user in users)
+    {
+        <tr>
+            <td>
+                <a asp-controller="Admin" asp-action="User" asp-route-Id="@user.Id">@user.Id</a>
+            </td>
+            <td>@user.Nickname</td>
+            <td>@user.ReviewsLikes</td>
+
+            <td>@user.Role.Name</td>
+
+            <td>@user.Social.Email</td>
+            <td>@user.Social.Network</td>
+            <td>@user.Social.FirstName</td>
+            <td>@user.Social.LastName</td>
+
+            <td>@user.LastLoginDate</td>
+            <td>@user.RegistrationDate</td>
+        </tr>
+    }
+</table>

@@ -17,4 +17,9 @@ public class RoleService : IRoleService
     {
         return await _roleRepository.GetOneAsync(role => role.Id == id, CancellationToken.None);
     }
+
+    public async Task<List<Role>> GetRoleAll()
+    {
+        return await _roleRepository.GetAllAsync(role => role.Id > 0, CancellationToken.None);
+    }
 }

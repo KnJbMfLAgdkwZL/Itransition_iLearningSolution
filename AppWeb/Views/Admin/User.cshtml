@@ -1,0 +1,56 @@
+@using Database.Models
+@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    var user = (User) ViewData["user"]!;
+    var roles = (List<Role>) ViewData["roles"]!;
+}
+
+<h2>Admin User</h2>
+
+<a asp-action="GetAllUserReviews" asp-controller="Admin"
+   asp-route-id="@user.Id">
+    Get User Reviews
+</a> <br/>
+
+<form asp-action="User" asp-controller="Admin"
+      method="POST" asp-anti-forgery="true">
+
+    <input type="hidden" name="Id" value="@user.Id"/>
+    Id : @user.Id <br/>
+
+    RegistrationDate : @user.RegistrationDate <br/>
+    LastLoginDate : @user.LastLoginDate <br/>
+    ReviewsLikes : @user.ReviewsLikes <br/>
+
+    Nickname : <input type="text" name="Nickname" value="@user.Nickname"/> <br/>
+    Role.Name :
+    <select name="RoleId">
+        @{
+            foreach (var v in roles)
+            {
+                @if (user.RoleId == v.Id)
+                {
+                    <option selected="" value="@v.Id">@v.Name</option>
+                }
+                else
+                {
+                    <option value="@v.Id">@v.Name</option>
+                }
+            }
+        }
+    </select>
+    <br/>
+
+    Social.Email : @user.Social.Email <br/>
+    Social.Network : @user.Social.Network <br/>
+    Social.FirstName : @user.Social.FirstName <br/>
+    Social.LastName : @user.Social.LastName <br/>
+
+    Comment.Count : @user.Comment.Count <br/>
+    Review.Count : @user.Review.Count <br/>
+
+    <input type="submit" value="Update User">
+</form>
