@@ -18,6 +18,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Options
 var uploadOptions = builder.Configuration.GetSection("UploadOptions");
 uploadOptions["DropBoxAccessToken"] ??= Environment.GetEnvironmentVariable("DropBoxAccessToken");
+uploadOptions["MegaEmail"] ??= Environment.GetEnvironmentVariable("MegaEmail");
+uploadOptions["MegaPassword"] ??= Environment.GetEnvironmentVariable("MegaPassword");
+uploadOptions["AzureStorageConnectionString"] ??= Environment.GetEnvironmentVariable("AzureStorageConnectionString");
 builder.Services.Configure<UploadOptions>(uploadOptions);
 
 // Options Database Context

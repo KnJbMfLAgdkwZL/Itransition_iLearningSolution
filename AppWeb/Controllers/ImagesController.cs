@@ -21,7 +21,7 @@ public class ImagesController : Controller
 
         return Ok(new
         {
-            location = await _uploadService.UploadToDropbox(stream, fileName)
+            location = await _uploadService.UploadToAzureStorage(stream, fileName)
         });
     }
 }
