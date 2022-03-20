@@ -15,11 +15,11 @@ public class UserController : Controller
     private readonly IUserSocialService _userSocialService;
     private readonly IUserService _userService;
     private readonly IProductGroupService _productGroupService;
-
+    private readonly IRoleService _roleService;
 
     public UserController(IUserClaimsService userClaimsService, IUserSocialService userSocialService,
         IUserService userService, IStatusReviewService statusReviewService, IReviewService reviewService,
-        IProductGroupService productGroupService)
+        IProductGroupService productGroupService, IRoleService roleService)
     {
         _userClaimsService = userClaimsService;
         _userSocialService = userSocialService;
@@ -27,6 +27,7 @@ public class UserController : Controller
         _statusReviewService = statusReviewService;
         _reviewService = reviewService;
         _productGroupService = productGroupService;
+        _roleService = roleService;
     }
 
     private User? GetAuthorizedUser(out IActionResult? error)
@@ -51,7 +52,7 @@ public class UserController : Controller
     }
 
     [Authorize]
-    public async Task<IActionResult> PersonalPage()
+    public async Task<IActionResult> GetUserReviews([FromRoute] int id)
     {
         var user = GetAuthorizedUser(out var error);
         if (user == null)
@@ -59,18 +60,71 @@ public class UserController : Controller
             return error!;
         }
 
-        var statusReview = await _statusReviewService.Get("Deleted");
-        if (statusReview == null)
+        if (id > 0 && user.Role.Name == "Admin")
         {
-            return BadRequest("StatusReview Deleted not found");
+            user = await _userService.GetUserById(id);
+            if (user == null)
+            {
+                return NotFound("User NotFound");
+            }
         }
 
         var reviews = await _reviewService.GetAllIncludes(user.Id);
-        ViewData["reviews"] = reviews.Where(review => review.StatusId != statusReview.Id).ToList();
+        if (user.Role.Name != "Admin")
+        {
+            var statusReview = await _statusReviewService.Get("Deleted");
+            if (statusReview == null)
+            {
+                return BadRequest("StatusReview Deleted not found");
+            }
+
+            reviews = reviews.Where(review => review.StatusId != statusReview.Id).ToList();
+        }
+
+        ViewData["reviews"] = reviews;
 
         var productGroups = await _productGroupService.GetAll();
         ViewData["productGroups"] = productGroups.ToDictionary(productGroup => productGroup.Id);
+        ViewData["userId"] = id;
 
         return View();
+    }
+
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetUsers()
+    {
+        var users = await _userService.GetAllInclude();
+        ViewData["users"] = users;
+        return View();
+    }
+
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetUser([FromRoute] int id)
+    {
+        var user = await _userService.GetIncludesForAdmin(id);
+        if (user == null)
+        {
+            return NotFound("User NotFound");
+        }
+
+        ViewData["user"] = user;
+        ViewData["roles"] = await _roleService.GetRoleAll();
+        return View();
+    }
+
+    [Authorize(Roles = "Admin")]
+    [HttpPost]
+    public async Task<IActionResult> UpdateUser([FromForm] int id, [FromForm] string nickname, [FromForm] int roleId)
+    {
+        var user = await _userService.GetUserById(id);
+        if (user == null)
+        {
+            return NotFound("User NotFound");
+        }
+
+        user.Nickname = nickname;
+        user.RoleId = roleId;
+        await _userService.Update(user);
+        return RedirectToAction("GetUser", "User");
     }
 }

@@ -26,7 +26,8 @@ public class UserService : IUserService
 
     public async Task<User?> GetUserBySocialId(int socialId)
     {
-        return await _userRepository.GetOneAsync(user => user.SocialId == socialId, CancellationToken.None);
+        return await _userRepository.GetOneIncludeAsync(user => user.SocialId == socialId, user => user.Role,
+            CancellationToken.None);
     }
 
     public async Task<User?> GetUserBySocialIdWithRole(int socialId)
@@ -37,7 +38,8 @@ public class UserService : IUserService
 
     public async Task<User?> GetUserById(int id)
     {
-        return await _userRepository.GetOneAsync(user => user.Id == id, CancellationToken.None);
+        return await _userRepository.GetOneIncludeAsync(user => user.Id == id, user => user.Role,
+            CancellationToken.None);
     }
 
     public async Task UpdateReviewsLikes(int id, int count)
@@ -50,15 +52,15 @@ public class UserService : IUserService
         }
     }
 
-    public async Task<List<User>> GetAllInclude(Expression<Func<User, bool>> condition, int page, int pageSize)
+    public async Task<List<User>> GetAllInclude()
     {
         var includes = new List<Expression<Func<User, object>>>()
         {
             user => user.Role,
             user => user.Social
         };
-        var users = await _userRepository.GetAllIncludeManyAsync(condition, includes, CancellationToken.None);
-        return users;//.ToPagedList(page, pageSize).ToList();
+        var users = await _userRepository.GetAllIncludeManyAsync(user => user.Id > 0, includes, CancellationToken.None);
+        return users;
     }
 
     public async Task<User?> GetIncludesForAdmin(int id)

@@ -1,0 +1,243 @@
+@using Database.Models
+@model dynamic
+
+@{
+    ViewBag.Title = "title";
+    Layout = "_Layout";
+    var statusReviews = (List<StatusReview>) ViewData["statusReviews"]!;
+    var productGroups = (List<ProductGroup>) ViewData["productGroups"]!;
+    var review = (Review) ViewData["review"]!;
+    var tags = (string) ViewData["tags"]!;
+    var userId = (int) ViewData["userId"]!;
+    var reviewId = (int) ViewData["reviewId"]!;
+    var role = (string) ViewData["Role"]!;
+    var action = (reviewId <= 0) ? "Create" : "Update";
+}
+
+<h2>
+    @role
+    @action
+    Review
+</h2>
+
+@if (reviewId > 0)
+{
+    <a asp-controller="Review"
+       asp-action="Delete"
+       asp-route-id="@review.Id">
+        Delete
+    </a>
+    <br/>
+}
+
+<form asp-controller="Review" asp-action="CreateOrUpdate"
+      method="POST"
+      asp-anti-forgery="true">
+
+    StatusReview:
+    <select name="StatusReviewId">
+        @{
+            foreach (var v in statusReviews)
+            {
+                if (review != null && v.Id == review.StatusId)
+                {
+                    <option selected="" value="@v.Id">@v.Name</option>
+                }
+                else
+                {
+                    <option value="@v.Id">@v.Name</option>
+                }
+            }
+        }
+    </select>
+    <br/>
+
+    Product:
+    <select name="ProductId">
+        @{
+            foreach (var v in productGroups)
+            {
+                if (review != null && v.Id == review.ProductId)
+                {
+                    <option selected="" value="@v.Id">@v.Name</option>
+                }
+                else
+                {
+                    <option value="@v.Id">@v.Name</option>
+                }
+            }
+        }
+    </select>
+    <br/>
+
+    ProductName:
+    <input type="text" name="ProductName" maxlength="50" value="@review?.ProductName"/>
+    <br/>
+
+    Title:
+    <input type="text" name="Title" maxlength="100" value="@review?.Title"/>
+    <br/>
+
+    Content:
+    <textarea name="Content" maxlength="30000">@review?.Content</textarea>
+    <br/>
+
+    AuthorAssessment:
+    <select name="AuthorAssessment">
+        @{
+            for (var i = 1; i <= 5; i++)
+            {
+                if (review != null && i == review.AuthorAssessment)
+                {
+                    <option selected="" value="@i">@i</option>
+                }
+                else
+                {
+                    <option value="@i">@i</option>
+                }
+            }
+        }
+    </select>
+    <br/>
+
+    <input type="hidden" name="TagsInput" id="tagsInput" value="@tags"/>
+    <input type="hidden" name="AuthorId" id="AuthorId" value="@review?.AuthorId"/>
+    <input type="hidden" name="Id" id="Id" value="@review?.Id"/>
+
+    <input type="hidden" name="UserId" id="UserId" value="@userId"/>
+    <input type="hidden" name="UserId" id="ReviewId" value="@reviewId"/>
+
+
+    <input type="submit" value="@action"/>
+
+</form>
+
+
+<div id="tags"></div>
+<span id="TagsRecoms"></span>
+<input type="text" id="tagAdd"/>
+<script>
+let tags = document.getElementById("tags")
+let tagsValues = []
+let tagAdd = document.getElementById("tagAdd")
+let tagsInput = document.getElementById("tagsInput")
+
+AddTags(JSON.parse(tagsInput.value))
+
+function AddTags(values) {
+    for (let v of values) {
+        if (v) {
+            AddTag(v)
+        }
+    }
+}
+
+function AddTag(v) {
+    if (v) {
+        tagsValues.push(v)
+    }
+    tagsValues = tagsValues.filter(function (item, pos) {
+        return tagsValues.indexOf(item) === pos;
+    })
+    tags.innerHTML = ''
+    for (let v of tagsValues) {
+        tags.innerHTML += `<div class="tag" onclick="tagOnclick(this)">${v}</div>`
+    }
+    tagsInput.value = JSON.stringify(tagsValues)
+}
+
+tagAdd.onkeydown = function (e) {
+    if (tagAdd.value.length > 20) {
+        e.preventDefault()
+    }
+    
+    if (e.key === ' ') {
+        let tags = tagAdd.value.split(' ')
+        AddTags(tags)
+        tagAdd.value = ''
+        TagsRecomHide()
+        e.preventDefault()
+    }
+}
+
+function tagOnclick(element) {
+    let value = element.innerHTML
+
+    let index = tagsValues.indexOf(value);
+    if (index > -1) {
+        tagsValues.splice(index, 1)
+    }
+    element.remove()
+    tagsInput.value = JSON.stringify(tagsValues)
+}
+</script>
+<style>
+    .tag
+    {
+        background: lightgray;
+        display: inline-block;
+        margin-right: 5px;
+    }
+    #TagsRecoms{
+        display: none;
+        position: absolute;
+        background: lightblue;
+        margin: 10px;
+    }
+    .TagsRecom
+    {
+        cursor: pointer;
+        padding: 5px;
+    }
+    .TagsRecom:hover{
+        background: lightgray;
+    }
+</style>
+
+
+<script src="https://cdn.tiny.cloud/1/gntgkxs4ydn0xy7uodmu2ozzzkx6hbyfkjfqrp4w42io86y9/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+<script>
+tinymce.init({
+    selector: '#Content',
+    height: 500,
+    resize: false,
+    plugins: ['advlist', 'anchor', 'autolink', 'charmap', 'code', 'fullscreen', 'image', 'imagetools', 'insertdatetime', 'link', 'lists', 'media', 'powerpaste', 'preview', 'print', 'searchreplace', 'table', 'visualblocks', 'wordcount'],
+    toolbar: 'insertfile undo redo | forecolor backcolor | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image',
+    content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }',
+    file_picker_types: 'image',
+    images_upload_handler: example_image_upload_handler,
+})
+
+function example_image_upload_handler(blobInfo, success, failure, progress) {
+    let xhr, formData;
+    xhr = new XMLHttpRequest();
+    xhr.withCredentials = false;
+    xhr.open('POST', '/Images/Upload');
+    xhr.upload.onprogress = function (e) {
+        progress(e.loaded / e.total * 100);
+    };
+    xhr.onload = function () {
+        let json;
+        if (xhr.status === 403) {
+            failure('HTTP Error: ' + xhr.status, {remove: true});
+            return;
+        }
+        if (xhr.status < 200 || xhr.status >= 300) {
+            failure('HTTP Error: ' + xhr.status);
+            return;
+        }
+        json = JSON.parse(xhr.responseText);
+        if (!json || typeof json.location != 'string') {
+            failure('Invalid JSON: ' + xhr.responseText);
+            return;
+        }
+        success(json.location);
+    };
+    xhr.onerror = function () {
+        failure('Image upload failed due to a XHR Transport error. Code: ' + xhr.status);
+    };
+    formData = new FormData();
+    formData.append('file', blobInfo.blob(), blobInfo.filename());
+    xhr.send(formData);
+}
+</script>

@@ -11,6 +11,6 @@ public interface IUserService
     Task<User?> GetUserBySocialIdWithRole(int socialId);
     Task<User?> GetUserById(int id);
     Task UpdateReviewsLikes(int id, int count);
-    Task<List<User>> GetAllInclude(Expression<Func<User, bool>> condition, int page, int pageSize);
+    Task<List<User>> GetAllInclude();
     Task<User?> GetIncludesForAdmin(int id);
 }

@@ -30,4 +30,6 @@ public class ReviewForm
 
     public string TagsInput { get; set; } = string.Empty;
     public int AuthorId { get; set; } = 0;
+    public int UserId { get; set; } = 0;
+    public int ReviewId { get; set; } = 0;
 }

@@ -6,11 +6,10 @@
     Layout = "_Layout";
     var reviews = (List<Review>) ViewData["reviews"]!;
     var productGroups = (Dictionary<int, ProductGroup>) ViewData["productGroups"]!;
+    var userId = (string) ViewData["userId"]!;
 }
 
-<h2>User Personal Page</h2>
-
-<h4>Reviews:</h4>
+<h2>User Reviews</h2>
 
 <style>
 table {
@@ -31,6 +30,7 @@ th, td {
 tr:nth-child(even) {
   background-color: #E7E9EB;
 }
+
 .SearchInput {
   background-image: url('/searchicon.png');
   background-position: 10px 10px;
@@ -42,13 +42,20 @@ tr:nth-child(even) {
 }
 </style>
 
+<p>
+    <a asp-controller="Review" asp-action="CreateOrUpdate"
+       asp-route-userId="@userId"
+       asp-route-reviewId="0">
+        Create Review
+    </a>
+</p>
+
 
 <p>
     <strong>Click the headers to sort the table.</strong>
 </p>
-<p>The first time you click, the sorting direction is ascending (A to Z).</p>
-<p>Click again, and the sorting direction will be descending (Z to A):</p>
 
+<p>First click, the sorting is ascending (A to Z). Click again, the sorting will be descending (Z to A).</p>
 
 <input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Product"/>
 <input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Status"/>
@@ -75,7 +82,9 @@ tr:nth-child(even) {
     {
         <tr>
             <td>
-                <a asp-controller="Review" asp-action="Edit" asp-route-id="@review.Id">
+                <a asp-controller="Review" asp-action="CreateOrUpdate"
+                   asp-route-userId="@userId"
+                   asp-route-reviewId="@review.Id">
                     @review.Id
                 </a>
             </td>
@@ -90,7 +99,6 @@ tr:nth-child(even) {
         </tr>
     }
 </table>
-
 
 <script>
 function myFunction() {
@@ -124,53 +132,35 @@ function myFunction() {
 }
 
 function sortTable(n) {
-    var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    let table, rows, switching, i, x, y, shouldSwitch, dir, switchCount = 0;
     table = document.getElementById("myTable");
     switching = true;
-    //Set the sorting direction to ascending:
     dir = "asc";
-    /*Make a loop that will continue until
-    no switching has been done:*/
     while (switching) {
-        //start by saying: no switching is done:
         switching = false;
         rows = table.rows;
-        /*Loop through all table rows (except the
-        first, which contains table headers):*/
         for (i = 1; i < (rows.length - 1); i++) {
-            //start by saying there should be no switching:
             shouldSwitch = false;
-            /*Get the two elements you want to compare,
-            one from current row and one from the next:*/
             x = rows[i].getElementsByTagName("TD")[n];
             y = rows[i + 1].getElementsByTagName("TD")[n];
-            /*check if the two rows should switch place,
-            based on the direction, asc or desc:*/
-            if (dir == "asc") {
+            if (dir === "asc") {
                 if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                    //if so, mark as a switch and break the loop:
                     shouldSwitch = true;
                     break;
                 }
-            } else if (dir == "desc") {
+            } else if (dir === "desc") {
                 if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                    //if so, mark as a switch and break the loop:
                     shouldSwitch = true;
                     break;
                 }
             }
         }
         if (shouldSwitch) {
-            /*If a switch has been marked, make the switch
-            and mark that a switch has been done:*/
             rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
             switching = true;
-            //Each time a switch is done, increase this count by 1:
-            switchcount++;
+            switchCount++;
         } else {
-            /*If no switching has been done AND the direction is "asc",
-            set the direction to "desc" and run the while loop again.*/
-            if (switchcount == 0 && dir == "asc") {
+            if (switchCount === 0 && dir === "asc") {
                 dir = "desc";
                 switching = true;
             }

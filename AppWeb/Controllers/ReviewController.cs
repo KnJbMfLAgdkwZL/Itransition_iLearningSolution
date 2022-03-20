@@ -63,15 +63,75 @@ public class ReviewController : Controller
 
     [Authorize]
     [HttpGet]
-    public async Task<IActionResult> Create()
+    public async Task<IActionResult> CreateOrUpdate([FromQuery] int userId, [FromQuery] int reviewId)
     {
+        var user = GetAuthorizedUser(out var error);
+        if (user == null)
+        {
+            return error!;
+        }
+
+        if (userId > 0 && user.Role.Name == "Admin" && user.Id != userId)
+        {
+            user = await _userService.GetUserById(userId);
+            if (user == null)
+            {
+                return NotFound("User NotFound");
+            }
+        }
+
+        ViewData["userId"] = userId;
+        ViewData["reviewId"] = reviewId;
+        ViewData["Role"] = user.Role.Name;
+
         ViewData["productGroups"] = await _productGroupService.GetAll();
 
         var statusReviews = await _statusReviewService.GetAll();
         ViewData["statusReviews"] = statusReviews.Where(status => status.Name != "Deleted").ToList();
 
+        ViewData["review"] = null;
+        ViewData["tags"] = JsonConvert.SerializeObject(new List<string>());
+
+        if (reviewId > 0) // Update
+        {
+            var review = await _reviewService.GetOneIncludes(reviewId);
+            if (review == null)
+            {
+                return NotFound("Review NotFound");
+            }
+
+            if (review.AuthorId != user.Id && user.Role.Name != "Admin")
+            {
+                return BadRequest("You are not the author of this review");
+            }
+
+            var statusReview = await _statusReviewService.Get("Deleted");
+            if (statusReview == null)
+            {
+                return BadRequest("StatusReview Deleted not found");
+            }
+
+            if (review.StatusId == statusReview.Id && user.Role.Name != "Admin")
+            {
+                return BadRequest("Review Deleted");
+            }
+
+            ViewData["review"] = review;
+            var tags = await _reviewTagService.GetTagsNames(review.Id);
+            var tagsNames = tags.Select(tag => tag.Tag.Name).ToList();
+            ViewData["tags"] = JsonConvert.SerializeObject(tagsNames);
+        }
+
         return View();
     }
+
+    [Authorize]
+    [HttpPost]
+    public async Task<IActionResult> CreateOrUpdate([FromForm] ReviewForm reviewForm)
+    {
+        return Ok();
+    }
+
 
     [Authorize]
     [HttpPost]
@@ -124,53 +184,6 @@ public class ReviewController : Controller
         }
 
         return RedirectToAction("Get", "Review", new {id = review.Id});
-    }
-
-    [Authorize]
-    [HttpGet]
-    public async Task<IActionResult> Edit([FromRoute] int id)
-    {
-        var user = GetAuthorizedUser(out var error);
-        if (user == null)
-        {
-            return error!;
-        }
-
-        var review = await _reviewService.GetOneIncludes(id);
-        if (review == null)
-        {
-            return BadRequest("Wrong reviewId");
-        }
-
-        if (review.AuthorId != user.Id)
-        {
-            return BadRequest("You are not the author of this review");
-        }
-
-        var statusReview = await _statusReviewService.Get("Deleted");
-        if (statusReview == null)
-        {
-            return BadRequest("StatusReview Deleted not found");
-        }
-
-        if (review.StatusId == statusReview.Id)
-        {
-            return BadRequest("Review Deleted");
-        }
-
-
-        ViewData["productGroups"] = await _productGroupService.GetAll();
-
-        var statusReviews = await _statusReviewService.GetAll();
-        ViewData["statusReviews"] = statusReviews.Where(status => status.Name != "Deleted").ToList();
-
-        ViewData["review"] = review;
-
-        var tags = await _reviewTagService.GetTagsNames(review.Id);
-        var tagsNames = tags.Select(tag => tag.Tag.Name).ToList();
-        ViewData["tags"] = JsonConvert.SerializeObject(tagsNames);
-
-        return View();
     }
 
     [Authorize]

@@ -10,12 +10,12 @@
 
 <h2>Admin User</h2>
 
-<a asp-action="GetAllUserReviews" asp-controller="Admin"
+<a asp-controller="User" asp-action="GetUserReviews"
    asp-route-id="@user.Id">
     Get User Reviews
 </a> <br/>
 
-<form asp-action="GetUser" asp-controller="Admin"
+<form asp-action="UpdateUser" asp-controller="User"
       method="POST" asp-anti-forgery="true">
 
     <input type="hidden" name="Id" value="@user.Id"/>

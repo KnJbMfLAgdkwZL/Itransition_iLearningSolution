@@ -1,5 +1,6 @@
 using Business.Interfaces;
 using Business.Interfaces.Model;
+using Database.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -12,26 +13,51 @@ public class AccountController : Controller
     private readonly IAccountService _accountService;
     private readonly IUserSocialService _userSocialService;
     private readonly IUserClaimsService _userClaimsService;
+    private readonly IUserService _userService;
 
     public AccountController(IAccountService accountService, IUserSocialService userSocialService,
-        IUserClaimsService userClaimsService)
+        IUserClaimsService userClaimsService, IUserService userService)
     {
         _accountService = accountService;
         _userSocialService = userSocialService;
         _userClaimsService = userClaimsService;
+        _userService = userService;
+    }
+
+    private User? GetAuthorizedUser(out IActionResult? error)
+    {
+        var userClaims = _userClaimsService.GetClaims(HttpContext);
+        var userSocial = _userSocialService.Get(userClaims).Result;
+        if (userSocial == null)
+        {
+            error = Unauthorized("UserSocial not found");
+            return null;
+        }
+
+        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
+        if (user == null)
+        {
+            error = Unauthorized("User not found");
+            return null;
+        }
+
+        if (user.Role.Name != userClaims.Role)
+        {
+            error = Unauthorized("Claims.Role and user.Role not match");
+            return null;
+        }
+
+        error = null;
+        return user;
     }
 
     public async Task<IActionResult> AccessDenied()
     {
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-
-        if (userClaims.Uid != string.Empty && userClaims.Email != string.Empty && userClaims.Network != string.Empty)
+        var user = GetAuthorizedUser(out var error);
+        if (user == null)
         {
-            if (await _userSocialService.Get(userClaims) == null)
-            {
-                await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-                return Ok("AccessDenied Logout");
-            }
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            return error!;
         }
 
         return Ok("AccessDenied");
