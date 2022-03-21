@@ -63,6 +63,12 @@ public class AccountService : IAccountService
             return false;
         }
 
+        var userCheck = await _userService.GetUserBySocialId(userSocialRes.Id);
+        if (userCheck == null || userCheck.Role.Name != "Admin" && userCheck.Role.Name != "User")
+        {
+            return false;
+        }
+
         await AuthenticateAsync(userSocial!, httpContext, role.Name);
         return true;
     }

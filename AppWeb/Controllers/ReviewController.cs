@@ -277,7 +277,7 @@ public class ReviewController : Controller
             return BadRequest("Wrong reviewId");
         }
 
-        if (review.AuthorId != user.Id)
+        if (review.AuthorId != user.Id && user.Role.Name != "Admin")
         {
             return BadRequest("You are not the author of this review");
         }
@@ -295,7 +295,7 @@ public class ReviewController : Controller
 
         review.StatusId = statusReview.Id;
         var updatedReview = await _reviewService.Update(review);
-
+        
         return View();
     }
 }

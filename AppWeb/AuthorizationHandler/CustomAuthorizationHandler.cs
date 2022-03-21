@@ -25,10 +25,10 @@ public class CustomAuthorizationHandler : IAuthorizationHandler
         var userSocial = await _userSocialService.Get(userClaims);
         if (userSocial != null)
         {
-            var user = await _userService.GetUserBySocialIdWithRole(userSocial.Id);
+            var user = await _userService.GetUserBySocialId(userSocial.Id);
             if (user != null)
             {
-                if (user.Role.Name == userClaims.Role)
+                if (user.Role.Name == userClaims.Role && (user.Role.Name == "User" || user.Role.Name == "Admin"))
                 {
                     context.Succeed(new AssertionRequirement(handlerContext => handlerContext.HasSucceeded));
                     return;
