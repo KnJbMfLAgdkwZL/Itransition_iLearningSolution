@@ -8,11 +8,54 @@
     var productGroups = (List<ProductGroup>) ViewData["productGroups"]!;
     var review = (Review) ViewData["review"]!;
     var tags = (string) ViewData["tags"]!;
-    var userId = (int) ViewData["userId"]!;
-    var reviewId = (int) ViewData["reviewId"]!;
-    var role = (string) ViewData["Role"]!;
+
+    var userId = 0;
+    if (ViewData["userId"] != null)
+    {
+        userId = (int) ViewData["userId"]!;
+    }
+
+    var reviewId = 0;
+    if (ViewData["reviewId"] != null)
+    {
+        reviewId = (int) ViewData["reviewId"]!;
+    }
+
+    var role = (string) "";
+    if (ViewData["Role"] != null)
+    {
+        role = (string) ViewData["Role"]!;
+    }
+
+    var id = 0;
+    var productId = 0;
+    var authorId = 0;
+    var statusId = 0;
+    var productName = "";
+    var title = "";
+    var content = "";
+    var authorAssessment = 0;
+    if (review != null)
+    {
+        id = review.Id;
+        productId = review.ProductId;
+        authorId = review.AuthorId;
+        statusId = review.StatusId;
+        productName = review.ProductName;
+        title = review.Title;
+        content = review.Content;
+        authorAssessment = review.AuthorAssessment;
+    }
+
+
     var action = (reviewId <= 0) ? "Create" : "Update";
 }
+
+<script>
+//const nextURL = window.location.href.split('?')[0]
+//window.history.replaceState('', '', nextURL);
+//window.history.pushState('', '', nextURL);
+</script>
 
 <h2>
     @role
@@ -24,7 +67,7 @@
 {
     <a asp-controller="Review"
        asp-action="Delete"
-       asp-route-id="@review.Id">
+       asp-route-id="@id">
         Delete
     </a>
     <br/>
@@ -39,7 +82,7 @@
         @{
             foreach (var v in statusReviews)
             {
-                if (review != null && v.Id == review.StatusId)
+                if (v.Id == statusId)
                 {
                     <option selected="" value="@v.Id">@v.Name</option>
                 }
@@ -57,7 +100,7 @@
         @{
             foreach (var v in productGroups)
             {
-                if (review != null && v.Id == review.ProductId)
+                if (v.Id == productId)
                 {
                     <option selected="" value="@v.Id">@v.Name</option>
                 }
@@ -71,15 +114,15 @@
     <br/>
 
     ProductName:
-    <input type="text" name="ProductName" maxlength="50" value="@review?.ProductName"/>
+    <input type="text" name="ProductName" maxlength="50" value="@productName"/>
     <br/>
 
     Title:
-    <input type="text" name="Title" maxlength="100" value="@review?.Title"/>
+    <input type="text" name="Title" maxlength="100" value="@title"/>
     <br/>
 
     Content:
-    <textarea name="Content" id="Content" maxlength="30000">@review?.Content</textarea>
+    <textarea name="Content" id="Content" maxlength="30000">@content</textarea>
     <br/>
 
     AuthorAssessment:
@@ -87,7 +130,7 @@
         @{
             for (var i = 1; i <= 5; i++)
             {
-                if (review != null && i == review.AuthorAssessment)
+                if (i == authorAssessment)
                 {
                     <option selected="" value="@i">@i</option>
                 }
@@ -101,12 +144,12 @@
     <br/>
 
     <input type="hidden" name="TagsInput" id="tagsInput" value="@tags"/>
-    <input type="hidden" name="AuthorId" id="AuthorId" value="@review?.AuthorId"/>
-    <input type="hidden" name="Id" id="Id" value="@review?.Id"/>
+
+    <input type="hidden" name="AuthorId" id="AuthorId" value="@authorId"/>
+    <input type="hidden" name="Id" id="Id" value="@id"/>
 
     <input type="hidden" name="UserId" id="UserId" value="@userId"/>
-    <input type="hidden" name="UserId" id="ReviewId" value="@reviewId"/>
-
+    <input type="hidden" name="ReviewId" id="ReviewId" value="@reviewId"/>
 
     <input type="submit" value="@action"/>
 

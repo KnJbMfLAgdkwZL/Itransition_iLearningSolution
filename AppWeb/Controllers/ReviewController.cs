@@ -129,14 +129,6 @@ public class ReviewController : Controller
     [HttpPost]
     public async Task<IActionResult> CreateOrUpdate([FromForm] ReviewForm reviewForm)
     {
-        return Ok();
-    }
-
-
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> Create([FromForm] ReviewForm reviewForm)
-    {
         if (!ModelState.IsValid)
         {
             return BadRequest("Form not Valid");
@@ -152,118 +144,87 @@ public class ReviewController : Controller
             return BadRequest("Wrong StatusReview");
         }
 
-        var status = await _statusReviewService.Get("Deleted");
-        if (status != null && status.Id == reviewForm.StatusReviewId)
-        {
-            return BadRequest("Wrong StatusReview");
-        }
-
-        var user = GetAuthorizedUser(out var error);
-        if (user == null)
+        var currentUser = GetAuthorizedUser(out var error);
+        if (currentUser == null)
         {
             return error!;
         }
 
-        reviewForm.AuthorId = user.Id;
-        var review = await _reviewService.Create(reviewForm);
-        if (review == null)
-        {
-            return BadRequest();
-        }
-
-        await _reviewUserRatingService.AddAssessment(review.Id, review.AuthorId, review.AuthorAssessment);
-
-        var tags = JsonConvert.DeserializeObject<List<string>>(reviewForm.TagsInput);
-        if (tags != null)
-        {
-            foreach (var tagName in tags)
-            {
-                var tag = await _tagService.AddOrIncrement(tagName);
-                await _reviewTagService.AddTagToReview(review.Id, tag.Id);
-            }
-        }
-
-        return RedirectToAction("Get", "Review", new {id = review.Id});
-    }
-
-    [Authorize]
-    [HttpPost]
-    public async Task<IActionResult> Edit([FromForm] ReviewForm reviewForm)
-    {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest("Form not Valid");
-        }
-
-        if (!await _productGroupService.Check(reviewForm.ProductId))
-        {
-            return BadRequest("Wrong ProductGroup");
-        }
-
-        if (!await _statusReviewService.Check(reviewForm.StatusReviewId))
+        var statusReviewDeleted = await _statusReviewService.Get("Deleted");
+        if (statusReviewDeleted != null && statusReviewDeleted.Id == reviewForm.StatusReviewId &&
+            currentUser.Role.Name != "Admin")
         {
             return BadRequest("Wrong StatusReview");
         }
 
-        var status = await _statusReviewService.Get("Deleted");
-        if (status != null && status.Id == reviewForm.StatusReviewId)
+        Review? review = null;
+        if (reviewForm.AuthorId <= 0 && reviewForm.Id <= 0) // Create
         {
-            return BadRequest("Wrong StatusReview");
-        }
-
-        var user = GetAuthorizedUser(out var error);
-        if (user == null)
-        {
-            return error!;
-        }
-
-        var review = await _reviewService.GetOneIncludes(reviewForm.Id);
-        if (review == null)
-        {
-            return BadRequest("Wrong reviewId");
-        }
-
-        if (!(reviewForm.AuthorId == user.Id && user.Id == review.AuthorId))
-        {
-            return BadRequest("You are not the author of this review");
-        }
-
-        var statusReview = await _statusReviewService.Get("Deleted");
-        if (statusReview == null)
-        {
-            return BadRequest("StatusReview Deleted not found");
-        }
-
-        if (review.StatusId == statusReview.Id)
-        {
-            return BadRequest("Review Deleted");
-        }
-
-
-        var updatedReview = await _reviewService.Update(reviewForm, review);
-        if (updatedReview == null)
-        {
-            return BadRequest();
-        }
-
-
-        await _reviewUserRatingService.AddAssessment(updatedReview.Id, updatedReview.AuthorId,
-            updatedReview.AuthorAssessment);
-
-        await _reviewTagService.DeleteTags(updatedReview.Id);
-
-        var tags = JsonConvert.DeserializeObject<List<string>>(reviewForm.TagsInput);
-        if (tags != null)
-        {
-            foreach (var tagName in tags)
+            if (currentUser.Role.Name == "Admin" && reviewForm.UserId > 0) // Admin Created on behalf User
             {
-                var tag = await _tagService.AddOrIncrement(tagName);
+                var userAuthor = await _userService.GetUserById(reviewForm.UserId);
+                if (userAuthor == null)
+                {
+                    return NotFound("UserAuthor NotFound");
+                }
 
-                await _reviewTagService.AddTagToReview(review.Id, tag.Id);
+                reviewForm.AuthorId = userAuthor.Id; // Создать обзор Админом от лица другого пользователя
+            }
+            else
+            {
+                reviewForm.AuthorId = currentUser.Id; // Админ как пользователь или пользователь, создал свой обзор
+            }
+
+            review = await _reviewService.Create(reviewForm);
+            if (review == null)
+            {
+                return BadRequest("Error reviewService.Create");
+            }
+        }
+        else if (reviewForm.AuthorId > 0 && reviewForm.Id > 0) // Update
+        {
+            var reviewUpdate = await _reviewService.GetOneIncludes(reviewForm.Id);
+            if (reviewUpdate == null)
+            {
+                return NotFound("Wrong reviewForm.Id");
+            }
+
+            if (currentUser.Role.Name != "Admin" && reviewUpdate.AuthorId != currentUser.Id)
+            {
+                return BadRequest("You are not the author of this review");
+            }
+
+            if (reviewUpdate!.StatusId == statusReviewDeleted!.Id && currentUser.Role.Name != "Admin")
+            {
+                return BadRequest("Review Deleted");
+            }
+
+            review = await _reviewService.Update(reviewForm, reviewUpdate);
+            if (review == null)
+            {
+                return BadRequest("Error reviewService.Update");
             }
         }
 
-        return RedirectToAction("Get", "Review", new {id = review.Id});
+        if (review != null)
+        {
+            await _reviewUserRatingService.AddAssessment(review.Id, review.AuthorId, review.AuthorAssessment);
+            await _reviewTagService.DeleteTags(review.Id);
+
+            var tags = JsonConvert.DeserializeObject<List<string>>(reviewForm.TagsInput);
+            if (tags != null)
+            {
+                foreach (var tagName in tags)
+                {
+                    var tag = await _tagService.AddOrIncrement(tagName);
+                    await _reviewTagService.AddTagToReview(review.Id, tag.Id);
+                }
+            }
+
+            return RedirectToAction("Get", "Review", new {id = review.Id});
+        }
+
+        return BadRequest();
     }
 
     public async Task<IActionResult> Get([FromRoute] int id)
@@ -274,6 +235,12 @@ public class ReviewController : Controller
             return BadRequest("Wrong reviewId");
         }
 
+        var user = GetAuthorizedUser(out var error);
+        if (user != null)
+        {
+            ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReview(user.Id, id);
+        }
+
         var statusReview = await _statusReviewService.Get("Deleted");
         if (statusReview == null)
         {
@@ -282,23 +249,18 @@ public class ReviewController : Controller
 
         if (review.StatusId == statusReview.Id)
         {
-            return BadRequest("Review Deleted");
+            if (user == null || user.Role.Name != "Admin")
+            {
+                return BadRequest("Review Deleted");
+            }
         }
-
 
         ViewData["review"] = review;
         ViewData["tags"] = await _reviewTagService.GetTagsNames(review.Id);
         ViewData["IsUserLike"] = false;
 
-        var user = GetAuthorizedUser(out var error);
-        if (user != null)
-        {
-            ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReview(user.Id, id);
-        }
-
         return View();
     }
-
 
     [Authorize]
     public async Task<IActionResult> Delete([FromRoute] int id)

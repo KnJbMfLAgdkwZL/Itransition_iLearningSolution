@@ -6,10 +6,10 @@ public class ReviewForm
 {
     public int Id { get; set; }
 
-    [Required(ErrorMessage = "Required ProductType")]
+    [Required(ErrorMessage = "Required StatusReviewId")]
     public int StatusReviewId { get; set; }
 
-    [Required(ErrorMessage = "Required ProductType")]
+    [Required(ErrorMessage = "Required ProductId")]
     public int ProductId { get; set; }
 
     [Required(ErrorMessage = "Required ProductName")]

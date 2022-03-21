@@ -51,7 +51,6 @@ public class ReviewService : IReviewService
             DeletionDate = DateTime.Now,
         };
 
-        //add images <= 3
         return await _reviewRepository.AddAsync(review, CancellationToken.None);
     }
 
@@ -65,7 +64,6 @@ public class ReviewService : IReviewService
         review.StatusId = reviewForm.StatusReviewId;
         review.RedactionDate = DateTime.Now;
 
-        //add images <= 3
         return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
     }
 
