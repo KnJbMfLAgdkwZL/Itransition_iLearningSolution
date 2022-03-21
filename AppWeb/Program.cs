@@ -52,7 +52,6 @@ builder.Services.AddScoped(typeof(IGeneralRepository<>), typeof(GeneralRepositor
 // Services
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IConverterService, ConverterService>();
 builder.Services.AddScoped<IProductGroupService, ProductGroupService>();
 builder.Services.AddScoped<IReviewLikeService, ReviewLikeService>();
 builder.Services.AddScoped<IReviewService, ReviewService>();
@@ -61,7 +60,7 @@ builder.Services.AddScoped<IReviewUserRatingService, ReviewUserRatingService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IStatusReviewService, StatusReviewService>();
 builder.Services.AddScoped<ITagService, TagService>();
-builder.Services.AddScoped<IUserClaimsService, UserClaimsService>();
+builder.Services.AddScoped<IClaimsService, ClaimsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserSocialService, UserSocialService>();
 builder.Services.AddScoped<IUploadService, UploadService>();

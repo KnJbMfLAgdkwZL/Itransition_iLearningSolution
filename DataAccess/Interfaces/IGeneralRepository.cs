@@ -40,6 +40,5 @@ public interface IGeneralRepository<T>
         CancellationToken token);
 
     void DetachEntity(T model);
-
     Task<List<T>> FullTextSearchQueryAsync(string search, CancellationToken token);
 }

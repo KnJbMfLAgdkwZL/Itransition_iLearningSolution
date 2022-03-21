@@ -12,7 +12,9 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     private readonly DbSet<T> _table;
     private readonly MasterContext _masterContext;
 
-    public GeneralRepository(MasterContext masterContext)
+    public GeneralRepository(
+        MasterContext masterContext
+    )
     {
         _masterContext = masterContext;
         _table = _masterContext.Set<T>();
@@ -121,7 +123,7 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
         r = includes.Aggregate(r, (current, include) => current.Include(include));
         return await r.ToListAsync(token);
     }
-    
+
     public async Task<List<T>> GetAllIncludeManyDescendingAsync<TKey>(Expression<Func<T, bool>> condition,
         IEnumerable<Expression<Func<T, TKey>>> includes, Expression<Func<T, TKey>> orderBy, CancellationToken token)
     {

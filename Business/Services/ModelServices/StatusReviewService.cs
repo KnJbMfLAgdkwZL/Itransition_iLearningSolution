@@ -8,7 +8,9 @@ public class StatusReviewService : IStatusReviewService
 {
     private readonly IGeneralRepository<StatusReview> _statusReviewRepository;
 
-    public StatusReviewService(IGeneralRepository<StatusReview> statusReviewRepository)
+    public StatusReviewService(
+        IGeneralRepository<StatusReview> statusReviewRepository
+    )
     {
         _statusReviewRepository = statusReviewRepository;
     }

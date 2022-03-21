@@ -10,11 +10,15 @@ public class SearchController : Controller
     private readonly ICommentService _commentService;
     private readonly ITagService _tagService;
     private readonly IReviewTagService _reviewTagService;
-
     private readonly IProductGroupService _productGroupService;
 
-    public SearchController(IReviewService reviewService, IProductGroupService productGroupService,
-        ICommentService commentService, ITagService tagService, IReviewTagService reviewTagService)
+    public SearchController(
+        IReviewService reviewService,
+        IProductGroupService productGroupService,
+        ICommentService commentService,
+        ITagService tagService,
+        IReviewTagService reviewTagService
+    )
     {
         _reviewService = reviewService;
         _productGroupService = productGroupService;

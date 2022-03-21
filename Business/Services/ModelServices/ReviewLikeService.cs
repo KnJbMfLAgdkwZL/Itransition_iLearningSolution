@@ -8,7 +8,9 @@ public class ReviewLikeService : IReviewLikeService
 {
     private readonly IGeneralRepository<ReviewLike> _reviewLikeRepository;
 
-    public ReviewLikeService(IGeneralRepository<ReviewLike> reviewLikeRepository)
+    public ReviewLikeService(
+        IGeneralRepository<ReviewLike> reviewLikeRepository
+    )
     {
         _reviewLikeRepository = reviewLikeRepository;
     }

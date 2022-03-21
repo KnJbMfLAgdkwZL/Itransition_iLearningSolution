@@ -6,44 +6,37 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin, User")]
 public class LikeController : Controller
 {
     private readonly IReviewLikeService _reviewLikeService;
     private readonly IUserService _userService;
     private readonly IReviewService _reviewService;
-    private readonly IUserClaimsService _userClaimsService;
-    private readonly IUserSocialService _userSocialService;
+    private readonly IAccountService _accountService;
 
-    public LikeController(IReviewLikeService reviewLikeService, IUserService userService, IReviewService reviewService,
-        IUserClaimsService userClaimsService, IUserSocialService userSocialService)
+    public LikeController(
+        IReviewLikeService reviewLikeService,
+        IUserService userService,
+        IReviewService reviewService,
+        IAccountService accountService
+    )
     {
         _reviewLikeService = reviewLikeService;
         _userService = userService;
         _reviewService = reviewService;
-        _userClaimsService = userClaimsService;
-        _userSocialService = userSocialService;
+        _accountService = accountService;
     }
 
-    private User? GetAuthorizedUser(out IActionResult? error)
+    [Authorize(Roles = "Admin, User")]
+    public async Task<IActionResult> Add([FromQuery] int reviewId)
     {
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = _userSocialService.Get(userClaims).Result;
-        if (userSocial == null)
-        {
-            error = BadRequest("UserSocial not found");
-            return null;
-        }
+        return await AddOrRemove(reviewId, "Add");
+    }
 
-        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
-        if (user == null)
-        {
-            error = BadRequest("User not found");
-            return null;
-        }
-
-        error = null;
-        return user;
+    [Authorize(Roles = "Admin, User")]
+    public async Task<IActionResult> Remove([FromQuery] int reviewId)
+    {
+        return await AddOrRemove(reviewId, "Remove");
     }
 
     private Review? GetOneReview(int reviewId, out IActionResult? error)
@@ -60,7 +53,7 @@ public class LikeController : Controller
 
     private async Task<IActionResult> AddOrRemove(int reviewId, string action)
     {
-        var user = GetAuthorizedUser(out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
         if (user == null)
         {
             return error!;
@@ -89,17 +82,5 @@ public class LikeController : Controller
         await _userService.UpdateReviewsLikes(user.Id, count);
 
         return Ok();
-    }
-
-    [Authorize]
-    public async Task<IActionResult> Add([FromQuery] int reviewId)
-    {
-        return await AddOrRemove(reviewId, "Add");
-    }
-
-    [Authorize]
-    public async Task<IActionResult> Remove([FromQuery] int reviewId)
-    {
-        return await AddOrRemove(reviewId, "Remove");
     }
 }

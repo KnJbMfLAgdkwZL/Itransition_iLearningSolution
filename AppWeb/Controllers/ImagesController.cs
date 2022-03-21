@@ -1,13 +1,17 @@
 using Business.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
+[Authorize(Roles = "Admin, User")]
 public class ImagesController : Controller
 {
     private readonly IUploadService _uploadService;
 
-    public ImagesController(IUploadService uploadService)
+    public ImagesController(
+        IUploadService uploadService
+    )
     {
         _uploadService = uploadService;
     }

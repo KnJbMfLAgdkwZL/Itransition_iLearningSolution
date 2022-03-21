@@ -12,7 +12,9 @@ public class UploadService : IUploadService
 {
     private readonly UploadOptions _uploadOptions;
 
-    public UploadService(IOptions<UploadOptions> uploadOptions)
+    public UploadService(
+        IOptions<UploadOptions> uploadOptions
+    )
     {
         _uploadOptions = uploadOptions.Value;
     }

@@ -9,7 +9,9 @@ public class TagService : ITagService
 {
     private readonly IGeneralRepository<Tag> _tagRepository;
 
-    public TagService(IGeneralRepository<Tag> tagRepository)
+    public TagService(
+        IGeneralRepository<Tag> tagRepository
+    )
     {
         _tagRepository = tagRepository;
     }

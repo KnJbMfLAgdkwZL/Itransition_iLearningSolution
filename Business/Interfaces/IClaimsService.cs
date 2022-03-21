@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Business.Interfaces;
 
-public interface IUserClaimsService
+public interface IClaimsService
 {
     UserClaims GetClaims(AuthorizationHandlerContext context);
     UserClaims GetClaims(HttpContext context);

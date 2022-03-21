@@ -8,7 +8,9 @@ public class TagController : Controller
 {
     private readonly ITagService _tagService;
 
-    public TagController(ITagService tagService)
+    public TagController(
+        ITagService tagService
+    )
     {
         _tagService = tagService;
     }

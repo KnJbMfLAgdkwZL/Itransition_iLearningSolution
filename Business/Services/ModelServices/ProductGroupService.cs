@@ -8,7 +8,9 @@ public class ProductGroupService : IProductGroupService
 {
     private readonly IGeneralRepository<ProductGroup> _productGroupRepository;
 
-    public ProductGroupService(IGeneralRepository<ProductGroup> reviewRepository)
+    public ProductGroupService(
+        IGeneralRepository<ProductGroup> reviewRepository
+    )
     {
         _productGroupRepository = reviewRepository;
     }
@@ -22,6 +24,7 @@ public class ProductGroupService : IProductGroupService
     {
         return await _productGroupRepository.GetAllAsync(product => product.Id > 0, CancellationToken.None);
     }
+
     public async Task<List<ProductGroup>> FullTextSearchQuery(string search)
     {
         return await _productGroupRepository.FullTextSearchQueryAsync(search, CancellationToken.None);

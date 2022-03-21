@@ -11,8 +11,11 @@ public class HomeController : Controller
     private readonly ITagService _tagService;
     private readonly IStatusReviewService _statusReviewService;
 
-    public HomeController(IReviewService reviewService, ITagService tagService,
-        IStatusReviewService statusReviewService)
+    public HomeController(
+        IReviewService reviewService,
+        ITagService tagService,
+        IStatusReviewService statusReviewService
+    )
     {
         _reviewService = reviewService;
         _tagService = tagService;

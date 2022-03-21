@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Business.Services;
 
-public class UserClaimsService : IUserClaimsService
+public class ClaimsService : IClaimsService
 {
     public UserClaims GetClaims(AuthorizationHandlerContext context)
     {

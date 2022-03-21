@@ -1,60 +1,40 @@
 using Business.Interfaces;
 using Business.Interfaces.Model;
-using Database.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
-[Authorize]
 public class UserController : Controller
 {
     private readonly IReviewService _reviewService;
     private readonly IStatusReviewService _statusReviewService;
-    private readonly IUserClaimsService _userClaimsService;
-    private readonly IUserSocialService _userSocialService;
     private readonly IUserService _userService;
     private readonly IProductGroupService _productGroupService;
     private readonly IRoleService _roleService;
+    private readonly IAccountService _accountService;
 
-    public UserController(IUserClaimsService userClaimsService, IUserSocialService userSocialService,
-        IUserService userService, IStatusReviewService statusReviewService, IReviewService reviewService,
-        IProductGroupService productGroupService, IRoleService roleService)
+    public UserController(
+        IUserService userService,
+        IStatusReviewService statusReviewService,
+        IReviewService reviewService,
+        IProductGroupService productGroupService,
+        IRoleService roleService,
+        IAccountService accountService
+    )
     {
-        _userClaimsService = userClaimsService;
-        _userSocialService = userSocialService;
         _userService = userService;
         _statusReviewService = statusReviewService;
         _reviewService = reviewService;
         _productGroupService = productGroupService;
         _roleService = roleService;
+        _accountService = accountService;
     }
 
-    private User? GetAuthorizedUser(out IActionResult? error)
-    {
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = _userSocialService.Get(userClaims).Result;
-        if (userSocial == null)
-        {
-            error = BadRequest("UserSocial not found");
-            return null;
-        }
-
-        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
-        if (user == null)
-        {
-            error = BadRequest("User not found");
-            return null;
-        }
-
-        error = null;
-        return user;
-    }
-
-    [Authorize]
+    [Authorize(Roles = "Admin, User")]
     public async Task<IActionResult> GetUserReviews([FromRoute] int id)
     {
-        var user = GetAuthorizedUser(out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
         if (user == null)
         {
             return error!;
@@ -125,6 +105,6 @@ public class UserController : Controller
         user.Nickname = nickname;
         user.RoleId = roleId;
         await _userService.Update(user);
-        return RedirectToAction("GetUser", "User");
+        return RedirectToAction("GetUser", "User", new {id = user.Id});
     }
 }

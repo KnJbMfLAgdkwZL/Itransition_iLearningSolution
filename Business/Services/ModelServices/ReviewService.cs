@@ -10,7 +10,9 @@ public class ReviewService : IReviewService
 {
     private readonly IGeneralRepository<Review> _reviewRepository;
 
-    public ReviewService(IGeneralRepository<Review> reviewRepository)
+    public ReviewService(
+        IGeneralRepository<Review> reviewRepository
+    )
     {
         _reviewRepository = reviewRepository;
     }

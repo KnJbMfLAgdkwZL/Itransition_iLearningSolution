@@ -9,7 +9,9 @@ public class UserService : IUserService
 {
     private readonly IGeneralRepository<User> _userRepository;
 
-    public UserService(IGeneralRepository<User> userRepository)
+    public UserService(
+        IGeneralRepository<User> userRepository
+    )
     {
         _userRepository = userRepository;
     }

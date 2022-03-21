@@ -7,35 +7,37 @@ namespace AppWeb.AuthorizationHandler;
 
 public class CustomAuthorizationHandler : IAuthorizationHandler
 {
-    private readonly IUserSocialService _userSocialService;
-    private readonly IUserClaimsService _userClaimsService;
-    private readonly IUserService _userService;
+    private readonly IClaimsService _claimsService;
+    private readonly IAccountService _accountService;
 
-    public CustomAuthorizationHandler(IUserSocialService userSocialService, IUserClaimsService userClaimsService,
-        IUserService userService)
+    public CustomAuthorizationHandler(
+        IClaimsService claimsService,
+        IAccountService accountService
+    )
     {
-        _userSocialService = userSocialService;
-        _userClaimsService = userClaimsService;
-        _userService = userService;
+        _claimsService = claimsService;
+        _accountService = accountService;
     }
 
-    public async Task HandleAsync(AuthorizationHandlerContext context)
+    public Task HandleAsync(AuthorizationHandlerContext context)
     {
-        var userClaims = _userClaimsService.GetClaims(context);
-        var userSocial = await _userSocialService.Get(userClaims);
-        if (userSocial != null)
+        var roles = new List<string>()
         {
-            var user = await _userService.GetUserBySocialId(userSocial.Id);
-            if (user != null)
+            "User",
+            "Admin"
+        };
+        var userClaims = _claimsService.GetClaims(context);
+        var user = _accountService.GetAuthorizedUser(context, out var error);
+        if (user != null)
+        {
+            if (user.Role.Name == userClaims.Role && roles.Contains(user.Role.Name))
             {
-                if (user.Role.Name == userClaims.Role && (user.Role.Name == "User" || user.Role.Name == "Admin"))
-                {
-                    context.Succeed(new AssertionRequirement(handlerContext => handlerContext.HasSucceeded));
-                    return;
-                }
+                context.Succeed(new AssertionRequirement(handlerContext => handlerContext.HasSucceeded));
+                return Task.CompletedTask;
             }
         }
 
         context.Fail();
+        return Task.CompletedTask;
     }
 }

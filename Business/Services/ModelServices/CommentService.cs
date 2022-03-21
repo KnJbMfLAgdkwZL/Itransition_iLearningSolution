@@ -8,7 +8,9 @@ public class CommentService : ICommentService
 {
     private readonly IGeneralRepository<Comment> _commentRepository;
 
-    public CommentService(IGeneralRepository<Comment> commentRepository)
+    public CommentService(
+        IGeneralRepository<Comment> commentRepository
+    )
     {
         _commentRepository = commentRepository;
     }

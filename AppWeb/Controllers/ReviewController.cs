@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 
 namespace AppWeb.Controllers;
 
-[Authorize]
 public class ReviewController : Controller
 {
     private readonly IReviewService _reviewService;
@@ -18,54 +17,37 @@ public class ReviewController : Controller
     private readonly IReviewLikeService _reviewLikeService;
     private readonly IReviewUserRatingService _reviewUserRatingService;
     private readonly ITagService _tagService;
-
-    private readonly IUserSocialService _userSocialService;
-    private readonly IUserClaimsService _userClaimsService;
     private readonly IUserService _userService;
+    private readonly IAccountService _accountService;
 
-    public ReviewController(IReviewService reviewService, IProductGroupService productGroupService,
-        IStatusReviewService statusReviewService, IReviewTagService reviewTagService,
-        IReviewLikeService reviewLikeService, IUserClaimsService userClaimsService, IUserService userService,
-        IUserSocialService userSocialService, IReviewUserRatingService reviewUserRatingService, ITagService tagService)
+    public ReviewController(
+        IReviewService reviewService,
+        IProductGroupService productGroupService,
+        IStatusReviewService statusReviewService,
+        IReviewTagService reviewTagService,
+        IReviewLikeService reviewLikeService,
+        IUserService userService,
+        IReviewUserRatingService reviewUserRatingService,
+        ITagService tagService,
+        IAccountService accountService
+    )
     {
         _reviewService = reviewService;
         _productGroupService = productGroupService;
         _statusReviewService = statusReviewService;
         _reviewTagService = reviewTagService;
         _reviewLikeService = reviewLikeService;
-        _userClaimsService = userClaimsService;
         _userService = userService;
-        _userSocialService = userSocialService;
         _reviewUserRatingService = reviewUserRatingService;
         _tagService = tagService;
+        _accountService = accountService;
     }
 
-    private User? GetAuthorizedUser(out IActionResult? error)
-    {
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = _userSocialService.Get(userClaims).Result;
-        if (userSocial == null)
-        {
-            error = BadRequest("UserSocial not found");
-            return null;
-        }
-
-        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
-        if (user == null)
-        {
-            error = BadRequest("User not found");
-            return null;
-        }
-
-        error = null;
-        return user;
-    }
-
-    [Authorize]
+    [Authorize(Roles = "Admin, User")]
     [HttpGet]
     public async Task<IActionResult> CreateOrUpdate([FromQuery] int userId, [FromQuery] int reviewId)
     {
-        var user = GetAuthorizedUser(out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
         if (user == null)
         {
             return error!;
@@ -125,7 +107,7 @@ public class ReviewController : Controller
         return View();
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin, User")]
     [HttpPost]
     public async Task<IActionResult> CreateOrUpdate([FromForm] ReviewForm reviewForm)
     {
@@ -144,7 +126,7 @@ public class ReviewController : Controller
             return BadRequest("Wrong StatusReview");
         }
 
-        var currentUser = GetAuthorizedUser(out var error);
+        var currentUser = _accountService.GetAuthorizedUser(HttpContext, out var error);
         if (currentUser == null)
         {
             return error!;
@@ -235,7 +217,7 @@ public class ReviewController : Controller
             return BadRequest("Wrong reviewId");
         }
 
-        var user = GetAuthorizedUser(out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
         if (user != null)
         {
             ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReview(user.Id, id);
@@ -262,10 +244,10 @@ public class ReviewController : Controller
         return View();
     }
 
-    [Authorize]
+    [Authorize(Roles = "Admin, User")]
     public async Task<IActionResult> Delete([FromRoute] int id)
     {
-        var user = GetAuthorizedUser(out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
         if (user == null)
         {
             return error!;
@@ -295,7 +277,7 @@ public class ReviewController : Controller
 
         review.StatusId = statusReview.Id;
         var updatedReview = await _reviewService.Update(review);
-        
+
         return View();
     }
 }

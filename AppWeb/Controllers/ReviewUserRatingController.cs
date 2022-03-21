@@ -1,56 +1,31 @@
 using Business.Interfaces;
 using Business.Interfaces.Model;
-using Database.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AppWeb.Controllers;
 
-[Authorize]
+[Authorize(Roles = "Admin, User")]
 public class ReviewUserRatingController : Controller
 {
     private readonly IReviewUserRatingService _reviewUserRatingService;
-    private readonly IUserClaimsService _userClaimsService;
-    private readonly IUserService _userService;
     private readonly IReviewService _reviewService;
-    private readonly IUserSocialService _userSocialService;
+    private readonly IAccountService _accountService;
 
-    public ReviewUserRatingController(IReviewUserRatingService reviewUserRatingService,
-        IUserClaimsService userClaimsService, IUserService userService, IReviewService reviewService,
-        IUserSocialService userSocialService)
+    public ReviewUserRatingController(
+        IReviewUserRatingService reviewUserRatingService,
+        IReviewService reviewService,
+        IAccountService accountService
+    )
     {
         _reviewUserRatingService = reviewUserRatingService;
-        _userClaimsService = userClaimsService;
-        _userService = userService;
         _reviewService = reviewService;
-        _userSocialService = userSocialService;
+        _accountService = accountService;
     }
 
-    private User? GetAuthorizedUser(out IActionResult? error)
-    {
-        var userClaims = _userClaimsService.GetClaims(HttpContext);
-        var userSocial = _userSocialService.Get(userClaims).Result;
-        if (userSocial == null)
-        {
-            error = BadRequest("UserSocial not found");
-            return null;
-        }
-
-        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
-        if (user == null)
-        {
-            error = BadRequest("User not found");
-            return null;
-        }
-
-        error = null;
-        return user;
-    }
-
-    [Authorize]
     public async Task<IActionResult> Set([FromQuery] int reviewId, [FromQuery] int assessment)
     {
-        var user = GetAuthorizedUser(out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
         if (user == null)
         {
             return error!;
