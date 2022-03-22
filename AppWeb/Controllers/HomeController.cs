@@ -22,21 +22,21 @@ public class HomeController : Controller
         _statusReviewService = statusReviewService;
     }
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> IndexAsync(CancellationToken token)
     {
-        var status = await _statusReviewService.Get("Deleted");
+        var status = await _statusReviewService.GetAsync("Deleted", token);
         if (status == null)
         {
             return BadRequest("StatusReview Deleted not found");
         }
 
-        var newReviews = await _reviewService.GetNewReviews();
+        var newReviews = await _reviewService.GetNewReviewsAsync(token);
         ViewData["NewReviews"] = newReviews.Where(review => review.StatusId != status.Id).ToList();
 
-        var topReviews = await _reviewService.GetTopReviews();
+        var topReviews = await _reviewService.GetTopReviewsAsync(token);
         ViewData["TopReviews"] = topReviews.Where(review => review.StatusId != status.Id).ToList();
 
-        ViewData["TopTags"] = await _tagService.GetTopTags();
+        ViewData["TopTags"] = await _tagService.GetTopTagsAsync(token);
 
         return View();
     }

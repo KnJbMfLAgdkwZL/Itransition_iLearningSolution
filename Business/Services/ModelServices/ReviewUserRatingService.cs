@@ -15,7 +15,7 @@ public class ReviewUserRatingService : IReviewUserRatingService
         _reviewUserRatingRepository = reviewUserRatingRepository;
     }
 
-    public async Task AddAssessment(int reviewId, int userId, int assessment)
+    public async Task AddAssessmentAsync(int reviewId, int userId, int assessment, CancellationToken token)
     {
         await _reviewUserRatingRepository.AddOrUpdateAsync(
             rating => rating.ReviewId == reviewId && rating.UserId == userId,
@@ -24,13 +24,14 @@ public class ReviewUserRatingService : IReviewUserRatingService
                 ReviewId = reviewId,
                 UserId = userId,
                 Assessment = (byte) assessment
-            }, CancellationToken.None);
+            }, token);
     }
 
-    public async Task<float> GetAverageAssessment(int reviewId)
+    public async Task<float> GetAverageAssessmentAsync(int reviewId, CancellationToken token)
     {
         var ratings = await _reviewUserRatingRepository.GetAllAsync(
-            rating => rating.ReviewId == reviewId, CancellationToken.None);
+            rating => rating.ReviewId == reviewId, token);
+        
         return (float) ratings.Average(v => v.Assessment);
     }
 }

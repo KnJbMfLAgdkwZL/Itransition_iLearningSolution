@@ -4,7 +4,7 @@ namespace Business.Interfaces.Model;
 
 public interface IStatusReviewService
 {
-    Task<StatusReview?> Get(string name);
-    Task<List<StatusReview>> GetAll();
-    Task<bool> Check(int id);
+    Task<StatusReview?> GetAsync(string name, CancellationToken token);
+    Task<List<StatusReview>> GetAllAsync(CancellationToken token);
+    Task<bool> CheckAsync(int id, CancellationToken token);
 }

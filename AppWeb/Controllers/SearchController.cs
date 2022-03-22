@@ -27,7 +27,7 @@ public class SearchController : Controller
         _reviewTagService = reviewTagService;
     }
 
-    private async Task SearchReviews(string search, IDictionary<int, Review> preSearch)
+    private async Task SearchReviewsAsync(string search, IDictionary<int, Review> preSearch, CancellationToken token)
     {
         const int maxSizeResult = 100;
         if (preSearch.Count >= maxSizeResult)
@@ -35,10 +35,10 @@ public class SearchController : Controller
             return;
         }
 
-        var reviews = await _reviewService.FullTextSearchQuery(search);
+        var reviews = await _reviewService.FullTextSearchQueryAsync(search, token);
         foreach (var review in reviews)
         {
-            if (review == null || preSearch.ContainsKey(review.Id))
+            if (preSearch.ContainsKey(review.Id))
             {
                 continue;
             }
@@ -52,7 +52,8 @@ public class SearchController : Controller
         }
     }
 
-    async Task SearchReviewsByComments(string search, Dictionary<int, Review> preSearch)
+    private async Task SearchReviewsByCommentsAsync(string search, IDictionary<int, Review> preSearch,
+        CancellationToken token)
     {
         const int maxSizeResult = 100;
         if (preSearch.Count >= maxSizeResult)
@@ -60,10 +61,10 @@ public class SearchController : Controller
             return;
         }
 
-        var comments = await _commentService.FullTextSearchQuery(search);
+        var comments = await _commentService.FullTextSearchQueryAsync(search, token);
         foreach (var comment in comments)
         {
-            var review = await _reviewService.GetOne(comment.ReviewId);
+            var review = await _reviewService.GetOneAsync(comment.ReviewId, token);
             if (review == null || preSearch.ContainsKey(review.Id))
             {
                 continue;
@@ -78,7 +79,8 @@ public class SearchController : Controller
         }
     }
 
-    async Task SearchReviewsByTags(string search, Dictionary<int, Review> preSearch)
+    private async Task SearchReviewsByTagsAsync(string search, IDictionary<int, Review> preSearch,
+        CancellationToken token)
     {
         const int maxSizeResult = 100;
         if (preSearch.Count >= maxSizeResult)
@@ -86,14 +88,14 @@ public class SearchController : Controller
             return;
         }
 
-        var tags = await _tagService.FullTextSearchQuery(search);
+        var tags = await _tagService.FullTextSearchQueryAsync(search, token);
         foreach (var tag in tags)
         {
-            var reviewTags = await _reviewTagService.GetAllReviews(tag.Id);
+            var reviewTags = await _reviewTagService.GetAllReviewsAsync(tag.Id, token);
             foreach (var rt in reviewTags)
             {
                 var review = rt.Review;
-                if (review == null || preSearch.ContainsKey(review.Id))
+                if (preSearch.ContainsKey(review.Id))
                 {
                     continue;
                 }
@@ -108,7 +110,8 @@ public class SearchController : Controller
         }
     }
 
-    async Task SearchReviewsByProductGroupService(string search, Dictionary<int, Review> preSearch)
+    private async Task SearchReviewsByProductGroupServiceAsync(string search, IDictionary<int, Review> preSearch,
+        CancellationToken token)
     {
         const int maxSizeResult = 100;
         if (preSearch.Count >= maxSizeResult)
@@ -116,13 +119,13 @@ public class SearchController : Controller
             return;
         }
 
-        var productGroups = await _productGroupService.FullTextSearchQuery(search);
+        var productGroups = await _productGroupService.FullTextSearchQueryAsync(search, token);
         foreach (var productGroup in productGroups)
         {
-            var reviewsFromGroup = await _reviewService.GetByProductId(productGroup.Id, 10);
+            var reviewsFromGroup = await _reviewService.GetByProductIdAsync(productGroup.Id, 10, token);
             foreach (var review in reviewsFromGroup)
             {
-                if (review == null || preSearch.ContainsKey(review.Id))
+                if (preSearch.ContainsKey(review.Id))
                 {
                     continue;
                 }
@@ -138,13 +141,15 @@ public class SearchController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> FullTextSearch([FromQuery] string search)
+    public async Task<IActionResult> FullTextSearchAsync([FromQuery] string search, CancellationToken token)
     {
         var searchResult = new Dictionary<int, Review>();
-        await SearchReviews(search, searchResult);
-        await SearchReviewsByComments(search, searchResult);
-        await SearchReviewsByTags(search, searchResult);
-        await SearchReviewsByProductGroupService(search, searchResult);
+
+        await SearchReviewsAsync(search, searchResult, token);
+        await SearchReviewsByCommentsAsync(search, searchResult, token);
+        await SearchReviewsByTagsAsync(search, searchResult, token);
+        await SearchReviewsByProductGroupServiceAsync(search, searchResult, token);
+
         return View(searchResult.Values.ToList());
     }
 }

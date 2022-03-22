@@ -1,5 +1,4 @@
 using Business.Interfaces;
-using Business.Interfaces.Model;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 
@@ -26,8 +25,10 @@ public class CustomAuthorizationHandler : IAuthorizationHandler
             "User",
             "Admin"
         };
+        
         var userClaims = _claimsService.GetClaims(context);
-        var user = _accountService.GetAuthorizedUser(context, out var error);
+        
+        var user = _accountService.GetAuthorizedUser(context, out var error, CancellationToken.None);
         if (user != null)
         {
             if (user.Role.Name == userClaims.Role && roles.Contains(user.Role.Name))
@@ -38,6 +39,7 @@ public class CustomAuthorizationHandler : IAuthorizationHandler
         }
 
         context.Fail();
+        
         return Task.CompletedTask;
     }
 }

@@ -15,13 +15,13 @@ public class RoleService : IRoleService
         _roleRepository = roleRepository;
     }
 
-    public async Task<Role?> GetRoleById(int id)
+    public async Task<Role?> GetRoleByIdAsync(int id, CancellationToken token)
     {
-        return await _roleRepository.GetOneAsync(role => role.Id == id, CancellationToken.None);
+        return await _roleRepository.GetOneAsync(role => role.Id == id, token);
     }
 
-    public async Task<List<Role>> GetRoleAll()
+    public async Task<List<Role>> GetRoleAllAsync(CancellationToken token)
     {
-        return await _roleRepository.GetAllAsync(role => role.Id > 0, CancellationToken.None);
+        return await _roleRepository.GetAllAsync(role => role.Id > 0, token);
     }
 }

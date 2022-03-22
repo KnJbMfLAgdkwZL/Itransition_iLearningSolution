@@ -15,15 +15,16 @@ public class TagController : Controller
         _tagService = tagService;
     }
 
-    public async Task<IActionResult> GetAll(string search)
+    public async Task<IActionResult> GetAllAsync(string search, CancellationToken token)
     {
-        var tags = await _tagService.GetTopTags(search);
+        var tags = await _tagService.GetTopTagsAsync(search, token);
 
         var settings = new JsonSerializerSettings()
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             Error = (sender, args) => { args.ErrorContext.Handled = true; },
         };
+
         var jsonResponse = JsonConvert.SerializeObject(tags, Formatting.Indented, settings);
 
         return Ok(jsonResponse);

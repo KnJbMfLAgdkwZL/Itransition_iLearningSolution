@@ -32,9 +32,9 @@ public class UserController : Controller
     }
 
     [Authorize(Roles = "Admin, User")]
-    public async Task<IActionResult> GetUserReviews([FromRoute] int id)
+    public async Task<IActionResult> GetUserReviewsAsync([FromRoute] int id, CancellationToken token)
     {
-        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user == null)
         {
             return error!;
@@ -42,17 +42,17 @@ public class UserController : Controller
 
         if (id > 0 && user.Role.Name == "Admin")
         {
-            user = await _userService.GetUserById(id);
+            user = await _userService.GetUserByIdAsync(id, token);
             if (user == null)
             {
                 return NotFound("User NotFound");
             }
         }
 
-        var reviews = await _reviewService.GetAllIncludes(user.Id);
+        var reviews = await _reviewService.GetAllIncludesAsync(user.Id, token);
         if (user.Role.Name != "Admin")
         {
-            var statusReview = await _statusReviewService.Get("Deleted");
+            var statusReview = await _statusReviewService.GetAsync("Deleted", token);
             if (statusReview == null)
             {
                 return BadRequest("StatusReview Deleted not found");
@@ -63,7 +63,7 @@ public class UserController : Controller
 
         ViewData["reviews"] = reviews;
 
-        var productGroups = await _productGroupService.GetAll();
+        var productGroups = await _productGroupService.GetAllAsync(token);
         ViewData["productGroups"] = productGroups.ToDictionary(productGroup => productGroup.Id);
         ViewData["userId"] = id;
 
@@ -71,32 +71,35 @@ public class UserController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetUsers()
+    public async Task<IActionResult> GetUsersAsync(CancellationToken token)
     {
-        var users = await _userService.GetAllInclude();
-        ViewData["users"] = users;
+        ViewData["users"] = await _userService.GetAllIncludeAsync(token);
+
         return View();
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetUser([FromRoute] int id)
+    public async Task<IActionResult> GetUserAsync([FromRoute] int id, CancellationToken token)
     {
-        var user = await _userService.GetIncludesForAdmin(id);
+        var user = await _userService.GetIncludesForAdminAsync(id, token);
         if (user == null)
         {
             return NotFound("User NotFound");
         }
 
         ViewData["user"] = user;
-        ViewData["roles"] = await _roleService.GetRoleAll();
+        ViewData["roles"] = await _roleService.GetRoleAllAsync(token);
+
         return View();
     }
 
     [Authorize(Roles = "Admin")]
     [HttpPost]
-    public async Task<IActionResult> UpdateUser([FromForm] int id, [FromForm] string nickname, [FromForm] int roleId)
+    public async Task<IActionResult> UpdateUserAsync([FromForm] int id, [FromForm] string nickname,
+        [FromForm] int roleId,
+        CancellationToken token)
     {
-        var user = await _userService.GetUserById(id);
+        var user = await _userService.GetUserByIdAsync(id, token);
         if (user == null)
         {
             return NotFound("User NotFound");
@@ -104,7 +107,9 @@ public class UserController : Controller
 
         user.Nickname = nickname;
         user.RoleId = roleId;
-        await _userService.Update(user);
+
+        await _userService.UpdateAsync(user, token);
+
         return RedirectToAction("GetUser", "User", new {id = user.Id});
     }
 }

@@ -17,26 +17,27 @@ public class ReviewService : IReviewService
         _reviewRepository = reviewRepository;
     }
 
-    public async Task<List<Review>> GetNewReviews()
+    public async Task<List<Review>> GetNewReviewsAsync(CancellationToken token)
     {
         var reviews = await _reviewRepository.GetAllAsyncDescending(
             review => review.Id > 0,
             review => review.CreationDate,
-            CancellationToken.None);
+            token);
+
         return reviews.Take(20).ToList();
     }
 
-    public async Task<List<Review>> GetTopReviews()
+    public async Task<List<Review>> GetTopReviewsAsync(CancellationToken token)
     {
         var reviews = await _reviewRepository.GetAllAsyncDescending(
             review => review.Id > 0,
             review => review.AverageUserRating,
-            CancellationToken.None
-        );
+            token);
+
         return reviews.Take(20).ToList();
     }
 
-    public async Task<Review?> Create(ReviewForm reviewForm)
+    public async Task<Review?> CreateAsync(ReviewForm reviewForm, CancellationToken token)
     {
         var review = new Review()
         {
@@ -53,10 +54,10 @@ public class ReviewService : IReviewService
             DeletionDate = DateTime.Now,
         };
 
-        return await _reviewRepository.AddAsync(review, CancellationToken.None);
+        return await _reviewRepository.AddAsync(review, token);
     }
 
-    public async Task<Review?> Update(ReviewForm reviewForm, Review review)
+    public async Task<Review?> UpdateAsync(ReviewForm reviewForm, Review review, CancellationToken token)
     {
         review.ProductName = reviewForm.ProductName;
         review.Title = reviewForm.Title;
@@ -66,23 +67,15 @@ public class ReviewService : IReviewService
         review.StatusId = reviewForm.StatusReviewId;
         review.RedactionDate = DateTime.Now;
 
-        return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
+        return await _reviewRepository.UpdateAsync(review, token);
     }
 
-    public async Task<Review> Update(Review review)
+    public async Task<Review> UpdateAsync(Review review, CancellationToken token)
     {
-        return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
+        return await _reviewRepository.UpdateAsync(review, token);
     }
 
-    public async Task<Review?> Delete(Review review, int deleteStatusId)
-    {
-        review.StatusId = deleteStatusId;
-        review.DeletionDate = DateTime.Now;
-
-        return await _reviewRepository.UpdateAsync(review, CancellationToken.None);
-    }
-
-    public async Task<Review?> GetOneIncludes(int id)
+    public async Task<Review?> GetOneIncludesAsync(int id, CancellationToken token)
     {
         var includes = new List<Expression<Func<Review, object>>>()
         {
@@ -95,31 +88,24 @@ public class ReviewService : IReviewService
             review => review.ReviewUserRating
         };
 
-        return await _reviewRepository.GetOneIncludeManyAsync(
-            review => review.Id == id,
-            includes,
-            CancellationToken.None);
+        return await _reviewRepository.GetOneIncludeManyAsync(review => review.Id == id, includes, token);
     }
 
-    public async Task<Review?> GetOne(int id)
+    public async Task<Review?> GetOneAsync(int id, CancellationToken token)
     {
-        return await _reviewRepository.GetOneAsync(review => review.Id == id, CancellationToken.None);
+        return await _reviewRepository.GetOneAsync(review => review.Id == id, token);
     }
 
-    public async Task<List<Review>> GetAllByUserId(int userId)
+    public async Task<List<Review>> GetByProductIdAsync(int productId, int takeNum, CancellationToken token)
     {
-        return await _reviewRepository.GetAllAsync(review => review.AuthorId == userId, CancellationToken.None);
-    }
+        var reviews = await _reviewRepository.GetAllAsync(review => review.ProductId == productId, token);
 
-    public async Task<List<Review>> GetByProductId(int productId, int takeNum)
-    {
-        var reviews = await _reviewRepository.GetAllAsync(review => review.ProductId == productId,
-            CancellationToken.None);
         var orderedEnumerable = reviews.OrderBy(review => review.AverageUserRating);
+
         return orderedEnumerable.Take(takeNum).ToList();
     }
 
-    public async Task<List<Review>> GetAllIncludes(int userId)
+    public async Task<List<Review>> GetAllIncludesAsync(int userId, CancellationToken token)
     {
         var includes = new List<Expression<Func<Review, object>>>()
         {
@@ -132,32 +118,22 @@ public class ReviewService : IReviewService
             review => review.ReviewUserRating
         };
 
-        return await _reviewRepository.GetAllIncludeManyDescendingAsync(
-            review => review.AuthorId == userId,
-            includes,
-            review => review.CreationDate,
-            CancellationToken.None);
+        return await _reviewRepository.GetAllIncludeManyDescendingAsync(review => review.AuthorId == userId, includes,
+            review => review.CreationDate, token);
     }
 
-    public async Task<int?> GetUserId(int reviewId)
+    public async Task UpdateAverageUserRatingAsync(int id, float averageUserRating, CancellationToken token)
     {
-        var reviewModel = await _reviewRepository.GetOneAsync(review => review.Id == reviewId, CancellationToken.None);
-
-        return reviewModel?.AuthorId;
-    }
-
-    public async Task UpdateAverageUserRating(int id, float averageUserRating)
-    {
-        var review = await GetOne(id);
+        var review = await GetOneAsync(id, token);
         if (review != null)
         {
             review.AverageUserRating = averageUserRating;
-            await _reviewRepository.UpdateAsync(review, CancellationToken.None);
+            await _reviewRepository.UpdateAsync(review, token);
         }
     }
 
-    public async Task<List<Review>> FullTextSearchQuery(string search)
+    public async Task<List<Review>> FullTextSearchQueryAsync(string search, CancellationToken token)
     {
-        return await _reviewRepository.FullTextSearchQueryAsync(search, CancellationToken.None);
+        return await _reviewRepository.FullTextSearchQueryAsync(search, token);
     }
 }

@@ -15,7 +15,7 @@ public class ReviewLikeService : IReviewLikeService
         _reviewLikeRepository = reviewLikeRepository;
     }
 
-    public async Task Add(int reviewId, int userId)
+    public async Task AddAsync(int reviewId, int userId, CancellationToken token)
     {
         await _reviewLikeRepository.AddOrUpdateAsync(
             like =>
@@ -27,10 +27,10 @@ public class ReviewLikeService : IReviewLikeService
                 UserId = userId,
                 IsSet = true
             },
-            CancellationToken.None);
+            token);
     }
 
-    public async Task Remove(int reviewId, int userId)
+    public async Task RemoveAsync(int reviewId, int userId, CancellationToken token)
     {
         await _reviewLikeRepository.AddOrUpdateAsync(
             like =>
@@ -42,26 +42,28 @@ public class ReviewLikeService : IReviewLikeService
                 UserId = userId,
                 IsSet = false
             },
-            CancellationToken.None);
+            token);
     }
 
-    public async Task<bool> IsUserLikeReview(int userId, int reviewId)
+    public async Task<bool> IsUserLikeReviewAsync(int userId, int reviewId, CancellationToken token)
     {
         var reviewLike = await _reviewLikeRepository.GetOneAsync(
             like =>
                 like.ReviewId == reviewId &&
                 like.UserId == userId,
-            CancellationToken.None);
+            token);
+
         return reviewLike != null && reviewLike.IsSet;
     }
 
-    public async Task<int> GetLikesCount(int reviewId)
+    public async Task<int> GetLikesCountAsync(int reviewId, CancellationToken token)
     {
         var likes = await _reviewLikeRepository.GetAllAsync(
             like =>
                 like.ReviewId == reviewId &&
                 like.IsSet == true,
-            CancellationToken.None);
+            token);
+
         return likes.Count;
     }
 }

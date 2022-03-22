@@ -4,7 +4,7 @@ namespace Business.Interfaces.Model;
 
 public interface IProductGroupService
 {
-    Task<bool> Check(int id);
-    Task<List<ProductGroup>> GetAll();
-    Task<List<ProductGroup>> FullTextSearchQuery(string search);
+    Task<bool> CheckAsync(int id, CancellationToken token);
+    Task<List<ProductGroup>> GetAllAsync(CancellationToken token);
+    Task<List<ProductGroup>> FullTextSearchQueryAsync(string search, CancellationToken token);
 }

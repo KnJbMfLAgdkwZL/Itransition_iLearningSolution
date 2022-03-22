@@ -15,18 +15,18 @@ public class ProductGroupService : IProductGroupService
         _productGroupRepository = reviewRepository;
     }
 
-    public async Task<bool> Check(int id)
+    public async Task<bool> CheckAsync(int id, CancellationToken token)
     {
-        return await _productGroupRepository.GetOneAsync(product => product.Id == id, CancellationToken.None) != null;
+        return await _productGroupRepository.GetOneAsync(product => product.Id == id, token) != null;
     }
 
-    public async Task<List<ProductGroup>> GetAll()
+    public async Task<List<ProductGroup>> GetAllAsync(CancellationToken token)
     {
-        return await _productGroupRepository.GetAllAsync(product => product.Id > 0, CancellationToken.None);
+        return await _productGroupRepository.GetAllAsync(product => product.Id > 0, token);
     }
 
-    public async Task<List<ProductGroup>> FullTextSearchQuery(string search)
+    public async Task<List<ProductGroup>> FullTextSearchQueryAsync(string search, CancellationToken token)
     {
-        return await _productGroupRepository.FullTextSearchQueryAsync(search, CancellationToken.None);
+        return await _productGroupRepository.FullTextSearchQueryAsync(search, token);
     }
 }

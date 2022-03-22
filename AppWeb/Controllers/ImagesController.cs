@@ -17,7 +17,7 @@ public class ImagesController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> Upload(IFormFile file)
+    public async Task<IActionResult> UploadAsync(IFormFile file, CancellationToken token)
     {
         var fileName = Path.GetRandomFileName().Split(".")[0] + Path.GetExtension(file.FileName);
 
@@ -25,7 +25,7 @@ public class ImagesController : Controller
 
         return Ok(new
         {
-            location = await _uploadService.UploadToAzureStorage(stream, fileName)
+            location = await _uploadService.UploadToAzureStorageAsync(stream, fileName, token)
         });
     }
 }

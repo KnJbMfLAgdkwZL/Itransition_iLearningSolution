@@ -28,38 +28,39 @@ public class LikeController : Controller
     }
 
     [Authorize(Roles = "Admin, User")]
-    public async Task<IActionResult> Add([FromQuery] int reviewId)
+    public async Task<IActionResult> AddAsync([FromQuery] int reviewId, CancellationToken token)
     {
-        return await AddOrRemove(reviewId, "Add");
+        return await AddOrRemoveAsync(reviewId, "Add", token);
     }
 
     [Authorize(Roles = "Admin, User")]
-    public async Task<IActionResult> Remove([FromQuery] int reviewId)
+    public async Task<IActionResult> RemoveAsync([FromQuery] int reviewId, CancellationToken token)
     {
-        return await AddOrRemove(reviewId, "Remove");
+        return await AddOrRemoveAsync(reviewId, "Remove", token);
     }
 
-    private Review? GetOneReview(int reviewId, out IActionResult? error)
+    private Review? GetOneReview(int reviewId, out IActionResult? error, CancellationToken token)
     {
-        var review = _reviewService.GetOne(reviewId).Result;
+        var review = _reviewService.GetOneAsync(reviewId, token).Result;
         if (review == null)
         {
             error = BadRequest("Review not found");
         }
 
         error = null;
+        
         return review;
     }
 
-    private async Task<IActionResult> AddOrRemove(int reviewId, string action)
+    private async Task<IActionResult> AddOrRemoveAsync(int reviewId, string action, CancellationToken token)
     {
-        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user == null)
         {
             return error!;
         }
 
-        var review = GetOneReview(reviewId, out var errorReview);
+        var review = GetOneReview(reviewId, out var errorReview, token);
         if (review == null)
         {
             return errorReview!;
@@ -67,19 +68,20 @@ public class LikeController : Controller
 
         if (action == "Add")
         {
-            await _reviewLikeService.Add(reviewId, user.Id);
+            await _reviewLikeService.AddAsync(reviewId, user.Id, token);
         }
         else if (action == "Remove")
         {
-            await _reviewLikeService.Remove(reviewId, user.Id);
+            await _reviewLikeService.RemoveAsync(reviewId, user.Id, token);
         }
         else
         {
             return BadRequest();
         }
 
-        var count = await _reviewLikeService.GetLikesCount(reviewId);
-        await _userService.UpdateReviewsLikes(user.Id, count);
+        var count = await _reviewLikeService.GetLikesCountAsync(reviewId, token);
+        
+        await _userService.UpdateReviewsLikesAsync(user.Id, count, token);
 
         return Ok();
     }

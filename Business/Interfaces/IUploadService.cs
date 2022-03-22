@@ -2,7 +2,7 @@ namespace Business.Interfaces;
 
 public interface IUploadService
 {
-    Task<string> UploadToDropbox(Stream stream, string fileName);
-    Task<string> UploadToMega(Stream stream, string fileName);
-    Task<string> UploadToAzureStorage(Stream stream, string fileName);
+    Task<string> UploadToDropboxAsync(Stream stream, string fileName, CancellationToken token);
+    Task<string> UploadToMegaAsync(Stream stream, string fileName, CancellationToken token);
+    Task<string> UploadToAzureStorageAsync(Stream stream, string fileName, CancellationToken token);
 }

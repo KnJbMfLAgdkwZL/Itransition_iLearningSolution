@@ -15,34 +15,32 @@ public class ReviewTagService : IReviewTagService
         _reviewTagRepository = reviewTagRepository;
     }
 
-    public async Task AddTagToReview(int reviewId, int tagId)
+    public async Task AddTagToReviewAsync(int reviewId, int tagId, CancellationToken token)
     {
         await _reviewTagRepository.AddIfNotExistAsync(tag => tag.ReviewId == reviewId && tag.TagId == tagId,
             new ReviewTag()
             {
                 ReviewId = reviewId,
                 TagId = tagId
-            }, CancellationToken.None);
+            }, token);
     }
 
-    public async Task DeleteTags(int reviewId)
+    public async Task DeleteTagsAsync(int reviewId, CancellationToken token)
     {
-        var tags = await _reviewTagRepository.GetAllAsync(tag => tag.ReviewId == reviewId, CancellationToken.None);
+        var tags = await _reviewTagRepository.GetAllAsync(tag => tag.ReviewId == reviewId, token);
         foreach (var tag in tags)
         {
-            await _reviewTagRepository.RemoveAsync(tag, CancellationToken.None);
+            await _reviewTagRepository.RemoveAsync(tag, token);
         }
     }
 
-    public async Task<List<ReviewTag>> GetTagsNames(int reviewId)
+    public async Task<List<ReviewTag>> GetTagsNamesAsync(int reviewId, CancellationToken token)
     {
-        return await _reviewTagRepository.GetAllIncludeAsync(tag => tag.ReviewId == reviewId, t => t.Tag,
-            CancellationToken.None);
+        return await _reviewTagRepository.GetAllIncludeAsync(tag => tag.ReviewId == reviewId, t => t.Tag, token);
     }
 
-    public async Task<List<ReviewTag>> GetAllReviews(int tagId)
+    public async Task<List<ReviewTag>> GetAllReviewsAsync(int tagId, CancellationToken token)
     {
-        return await _reviewTagRepository.GetAllIncludeAsync(tag => tag.TagId == tagId, t => t.Review,
-            CancellationToken.None);
+        return await _reviewTagRepository.GetAllIncludeAsync(tag => tag.TagId == tagId, t => t.Review, token);
     }
 }

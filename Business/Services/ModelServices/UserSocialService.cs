@@ -28,21 +28,21 @@ public class UserSocialService : IUserSocialService
                userSocial.Network != string.Empty;
     }
 
-    public async Task<UserSocial> LoginOrRegister(UserSocial userSocial)
+    public async Task<UserSocial> LoginOrRegisterAsync(UserSocial userSocial, CancellationToken token)
     {
         return await _userSocialRepository.AddIfNotExistAsync(social =>
                 social.Uid == userSocial!.Uid &&
                 social.Email == userSocial.Email &&
                 social.Network == userSocial.Network,
-            userSocial!, CancellationToken.None);
+            userSocial!, token);
     }
 
-    public async Task<UserSocial?> Get(UserClaims userClaims)
+    public async Task<UserSocial?> GetAsync(UserClaims userClaims, CancellationToken token)
     {
         return await _userSocialRepository.GetOneAsync(userSocial =>
                 userSocial.Uid == userClaims.Uid &&
                 userSocial.Email == userClaims.Email &&
                 userSocial.Network == userClaims.Network,
-            CancellationToken.None);
+            token);
     }
 }

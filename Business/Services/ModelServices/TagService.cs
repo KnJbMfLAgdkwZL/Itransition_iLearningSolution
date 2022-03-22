@@ -16,48 +16,48 @@ public class TagService : ITagService
         _tagRepository = tagRepository;
     }
 
-    public async Task<List<Tag>> GetTopTags()
+    public async Task<List<Tag>> GetTopTagsAsync(CancellationToken token)
     {
         var tags = await _tagRepository.GetAllAsyncDescending(
             tag => tag.Name != string.Empty,
             tag => tag.Amount,
-            CancellationToken.None
-        );
+            token);
+        
         return tags.Take(50).ToList();
     }
 
-    public async Task<List<Tag>> GetTopTags(string search)
+    public async Task<List<Tag>> GetTopTagsAsync(string search, CancellationToken token)
     {
         var tags = await _tagRepository.GetAllAsyncDescending(
             tag => EF.Functions.Like(tag.Name, $"%{search}%"),
             tag => tag.Amount,
-            CancellationToken.None
-        );
+            token);
+        
         return tags.Take(5).ToList();
     }
 
-    public async Task<Tag> AddOrIncrement(string name)
+    public async Task<Tag> AddOrIncrementAsync(string name, CancellationToken token)
     {
-        var tagModel = await _tagRepository.GetOneAsync(tag => tag.Name == name, CancellationToken.None);
+        var tagModel = await _tagRepository.GetOneAsync(tag => tag.Name == name, token);
         if (tagModel == null)
         {
             tagModel = await _tagRepository.AddAsync(new Tag()
             {
                 Name = name,
                 Amount = 0
-            }, CancellationToken.None);
+            }, token);
         }
         else
         {
             tagModel.Amount++;
-            await _tagRepository.UpdateAsync(tagModel, CancellationToken.None);
+            await _tagRepository.UpdateAsync(tagModel, token);
         }
 
         return tagModel;
     }
 
-    public async Task<List<Tag>> FullTextSearchQuery(string search)
+    public async Task<List<Tag>> FullTextSearchQueryAsync(string search, CancellationToken token)
     {
-        return await _tagRepository.FullTextSearchQueryAsync(search, CancellationToken.None);
+        return await _tagRepository.FullTextSearchQueryAsync(search, token);
     }
 }

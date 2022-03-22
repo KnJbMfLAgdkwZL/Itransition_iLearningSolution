@@ -23,7 +23,9 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     public async Task<T> AddAsync(T model, CancellationToken token)
     {
         var entityEntry = await _table.AddAsync(model, token);
+
         await _masterContext.SaveChangesAsync(token);
+
         return entityEntry.Entity;
     }
 
@@ -31,16 +33,22 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
         CancellationToken token)
     {
         await using var transaction = await _masterContext.Database.BeginTransactionAsync(token);
+
         var result = await GetOneAsync(condition, token) ?? await AddAsync(model, token);
+
         await transaction.CommitAsync(token);
+
         return result;
     }
 
     public async Task<T> AddOrUpdateAsync(Expression<Func<T, bool>> condition, T model, CancellationToken token)
     {
         await using var transaction = await _masterContext.Database.BeginTransactionAsync(token);
+
         var result = await GetOneAsync(condition, token);
+
         T modelRes;
+
         if (result == null)
         {
             modelRes = await AddAsync(model, token);
@@ -48,40 +56,52 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
         else
         {
             DetachEntity(result);
+
             ((IEntity) model).Id = ((IEntity) result).Id;
+
             modelRes = result;
+
             await UpdateAsync(model, token);
         }
 
         await transaction.CommitAsync(token);
+
         return modelRes;
     }
 
     public async Task<T> RemoveAsync(T model, CancellationToken token)
     {
         var entityEntry = _table.Remove(model);
+
         await _masterContext.SaveChangesAsync(token);
+
         return entityEntry.Entity;
     }
 
     public async Task<T> RemoveIfExistAsync(Expression<Func<T, bool>> condition, CancellationToken token)
     {
         await using var transaction = await _masterContext.Database.BeginTransactionAsync(token);
+
         var result = await GetOneAsync(condition, token);
+
         T modelRes = null!;
+
         if (result != null)
         {
             modelRes = await RemoveAsync(result, token);
         }
 
         await transaction.CommitAsync(token);
+
         return modelRes;
     }
 
     public async Task<T> UpdateAsync(T model, CancellationToken token)
     {
         var entityEntry = _table.Update(model);
+
         await _masterContext.SaveChangesAsync(token);
+
         return entityEntry.Entity;
     }
 
@@ -110,17 +130,16 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     public async Task<List<T>> GetAllIncludeAsync<TKey>(Expression<Func<T, bool>> condition,
         Expression<Func<T, TKey>> include, CancellationToken token)
     {
-        return await _table
-            .Where(condition)
-            .Include(include)
-            .ToListAsync(token);
+        return await _table.Where(condition).Include(include).ToListAsync(token);
     }
 
     public async Task<List<T>> GetAllIncludeManyAsync<TKey>(Expression<Func<T, bool>> condition,
         IEnumerable<Expression<Func<T, TKey>>> includes, CancellationToken token)
     {
         var r = _table.Where(condition);
+
         r = includes.Aggregate(r, (current, include) => current.Include(include));
+
         return await r.ToListAsync(token);
     }
 
@@ -128,7 +147,9 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
         IEnumerable<Expression<Func<T, TKey>>> includes, Expression<Func<T, TKey>> orderBy, CancellationToken token)
     {
         var r = _table.Where(condition);
+
         r = includes.Aggregate(r, (current, include) => current.Include(include));
+
         return await r.OrderByDescending(orderBy).ToListAsync(token);
     }
 
@@ -140,17 +161,16 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
     public async Task<T?> GetOneIncludeAsync<TKey>(Expression<Func<T, bool>> condition,
         Expression<Func<T, TKey>> include, CancellationToken token)
     {
-        return await _table
-            .Where(condition)
-            .Include(include)
-            .FirstOrDefaultAsync(token);
+        return await _table.Where(condition).Include(include).FirstOrDefaultAsync(token);
     }
 
     public async Task<T?> GetOneIncludeManyAsync<TKey>(Expression<Func<T, bool>> condition,
         IEnumerable<Expression<Func<T, TKey>>> includes, CancellationToken token)
     {
         var r = _table.Where(condition);
+
         r = includes.Aggregate(r, (current, include) => current.Include(include));
+
         return await r.FirstOrDefaultAsync(token);
     }
 

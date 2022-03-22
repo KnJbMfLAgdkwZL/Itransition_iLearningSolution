@@ -23,25 +23,25 @@ public class ReviewUserRatingController : Controller
         _accountService = accountService;
     }
 
-    public async Task<IActionResult> Set([FromQuery] int reviewId, [FromQuery] int assessment)
+    public async Task<IActionResult> SetAsync([FromQuery] int reviewId, [FromQuery] int assessment, CancellationToken token)
     {
-        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user == null)
         {
             return error!;
         }
 
-        var review = await _reviewService.GetOne(reviewId);
+        var review = await _reviewService.GetOneAsync(reviewId, token);
         if (review == null)
         {
             return BadRequest("Review not found");
         }
 
-        await _reviewUserRatingService.AddAssessment(reviewId, user.Id, assessment);
+        await _reviewUserRatingService.AddAssessmentAsync(reviewId, user.Id, assessment, token);
 
-        var averageAssessment = await _reviewUserRatingService.GetAverageAssessment(reviewId);
+        var averageAssessment = await _reviewUserRatingService.GetAverageAssessmentAsync(reviewId, token);
 
-        await _reviewService.UpdateAverageUserRating(reviewId, averageAssessment);
+        await _reviewService.UpdateAverageUserRatingAsync(reviewId, averageAssessment, token);
 
         return Ok();
     }

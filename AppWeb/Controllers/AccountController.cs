@@ -1,6 +1,4 @@
 using Business.Interfaces;
-using Business.Interfaces.Model;
-using Database.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
@@ -19,9 +17,9 @@ public class AccountController : Controller
         _accountService = accountService;
     }
 
-    public async Task<IActionResult> AccessDenied()
+    public async Task<IActionResult> AccessDeniedAsync(CancellationToken token)
     {
-        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user == null)
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
@@ -38,16 +36,19 @@ public class AccountController : Controller
     }
 
     [HttpPost]
-    public async Task<IActionResult> LoginResponse([FromForm] string token, CancellationToken cancellationToken)
+    public async Task<IActionResult> LoginResponseAsync([FromForm] string token, CancellationToken cancellationToken)
     {
         var httpHost = HttpContext.Request.Host.Value;
+        
         var url = $"http://ulogin.ru/token.php?token={token}&host={httpHost}";
 
         var http = new HttpClient();
-        var httpResponse = await http.GetAsync(url);
-        var json = await httpResponse.Content.ReadAsStringAsync();
+        
+        var httpResponse = await http.GetAsync(url, cancellationToken);
+        
+        var json = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
 
-        if (await _accountService.LoginOrRegister(json, HttpContext, cancellationToken))
+        if (await _accountService.LoginOrRegisterAsync(json, HttpContext, cancellationToken))
         {
             return RedirectToAction("Index", "Home");
         }
@@ -58,10 +59,11 @@ public class AccountController : Controller
     public async Task<IActionResult> LogoutAsync()
     {
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+        
         return RedirectToAction("Index", "Home");
     }
 
-    public async Task<IActionResult> LoginTmp(CancellationToken cancellationToken) //TEMP LOGIN
+    public async Task<IActionResult> LoginTmpAsync(CancellationToken token) //TEMP LOGIN
     {
         var userLogin = new
         {
@@ -71,8 +73,10 @@ public class AccountController : Controller
             first_name = "Zippo",
             last_name = "Cat"
         };
+        
         var json = JsonConvert.SerializeObject(userLogin);
-        if (await _accountService.LoginOrRegister(json, HttpContext, cancellationToken))
+        
+        if (await _accountService.LoginOrRegisterAsync(json, HttpContext, token))
         {
             return RedirectToAction("Index", "Home");
         }

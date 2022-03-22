@@ -45,9 +45,10 @@ public class ReviewController : Controller
 
     [Authorize(Roles = "Admin, User")]
     [HttpGet]
-    public async Task<IActionResult> CreateOrUpdate([FromQuery] int userId, [FromQuery] int reviewId)
+    public async Task<IActionResult> CreateOrUpdateAsync([FromQuery] int userId, [FromQuery] int reviewId,
+        CancellationToken token)
     {
-        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user == null)
         {
             return error!;
@@ -55,7 +56,7 @@ public class ReviewController : Controller
 
         if (userId > 0 && user.Role.Name == "Admin" && user.Id != userId)
         {
-            user = await _userService.GetUserById(userId);
+            user = await _userService.GetUserByIdAsync(userId, token);
             if (user == null)
             {
                 return NotFound("User NotFound");
@@ -65,10 +66,10 @@ public class ReviewController : Controller
         ViewData["userId"] = userId;
         ViewData["reviewId"] = reviewId;
         ViewData["Role"] = user.Role.Name;
+        
+        ViewData["productGroups"] = await _productGroupService.GetAllAsync(token);
 
-        ViewData["productGroups"] = await _productGroupService.GetAll();
-
-        var statusReviews = await _statusReviewService.GetAll();
+        var statusReviews = await _statusReviewService.GetAllAsync(token);
         ViewData["statusReviews"] = statusReviews.Where(status => status.Name != "Deleted").ToList();
 
         ViewData["review"] = null;
@@ -76,7 +77,7 @@ public class ReviewController : Controller
 
         if (reviewId > 0) // Update
         {
-            var review = await _reviewService.GetOneIncludes(reviewId);
+            var review = await _reviewService.GetOneIncludesAsync(reviewId, token);
             if (review == null)
             {
                 return NotFound("Review NotFound");
@@ -87,7 +88,7 @@ public class ReviewController : Controller
                 return BadRequest("You are not the author of this review");
             }
 
-            var statusReview = await _statusReviewService.Get("Deleted");
+            var statusReview = await _statusReviewService.GetAsync("Deleted", token);
             if (statusReview == null)
             {
                 return BadRequest("StatusReview Deleted not found");
@@ -99,7 +100,8 @@ public class ReviewController : Controller
             }
 
             ViewData["review"] = review;
-            var tags = await _reviewTagService.GetTagsNames(review.Id);
+            
+            var tags = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
             var tagsNames = tags.Select(tag => tag.Tag.Name).ToList();
             ViewData["tags"] = JsonConvert.SerializeObject(tagsNames);
         }
@@ -109,30 +111,30 @@ public class ReviewController : Controller
 
     [Authorize(Roles = "Admin, User")]
     [HttpPost]
-    public async Task<IActionResult> CreateOrUpdate([FromForm] ReviewForm reviewForm)
+    public async Task<IActionResult> CreateOrUpdateAsync([FromForm] ReviewForm reviewForm, CancellationToken token)
     {
         if (!ModelState.IsValid)
         {
             return BadRequest("Form not Valid");
         }
 
-        if (!await _productGroupService.Check(reviewForm.ProductId))
+        if (!await _productGroupService.CheckAsync(reviewForm.ProductId, token))
         {
             return BadRequest("Wrong ProductGroup");
         }
 
-        if (!await _statusReviewService.Check(reviewForm.StatusReviewId))
+        if (!await _statusReviewService.CheckAsync(reviewForm.StatusReviewId, token))
         {
             return BadRequest("Wrong StatusReview");
         }
 
-        var currentUser = _accountService.GetAuthorizedUser(HttpContext, out var error);
+        var currentUser = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (currentUser == null)
         {
             return error!;
         }
 
-        var statusReviewDeleted = await _statusReviewService.Get("Deleted");
+        var statusReviewDeleted = await _statusReviewService.GetAsync("Deleted", token);
         if (statusReviewDeleted != null && statusReviewDeleted.Id == reviewForm.StatusReviewId &&
             currentUser.Role.Name != "Admin")
         {
@@ -140,24 +142,25 @@ public class ReviewController : Controller
         }
 
         Review? review = null;
+        
         if (reviewForm.AuthorId <= 0 && reviewForm.Id <= 0) // Create
         {
             if (currentUser.Role.Name == "Admin" && reviewForm.UserId > 0) // Admin Created on behalf User
             {
-                var userAuthor = await _userService.GetUserById(reviewForm.UserId);
+                var userAuthor = await _userService.GetUserByIdAsync(reviewForm.UserId, token);
                 if (userAuthor == null)
                 {
                     return NotFound("UserAuthor NotFound");
                 }
 
-                reviewForm.AuthorId = userAuthor.Id; // Создать обзор Админом от лица другого пользователя
+                reviewForm.AuthorId = userAuthor.Id; // Create review by Admin on behalf of another user
             }
             else
             {
-                reviewForm.AuthorId = currentUser.Id; // Админ как пользователь или пользователь, создал свой обзор
+                reviewForm.AuthorId = currentUser.Id; // Admin as user or user, created his review
             }
 
-            review = await _reviewService.Create(reviewForm);
+            review = await _reviewService.CreateAsync(reviewForm, token);
             if (review == null)
             {
                 return BadRequest("Error reviewService.Create");
@@ -165,7 +168,7 @@ public class ReviewController : Controller
         }
         else if (reviewForm.AuthorId > 0 && reviewForm.Id > 0) // Update
         {
-            var reviewUpdate = await _reviewService.GetOneIncludes(reviewForm.Id);
+            var reviewUpdate = await _reviewService.GetOneIncludesAsync(reviewForm.Id, token);
             if (reviewUpdate == null)
             {
                 return NotFound("Wrong reviewForm.Id");
@@ -181,7 +184,7 @@ public class ReviewController : Controller
                 return BadRequest("Review Deleted");
             }
 
-            review = await _reviewService.Update(reviewForm, reviewUpdate);
+            review = await _reviewService.UpdateAsync(reviewForm, reviewUpdate, token);
             if (review == null)
             {
                 return BadRequest("Error reviewService.Update");
@@ -190,16 +193,19 @@ public class ReviewController : Controller
 
         if (review != null)
         {
-            await _reviewUserRatingService.AddAssessment(review.Id, review.AuthorId, review.AuthorAssessment);
-            await _reviewTagService.DeleteTags(review.Id);
+            await _reviewUserRatingService.AddAssessmentAsync(review.Id, review.AuthorId, review.AuthorAssessment,
+                token);
+            
+            await _reviewTagService.DeleteTagsAsync(review.Id, token);
 
             var tags = JsonConvert.DeserializeObject<List<string>>(reviewForm.TagsInput);
             if (tags != null)
             {
                 foreach (var tagName in tags)
                 {
-                    var tag = await _tagService.AddOrIncrement(tagName);
-                    await _reviewTagService.AddTagToReview(review.Id, tag.Id);
+                    var tag = await _tagService.AddOrIncrementAsync(tagName, token);
+                    
+                    await _reviewTagService.AddTagToReviewAsync(review.Id, tag.Id, token);
                 }
             }
 
@@ -209,21 +215,21 @@ public class ReviewController : Controller
         return BadRequest();
     }
 
-    public async Task<IActionResult> Get([FromRoute] int id)
+    public async Task<IActionResult> GetAsync([FromRoute] int id, CancellationToken token)
     {
-        var review = await _reviewService.GetOneIncludes(id);
+        var review = await _reviewService.GetOneIncludesAsync(id, token);
         if (review == null)
         {
             return BadRequest("Wrong reviewId");
         }
 
-        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user != null)
         {
-            ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReview(user.Id, id);
+            ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReviewAsync(user.Id, id, token);
         }
 
-        var statusReview = await _statusReviewService.Get("Deleted");
+        var statusReview = await _statusReviewService.GetAsync("Deleted", token);
         if (statusReview == null)
         {
             return BadRequest("StatusReview Deleted not found");
@@ -238,22 +244,22 @@ public class ReviewController : Controller
         }
 
         ViewData["review"] = review;
-        ViewData["tags"] = await _reviewTagService.GetTagsNames(review.Id);
+        ViewData["tags"] = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
         ViewData["IsUserLike"] = false;
 
         return View();
     }
 
     [Authorize(Roles = "Admin, User")]
-    public async Task<IActionResult> Delete([FromRoute] int id)
+    public async Task<IActionResult> DeleteAsync([FromRoute] int id, CancellationToken token)
     {
-        var user = _accountService.GetAuthorizedUser(HttpContext, out var error);
+        var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user == null)
         {
             return error!;
         }
 
-        var review = await _reviewService.GetOneIncludes(id);
+        var review = await _reviewService.GetOneIncludesAsync(id, token);
         if (review == null)
         {
             return BadRequest("Wrong reviewId");
@@ -264,7 +270,7 @@ public class ReviewController : Controller
             return BadRequest("You are not the author of this review");
         }
 
-        var statusReview = await _statusReviewService.Get("Deleted");
+        var statusReview = await _statusReviewService.GetAsync("Deleted", token);
         if (statusReview == null)
         {
             return BadRequest("StatusReview Deleted not found");
@@ -276,7 +282,8 @@ public class ReviewController : Controller
         }
 
         review.StatusId = statusReview.Id;
-        var updatedReview = await _reviewService.Update(review);
+        
+        await _reviewService.UpdateAsync(review, token);
 
         return View();
     }

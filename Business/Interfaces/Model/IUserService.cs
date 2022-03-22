@@ -1,16 +1,14 @@
-using System.Linq.Expressions;
 using Database.Models;
 
 namespace Business.Interfaces.Model;
 
 public interface IUserService
 {
-    Task<User> LoginOrRegister(User user);
-    Task<User> Update(User user);
-    //Task<User?> GetUserBySocialId(int socialId);
-    Task<User?> GetUserBySocialId(int socialId);
-    Task<User?> GetUserById(int id);
-    Task UpdateReviewsLikes(int id, int count);
-    Task<List<User>> GetAllInclude();
-    Task<User?> GetIncludesForAdmin(int id);
+    Task<User> LoginOrRegisterAsync(User user, CancellationToken token);
+    Task<User> UpdateAsync(User user, CancellationToken token);
+    Task<User?> GetUserBySocialIdAsync(int socialId, CancellationToken token);
+    Task<User?> GetUserByIdAsync(int id, CancellationToken token);
+    Task UpdateReviewsLikesAsync(int id, int count, CancellationToken token);
+    Task<List<User>> GetAllIncludeAsync(CancellationToken token);
+    Task<User?> GetIncludesForAdminAsync(int id, CancellationToken token);
 }

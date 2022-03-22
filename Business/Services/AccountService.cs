@@ -33,9 +33,10 @@ public class AccountService : IAccountService
         _claimsService = claimsService;
     }
 
-    public async Task<bool> LoginOrRegister(string json, HttpContext httpContext, CancellationToken token)
+    public async Task<bool> LoginOrRegisterAsync(string json, HttpContext httpContext, CancellationToken token)
     {
         var userSocialDto = JsonConvert.DeserializeObject<Dto.UserSocial>(json);
+        
         var userSocialModel = new UserSocial()
         {
             Uid = userSocialDto!.Uid!,
@@ -50,14 +51,17 @@ public class AccountService : IAccountService
             return false;
         }
 
-        var userSocialRes = await _userSocialService.LoginOrRegister(userSocialModel!);
+        var userSocialRes = await _userSocialService.LoginOrRegisterAsync(userSocialModel!, token);
+        
         var nickname = "Anonymous";
+        
         if (userSocialRes.FirstName != string.Empty && userSocialRes.LastName != string.Empty)
         {
             nickname = $"{userSocialRes.FirstName} {userSocialRes.LastName}";
         }
 
         var lastLoginDate = DateTime.Now;
+        
         var user = new User()
         {
             SocialId = userSocialRes.Id,
@@ -68,30 +72,33 @@ public class AccountService : IAccountService
             Nickname = nickname,
             LastLoginDate = lastLoginDate
         };
-        var userRes = await _userService.LoginOrRegister(user);
+        
+        var userRes = await _userService.LoginOrRegisterAsync(user, token);
         if (userRes.Id > 0)
         {
             userRes.LastLoginDate = lastLoginDate;
-            await _userService.Update(userRes);
+            await _userService.UpdateAsync(userRes, token);
         }
 
-        var role = await _roleService.GetRoleById(userRes.RoleId);
+        var role = await _roleService.GetRoleByIdAsync(userRes.RoleId, token);
         if (role == null)
         {
             return false;
         }
 
-        var userCheck = await _userService.GetUserBySocialId(userSocialRes.Id);
+        var userCheck = await _userService.GetUserBySocialIdAsync(userSocialRes.Id, token);
         if (userCheck == null || userCheck.Role.Name != "Admin" && userCheck.Role.Name != "User")
         {
             return false;
         }
 
-        await AuthenticateAsync(userSocialModel!, httpContext, role.Name);
+        await AuthenticateAsync(userSocialModel!, httpContext, role.Name, token);
+        
         return true;
     }
 
-    private async Task AuthenticateAsync(UserSocial userSocial, HttpContext httpContext, string role)
+    private async Task AuthenticateAsync(UserSocial userSocial, HttpContext httpContext, string role,
+        CancellationToken token)
     {
         var claims = new List<Claim>
         {
@@ -100,22 +107,26 @@ public class AccountService : IAccountService
             new("Network", userSocial.Network),
             new(ClaimsIdentity.DefaultRoleClaimType, role)
         };
+        
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+        
         var claimsPrincipal = new ClaimsPrincipal(claimsIdentity);
+        
         await httpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
     }
 
-    private User? GetAuthorizedUser(dynamic context, out IActionResult? error)
+    private User? GetAuthorizedUser(dynamic context, out IActionResult? error, CancellationToken token)
     {
         var userClaims = (UserClaims) _claimsService.GetClaims(context);
-        var userSocial = _userSocialService.Get(userClaims).Result;
+        
+        var userSocial = _userSocialService.GetAsync(userClaims, token).Result;
         if (userSocial == null)
         {
             error = new UnauthorizedObjectResult("UserSocial not found");
             return null;
         }
 
-        var user = _userService.GetUserBySocialId(userSocial.Id).Result;
+        var user = _userService.GetUserBySocialIdAsync(userSocial.Id, token).Result;
         if (user == null)
         {
             error = new UnauthorizedObjectResult("User not found");
@@ -129,19 +140,21 @@ public class AccountService : IAccountService
         }
 
         error = null;
+        
         return user;
     }
 
-    public User? GetAuthorizedUser(AuthorizationHandlerContext context, out IActionResult? error)
+    public User? GetAuthorizedUser(AuthorizationHandlerContext context, out IActionResult? error,
+        CancellationToken token)
     {
-        var user = GetAuthorizedUser((object) context, out var error1);
+        var user = GetAuthorizedUser((object) context, out var error1, token);
         error = error1;
         return user;
     }
 
-    public User? GetAuthorizedUser(HttpContext context, out IActionResult? error)
+    public User? GetAuthorizedUser(HttpContext context, out IActionResult? error, CancellationToken token)
     {
-        var user = GetAuthorizedUser((object) context, out var error1);
+        var user = GetAuthorizedUser((object) context, out var error1, token);
         error = error1;
         return user;
     }

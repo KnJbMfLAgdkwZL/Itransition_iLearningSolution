@@ -15,8 +15,8 @@ public class CommentService : ICommentService
         _commentRepository = commentRepository;
     }
 
-    public async Task<List<Comment>> FullTextSearchQuery(string search)
+    public async Task<List<Comment>> FullTextSearchQueryAsync(string search, CancellationToken token)
     {
-        return await _commentRepository.FullTextSearchQueryAsync(search, CancellationToken.None);
+        return await _commentRepository.FullTextSearchQueryAsync(search, token);
     }
 }

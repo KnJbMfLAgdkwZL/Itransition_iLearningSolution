@@ -4,5 +4,5 @@ namespace Business.Interfaces.Model;
 
 public interface ICommentService
 {
-    Task<List<Comment>> FullTextSearchQuery(string search);
+    Task<List<Comment>> FullTextSearchQueryAsync(string search, CancellationToken token);
 }

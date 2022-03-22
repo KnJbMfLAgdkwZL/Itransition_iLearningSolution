@@ -7,7 +7,10 @@ namespace Business.Interfaces;
 
 public interface IAccountService
 {
-    Task<bool> LoginOrRegister(string json, HttpContext httpContext, CancellationToken token);
-    User? GetAuthorizedUser(HttpContext context, out IActionResult? error);
-    User? GetAuthorizedUser(AuthorizationHandlerContext context, out IActionResult? error);
+    Task<bool> LoginOrRegisterAsync(string json, HttpContext httpContext, CancellationToken token);
+
+    User? GetAuthorizedUser(AuthorizationHandlerContext context, out IActionResult? error,
+        CancellationToken token);
+
+    User? GetAuthorizedUser(HttpContext context, out IActionResult? error, CancellationToken token);
 }
