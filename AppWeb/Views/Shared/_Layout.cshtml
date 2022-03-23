@@ -6,9 +6,9 @@
     <title>@ViewData["Title"] - AppWeb</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-    
+
     <link rel="stylesheet" href="~/css/bootstrap_Sandstone.css" asp-append-version="true"/>
-    
+
 </head>
 <body>
 <header>
@@ -26,22 +26,33 @@
                     </li>
                 </ul>
             </div>
+
+
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <div class="searchForm">
+                    <form asp-action="FullTextSearch" asp-controller="Search"
+                          method="GET"
+                          asp-anti-forgery="true"
+                          name="FullTextSearchForm" id="FullTextSearchForm">
+                        <div class="form-group row">
+                            <input type="text"
+                                   class="form-control"
+                                   placeholder="Search:"
+                                   name="search"
+                                   id="search"
+                                   maxlength="100"
+                                   value="">
+                        </div>
+                    </form>
+                </div>
+            </div>
+
         </div>
     </nav>
 </header>
 <div class="container">
-    <div class="pb-3 searchForm">
 
-        <form asp-action="FullTextSearch" asp-controller="Search"
-              method="GET"
-              asp-anti-forgery="true"
-              name="FullTextSearchForm" id="FullTextSearchForm">
 
-            <input type="text" name="search" maxlength="100" placeholder="Search"/>
-
-        </form>
-
-    </div>
     <main role="main" class="pb-3">
         @RenderBody()
     </main>
