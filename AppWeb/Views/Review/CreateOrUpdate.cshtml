@@ -34,7 +34,7 @@
     var productName = "";
     var title = "";
     var content = "";
-    var authorAssessment = 0;
+    var authorAssessment = 3;
     if (review != null)
     {
         id = review.Id;
@@ -50,12 +50,6 @@
 
     var action = (reviewId <= 0) ? "Create" : "Update";
 }
-
-<script>
-//const nextURL = window.location.href.split('?')[0]
-//window.history.replaceState('', '', nextURL);
-//window.history.pushState('', '', nextURL);
-</script>
 
 <h2>
     @role
@@ -73,91 +67,196 @@
     <br/>
 }
 
-<form asp-controller="Review" asp-action="CreateOrUpdate"
-      method="POST"
-      asp-anti-forgery="true">
+<form asp-controller="Review" asp-action="CreateOrUpdate" method="POST"asp-anti-forgery="true">
 
-    StatusReview:
-    <select name="StatusReviewId">
-        @{
-            foreach (var v in statusReviews)
-            {
-                if (v.Id == statusId)
-                {
-                    <option selected="" value="@v.Id">@v.Name</option>
+    <div class="form-group row col-sm-8 mb-3">
+        <label for="StatusReviewId" class="col-sm-2 col-form-label">Status Review:</label>
+        <div class="col-sm-5">
+            <select
+                name="StatusReviewId"
+                class="form-control"
+                id="StatusReviewId">
+                @{
+                    foreach (var v in statusReviews)
+                    {
+                        if (v.Id == statusId)
+                        {
+                            <option selected="" value="@v.Id">@v.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@v.Id">@v.Name</option>
+                        }
+                    }
                 }
-                else
-                {
-                    <option value="@v.Id">@v.Name</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group row col-sm-8 mb-3">
+        <label for="ProductId" class="col-sm-2 col-form-label">Product:</label>
+        <div class="col-sm-5">
+            <select
+                name="ProductId"
+                class="form-control"
+                id="ProductId">
+                @{
+                    foreach (var v in productGroups)
+                    {
+                        if (v.Id == productId)
+                        {
+                            <option selected="" value="@v.Id">@v.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@v.Id">@v.Name</option>
+                        }
+                    }
                 }
-            }
-        }
-    </select>
-    <br/>
+            </select>
+        </div>
+    </div>
 
-    Product:
-    <select name="ProductId">
-        @{
-            foreach (var v in productGroups)
-            {
-                if (v.Id == productId)
-                {
-                    <option selected="" value="@v.Id">@v.Name</option>
+    <div class="form-group row col-sm-8 mb-3">
+        <label for="ProductName" class="col-sm-2 col-form-label">Product Name:</label>
+        <div class="col-sm-5">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Product Name"
+                   name="ProductName"
+                   id="ProductName"
+                   maxlength="50"
+                   value="@productName"/>
+        </div>
+    </div>
+
+    <div class="form-group row col-sm-8 mb-3">
+        <label for="Title" class="col-sm-2 col-form-label">Title:</label>
+        <div class="col-sm-5">
+            <input type="text"
+                   class="form-control"
+                   placeholder="Title"
+                   name="Title"
+                   id="Title"
+                   maxlength="100"
+                   value="@title"/>
+        </div>
+    </div>
+
+    <div class="form-group row col-sm-8 mb-3">
+        <input type="hidden" name="TagsInput" id="tagsInput" value="@tags">
+        <label for="tagsInput" class="col-sm-2 col-form-label">Tags:</label>
+        <div class="col-sm-5">
+            <input type="text" class="form-control" placeholder="Tags" id="tagAdd">
+        </div>
+    </div>
+
+    <div class="form-group row col-sm-5 mb-3">
+        <div class="mb-3 tags-wrapper">
+            <div class="card-body">
+                <div id="tags" class="col-sm-7"></div>
+            </div>
+        </div>
+        <span id="TagsRecoms" class="col-sm-2 card border-primary"></span>
+    </div>
+
+    <div class="form-group row col-sm-8 mb-3">
+        <label for="Content" class="col-sm-2 col-form-label">Content:</label>
+        <div>
+            <textarea class="form-control" 
+            rows="3"
+            name="Content"
+            id="Content"
+            maxlength="30000">@content</textarea>
+        </div>
+    </div>
+
+    <div class="form-group row col-sm-8 mb-3">
+        <label for="Title" class="col-sm-3 align-self-center">Author Assessment:</label>
+        <div class="col-sm-9 align-middle">
+            <span class="star-cb-group   form-control-plaintext">
+                @{
+                    for (var i = 5; i > 0; i--)
+                    {
+                        if (i == authorAssessment)
+                        {
+                            <input type="radio" checked="" id="rating-@i" name="AuthorAssessment" value="@i"/>
+                            <label for="rating-@i">@i</label>
+                        }
+                        else
+                        {
+                            <input type="radio" id="rating-@i" name="AuthorAssessment" value="@i"/>
+                            <label for="rating-@i">@i</label>
+                        }
+                    }
                 }
-                else
-                {
-                    <option value="@v.Id">@v.Name</option>
-                }
-            }
-        }
-    </select>
-    <br/>
-
-    ProductName:
-    <input type="text" name="ProductName" maxlength="50" value="@productName"/>
-    <br/>
-
-    Title:
-    <input type="text" name="Title" maxlength="100" value="@title"/>
-    <br/>
-
-    Content:
-    <textarea name="Content" id="Content" maxlength="30000">@content</textarea>
-    <br/>
-
-    AuthorAssessment:
-    <select name="AuthorAssessment">
-        @{
-            for (var i = 1; i <= 5; i++)
-            {
-                if (i == authorAssessment)
-                {
-                    <option selected="" value="@i">@i</option>
-                }
-                else
-                {
-                    <option value="@i">@i</option>
-                }
-            }
-        }
-    </select>
-    <br/>
-
-    <input type="hidden" name="TagsInput" id="tagsInput" value="@tags"/>
+            </span>
+        </div>
+    </div>
 
     <input type="hidden" name="AuthorId" id="AuthorId" value="@authorId"/>
     <input type="hidden" name="Id" id="Id" value="@id"/>
-
     <input type="hidden" name="UserId" id="UserId" value="@userId"/>
     <input type="hidden" name="ReviewId" id="ReviewId" value="@reviewId"/>
-
-    <input type="submit" value="@action"/>
+    
+    <div class="form-group row col-sm-8 mb-5">
+        <input type="submit" class="btn btn-primary btn-lg col-sm-3" value="@action"/>
+    </div>
 
 </form>
 
-<div id="tags"></div>
-<span id="TagsRecoms"></span>
-<input type="text" id="tagAdd"/>
+<style>
+.star-cb-group {
+  font-size: 0;
+  unicode-bidi: bidi-override;
+  direction: rtl;
+}
+.star-cb-group * {
+  font-size: 1rem;
+}
+.star-cb-group > input {
+  display: none;
+}
+.star-cb-group > input + label {
+  display: inline-block;
+  overflow: hidden;
+  text-indent: 9999px;
+  width: 1em;
+  white-space: nowrap;
+  cursor: pointer;
+  font-size:40px;
+}
+.star-cb-group > input + label:before {
+  display: inline-block;
+  text-indent: -9999px;
+  content: "☆";
+  color: #888;
+}
+.star-cb-group > input:checked ~ label:before, .star-cb-group > input + label:hover ~ label:before, .star-cb-group > input + label:hover:before {
+  content: "★";
+  color: #e52;
+  text-shadow: 0 0 1px #333;
+}
+.star-cb-group > .star-cb-clear + label {
+  text-indent: -9999px;
+  width: .5em;
+  margin-left: -.5em;
+}
+.star-cb-group > .star-cb-clear + label:before {
+  width: .5em;
+}
+.star-cb-group:hover > input + label:before {
+  content: "☆";
+  color: #888;
+  text-shadow: none;
+}
+.star-cb-group:hover > input + label:hover ~ label:before, .star-cb-group:hover > input + label:hover:before {
+  content: "★";
+  color: #e52;
+  text-shadow: 0 0 1px #333;
+}
+</style>
+
 <script>
 let tags = document.getElementById("tags")
 let tagsValues = []
@@ -183,7 +282,7 @@ function AddTag(v) {
     })
     tags.innerHTML = ''
     for (let v of tagsValues) {
-        tags.innerHTML += `<div class="tag" onclick="tagOnclick(this)">${v}</div>`
+        tags.innerHTML += `<div class="tag btn btn-secondary" onclick="tagOnclick(this)">${v}</div>`
     }
     tagsInput.value = JSON.stringify(tagsValues)
 }
@@ -219,12 +318,14 @@ function tagOnclick(element) {
         background: lightgray;
         display: inline-block;
         margin-right: 5px;
+        border: none;
+        color: black;
     }
     #TagsRecoms{
         display: none;
         position: absolute;
-        background: lightblue;
         margin: 10px;
+        z-index: 100;
     }
     .TagsRecom
     {
@@ -232,7 +333,7 @@ function tagOnclick(element) {
         padding: 5px;
     }
     .TagsRecom:hover{
-        background: lightgray;
+        font-weight: bold;
     }
 </style>
 
