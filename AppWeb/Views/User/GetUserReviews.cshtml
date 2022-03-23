@@ -12,33 +12,8 @@
 <h2>User Reviews</h2>
 
 <style>
-table {
-  border-spacing: 0;
-  width: 100%;
-  border: 1px solid #ddd;
-}
-
 th {
   cursor: pointer;
-}
-
-th, td {
-  text-align: left;
-  padding: 16px;
-}
-
-tr:nth-child(even) {
-  background-color: #E7E9EB;
-}
-
-.SearchInput {
-  background-image: url('/searchicon.png');
-  background-position: 10px 10px;
-  background-repeat: no-repeat;
-  font-size: 16px;
-  padding: 12px 20px 12px 40px;
-  border: 1px solid #ddd;
-  margin-bottom: 12px;
 }
 </style>
 
@@ -50,35 +25,78 @@ tr:nth-child(even) {
     </a>
 </p>
 
-
 <p>
     <strong>Click the headers to sort the table.</strong>
 </p>
 
 <p>First click, the sorting is ascending (A to Z). Click again, the sorting will be descending (Z to A).</p>
 
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Id"/>
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Product"/>
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Status"/>
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Name"/>
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Title"/>
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Creation"/>
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Redaction"/>
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="Author Assessment"/>
-<input type="text" class="SearchInput" onkeyup="myFunction()" placeholder="User Assessment"/>
-
-<table id="myTable">
+<table class="table table-hover" id="myTable">
+    <thead>
+    
     <tr>
-        <th onclick="sortTable(0)">Id</th>
-        <th onclick="sortTable(1)">Product</th>
-        <th onclick="sortTable(2)">Status</th>
-        <th onclick="sortTable(3)">ProductName</th>
-        <th onclick="sortTable(4)">Title</th>
-        <th onclick="sortTable(5)">CreationDate</th>
-        <th onclick="sortTable(6)">RedactionDate</th>
-        <th onclick="sortTable(7)">AuthorAssessment</th>
-        <th onclick="sortTable(8)">AverageUserRating</th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Id"/>
+            </div>
+        </th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Product"/>
+            </div>
+        </th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Status"/>
+            </div>
+        </th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Name"/>
+            </div>
+        </th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Title"/>
+            </div>
+        </th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Creation"/>
+            </div>
+        </th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Redaction"/>
+            </div>
+        </th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Author Assessment"/>
+            </div>
+        </th>
+        <th>
+            <div class="form-group">
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="User Assessment"/>
+            </div>
+        </th>
     </tr>
+
+    <tr>
+        <th scope="col" onclick="sortTable(0, 'int')">Id</th>
+        <th scope="col" onclick="sortTable(1)">Product</th>
+        <th scope="col" onclick="sortTable(2)">Status</th>
+        <th scope="col" onclick="sortTable(3)">ProductName</th>
+        <th scope="col" onclick="sortTable(4)">Title</th>
+        <th scope="col" onclick="sortTable(5)">CreationDate</th>
+        <th scope="col" onclick="sortTable(6)">RedactionDate</th>
+        <th scope="col" onclick="sortTable(7)">AuthorAssessment</th>
+        <th scope="col" onclick="sortTable(8)">AverageUserRating</th>
+    </tr>
+    
+    </thead>
+    
+    <tbody>
     @foreach (var review in reviews)
     {
         <tr>
@@ -99,7 +117,10 @@ tr:nth-child(even) {
             <td>@review.AverageUserRating</td>
         </tr>
     }
+    </tbody>
+    
 </table>
+
 
 <script>
 function myFunction() {
@@ -132,7 +153,7 @@ function myFunction() {
     }
 }
 
-function sortTable(n) {
+function sortTable(n, type) {
     let table, rows, switching, i, x, y, shouldSwitch, dir, switchCount = 0;
     table = document.getElementById("myTable");
     switching = true;
@@ -140,20 +161,16 @@ function sortTable(n) {
     while (switching) {
         switching = false;
         rows = table.rows;
-        for (i = 1; i < (rows.length - 1); i++) {
+        for (i = 2; i < (rows.length - 1); i++) {
             shouldSwitch = false;
-            x = rows[i].getElementsByTagName("TD")[n];
-            y = rows[i + 1].getElementsByTagName("TD")[n];
-            if (dir === "asc") {
-                if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
-                    shouldSwitch = true;
-                    break;
-                }
-            } else if (dir === "desc") {
-                if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
-                    shouldSwitch = true;
-                    break;
-                }
+            x = rows[i].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
+            y = rows[i + 1].getElementsByTagName("TD")[n].innerHTML.toLowerCase();
+            if (dir === "asc" && x > y) {
+                shouldSwitch = true;
+                break;
+            } else if (dir === "desc" && x < y) {
+                shouldSwitch = true;
+                break;
             }
         }
         if (shouldSwitch) {
@@ -166,6 +183,7 @@ function sortTable(n) {
                 switching = true;
             }
         }
+
     }
 }
 </script>

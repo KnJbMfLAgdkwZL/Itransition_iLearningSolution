@@ -61,7 +61,8 @@
 {
     <a asp-controller="Review"
        asp-action="Delete"
-       asp-route-id="@id">
+       asp-route-id="@id"
+       class="btn btn-outline-danger btn-s">
         Delete
     </a>
     <br/>
@@ -74,7 +75,7 @@
         <div class="col-sm-5">
             <select
                 name="StatusReviewId"
-                class="form-control"
+                class="form-select"
                 id="StatusReviewId">
                 @{
                     foreach (var v in statusReviews)
@@ -98,7 +99,7 @@
         <div class="col-sm-5">
             <select
                 name="ProductId"
-                class="form-control"
+                class="form-select"
                 id="ProductId">
                 @{
                     foreach (var v in productGroups)
