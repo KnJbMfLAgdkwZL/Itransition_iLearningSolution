@@ -1,4 +1,5 @@
 ﻿@using Database.Models
+@using Newtonsoft.Json
 @{
     var newReviews = (List<Review>) ViewData["NewReviews"]!;
     var topReviews = (List<Review>) ViewData["TopReviews"]!;
@@ -7,29 +8,89 @@
     ViewData["Title"] = "Home Page";
 }
 
-NewReviews: <br/>
+
+<hr/>
+<h1>New Reviews:</h1>
 @foreach (var v in newReviews)
 {
     <div>@v.Id | @v.Title | @v.AverageUserRating | @v.CreationDate</div>
 }
-<br/>
 
-TopReviews: <br/>
+
+<hr/>
+<h1>Top Reviews:</h1>
 @foreach (var v in topReviews)
 {
     <div>@v.Id | @v.Title | @v.AverageUserRating | @v.CreationDate</div>
 }
-<br/>
 
-TopTags: <br/>
-@foreach (var v in topTags)
-{
-    <div>@v.Id | @v.Name | @v.Amount</div>
+
+<hr/>
+
+
+<style>
+#tag-cloud {
+    display: block;
 }
-<br/>
+#tag-cloud li {
+    display: inline-block;
+    padding-right: 40px;
+}
+#tag-cloud li:nth-last-child(1) {
+    padding-right: 0px;
+}
+#tag-cloud li a {
+    color: grey;
+}
+#tag-cloud li a:hover {
+    color: black;
+}
+</style>
+
+<h1>Top Tags:</h1>
+<div id="wrapper-tag-cloud">
+    <ul id="tag-cloud">
+    </ul>
+</div>
+@{
+    var tags = JsonConvert.SerializeObject(topTags);
+}
+
+<input type="hidden" id="cloudJson" value="@tags"/>
+
+<script>
+let json = document.getElementById('cloudJson').value
+let data = JSON.parse(json)
+let ulTag = document.getElementById("tag-cloud")
+let minFontSize = 1
+let maxFontSize = 2
+let liTags = ""
+let weights = []
+for (let v of data) {
+    if (!weights.includes(v.Amount)) {
+        weights.push(v.Amount)
+    }
+}
+weights.sort((a, b) => a - b)
+let shuffledArray = data.sort((a, b) => 0.5 - Math.random());
+for (let v of shuffledArray) {
+    let title = v.Name
+    let url = v.url
+    let m = weights.indexOf(v.Amount) + 1
+    let a = ((m - weights[0]) / (weights.length - weights[0]))
+    let dif = (maxFontSize - minFontSize)
+    let font_size = a * dif + minFontSize
+    liTags = liTags.concat(`<li>
+            	<a href="${url}" style="font-size: ${font_size}em;">
+                	${title} [${v.Amount}]
+                </a>
+            </li>`)
+}
+ulTag.innerHTML = liTags
+</script>
 
 
-<br/>
+<hr/>
 <a asp-controller="Account" asp-action="Login">Login</a>
 <br/>
 <a asp-controller="Account" asp-action="Logout">Logout</a>
