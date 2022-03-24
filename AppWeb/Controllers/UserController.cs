@@ -1,3 +1,4 @@
+using Business.Dto.Frontend.FromForm;
 using Business.Interfaces;
 using Business.Interfaces.Model;
 using Microsoft.AspNetCore.Authorization;
@@ -71,9 +72,13 @@ public class UserController : Controller
     }
 
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetUsersAsync(CancellationToken token)
+    public async Task<IActionResult> GetUsersAsync(
+        CancellationToken token,
+        [FromQuery] UsersFilterForm filterForm
+    )
     {
-        ViewData["users"] = await _userService.GetAllIncludeAsync(token);
+        ViewData["PageResultUser"] = await _userService.GetAllIncludeAsync(filterForm, token);
+        ViewData["UsersFilterForm"] = filterForm;
 
         return View();
     }

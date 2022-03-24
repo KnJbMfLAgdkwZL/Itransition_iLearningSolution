@@ -2,6 +2,7 @@ using DataAccess.Interfaces;
 using Database.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
+using DataAccess.Dto;
 using Database.DbContexts;
 using Korzh.EasyQuery.Linq;
 
@@ -141,6 +142,53 @@ public class GeneralRepository<T> : IGeneralRepository<T> where T : class
         r = includes.Aggregate(r, (current, include) => current.Include(include));
 
         return await r.ToListAsync(token);
+    }
+
+    public async Task<List<T>> GetAllIncludeManyAsync<TKey>(
+        Expression<Func<T, bool>> condition,
+        IEnumerable<Expression<Func<T, TKey>>> includes,
+        Expression<Func<T, TKey>> orderBy,
+        CancellationToken token)
+    {
+        var r = _table.Where(condition);
+
+        r = includes.Aggregate(r, (current, include) => current.Include(include));
+
+        r = r.OrderBy(orderBy);
+
+        return await r.ToListAsync(token);
+    }
+
+    public async Task<PageResult<T>> GetAllIncludeManyAsync<TKey>(
+        Expression<Func<T, bool>> condition,
+        IEnumerable<Expression<Func<T, TKey>>> includes,
+        Expression<Func<T, TKey>> orderBy,
+        int page,
+        int pageSize,
+        CancellationToken token)
+    {
+        var r = _table.Where(condition);
+
+        r = includes.Aggregate(r, (current, include) => current.Include(include));
+
+        var pageResult = new PageResult<T>()
+        {
+            TotalRecords = r.Count(),
+            PageSize = pageSize,
+            Page = page
+        };
+        
+        r = r.OrderBy(orderBy);
+
+        r = r.Skip((page - 1) * pageSize).Take(pageSize);
+
+        pageResult.Result = await r.ToListAsync(token);
+
+        var totalPages = ((double) pageResult.TotalRecords / (double) pageResult.PageSize);
+
+        pageResult.TotalPages = Convert.ToInt32(Math.Ceiling(totalPages));
+
+        return pageResult;
     }
 
     public async Task<List<T>> GetAllIncludeManyDescendingAsync<TKey>(Expression<Func<T, bool>> condition,

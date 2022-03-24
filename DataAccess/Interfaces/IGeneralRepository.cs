@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using DataAccess.Dto;
 
 namespace DataAccess.Interfaces;
 
@@ -24,6 +25,13 @@ public interface IGeneralRepository<T>
 
     Task<List<T>> GetAllIncludeManyAsync<TKey>(Expression<Func<T, bool>> condition,
         IEnumerable<Expression<Func<T, TKey>>> includes, CancellationToken token);
+
+    Task<List<T>> GetAllIncludeManyAsync<TKey>(Expression<Func<T, bool>> condition,
+        IEnumerable<Expression<Func<T, TKey>>> includes, Expression<Func<T, TKey>> orderBy, CancellationToken token);
+
+    Task<PageResult<T>> GetAllIncludeManyAsync<TKey>(Expression<Func<T, bool>> condition,
+        IEnumerable<Expression<Func<T, TKey>>> includes, Expression<Func<T, TKey>> orderBy, int page, int pageSize,
+        CancellationToken token);
 
     Task<List<T>> GetAllIncludeManyDescendingAsync<TKey>(Expression<Func<T, bool>> condition,
         IEnumerable<Expression<Func<T, TKey>>> includes, Expression<Func<T, TKey>> orderBy, CancellationToken token);

@@ -1,70 +1,215 @@
 @using Database.Models
+@using DataAccess.Dto
+@using Business.Dto.Frontend.FromForm
 @model dynamic
 
 @{
     ViewBag.Title = "title";
     Layout = "_Layout";
 
-    var users = (List<User>) ViewData["users"]!;
+    var orderBy = new List<string>()
+    {
+        "Id",
+        "Nickname",
+        "ReviewsLikes",
+        "Role",
+        "Email",
+        "Network",
+        "FirstName",
+        "LastName",
+        "LastLoginDate",
+        "RegistrationDate"
+    };
+
+    var usersFilterForm = (UsersFilterForm) ViewData["UsersFilterForm"]!;
+    var pageResultUser = (PageResult<User>) ViewData["PageResultUser"]!;
+    var users = pageResultUser.Result;
+
+    var usersFilterFormId = "";
+    if (usersFilterForm.Id > 0)
+    {
+        usersFilterFormId = usersFilterForm.Id.ToString();
+    }
 }
 
-<style>
-.UsersTable {
-  border-spacing: 0;
-  width: 100%;
-  border: 1px solid #ddd;
-}
+<h2 class="mb-3">Admin Users</h2>
 
-th {
-  cursor: pointer;
-}
+<form
+    asp-controller="User"
+    asp-action="GetUsers"
+    method="GET"
+    class="mb-5">
 
-th, td {
-  text-align: left;
-  padding: 5px;
-}
+    <div class="form-group row col-sm-3 mb-1">
+        <label for="OrderBy" class="col-sm-4 col-form-label">Order By:</label>
+        <div class="col-sm-8">
+            <select class="form-control form-control-sm form-select"
+                    name="OrderBy"
+                    id="OrderBy">
+                @{
+                    foreach (var name in orderBy)
+                    {
+                        if (usersFilterForm.OrderBy == name)
+                        {
+                            <option selected="" value="@name">@name</option>
+                        }
+                        else
+                        {
+                            <option value="@name">@name</option>
+                        }
+                    }
+                }
+            </select>
+        </div>
+    </div>
 
-tr:nth-child(even) {
-  background-color: #E7E9EB;
-}
-</style>
 
-<h2>Admin Users</h2>
+    <div class="form-group row col-sm-3 mb-1">
+        <div>
+            <input type="text" class="form-control form-control-sm"
+                   placeholder="Id"
+                   name="Id"
+                   value="@usersFilterFormId"/>
+        </div>
+    </div>
+    <div class="form-group row col-sm-3 mb-1">
+        <div>
+            <input type="text" class="form-control form-control-sm"
+                   placeholder="Nickname"
+                   name="Nickname"
+                   value="@usersFilterForm.Nickname"/>
+        </div>
+    </div>
+    <div class="form-group row col-sm-3 mb-1">
+        <div>
+            <input type="text" class="form-control form-control-sm"
+                   placeholder="Role"
+                   name="Role"
+                   value="@usersFilterForm.Role"/>
+        </div>
+    </div>
+    <div class="form-group row col-sm-3 mb-1">
+        <div>
+            <input type="text" class="form-control form-control-sm"
+                   placeholder="Email"
+                   name="Email"
+                   value="@usersFilterForm.Email"/>
+        </div>
+    </div>
+    <div class="form-group row col-sm-3 mb-1">
+        <div>
+            <input type="text" class="form-control form-control-sm"
+                   placeholder="Network"
+                   name="Network"
+                   value="@usersFilterForm.Network"/>
+        </div>
+    </div>
+    <div class="form-group row col-sm-3 mb-1">
+        <div>
+            <input type="text" class="form-control form-control-sm"
+                   placeholder="FirstName"
+                   name="FirstName"
+                   value="@usersFilterForm.FirstName"/>
+        </div>
+    </div>
+    <div class="form-group row col-sm-3 mb-1">
+        <div>
+            <input type="text" class="form-control form-control-sm"
+                   placeholder="LastName"
+                   name="LastName"
+                   value="@usersFilterForm.LastName"/>
+        </div>
+    </div>
+    <div class="form-group row col-sm-3 mb-1">
+        <div>
+            <input type="submit" class="btn btn-primary btn-sm form-control-sm" value="Filter"/>
+        </div>
+    </div>
+</form>
 
-<table class="UsersTable">
+<table class="table table-hover UsersTable" id="usersTable">
+    <thead>
     <tr>
-        <th>Id</th>
-        <th>Nickname</th>
-        <th>ReviewsLikes</th>
-
-        <th>Role.Name</th>
-
-        <th>Email</th>
-        <th>Network</th>
-        <th>FirstName</th>
-        <th>LastName</th>
-
-        <th>LastLoginDate</th>
-        <th>RegistrationDate</th>
+        <th scope="col">Id</th>
+        <th scope="col">Nickname</th>
+        <th scope="col">ReviewsLikes</th>
+        <th scope="col">Role</th>
+        <th scope="col">Email</th>
+        <th scope="col">Network</th>
+        <th scope="col">FirstName</th>
+        <th scope="col">LastName</th>
+        <th scope="col">LastLoginDate</th>
+        <th scope="col">RegistrationDate</th>
     </tr>
-    @foreach (var user in users)
+    </thead>
+
+    <tbody>
+    @foreach (var user in users!)
     {
         <tr>
-            <td>
+            <th scope="row">
                 <a asp-controller="User" asp-action="GetUser" asp-route-Id="@user.Id">@user.Id</a>
-            </td>
+            </th>
             <td>@user.Nickname</td>
             <td>@user.ReviewsLikes</td>
-
             <td>@user.Role.Name</td>
-
             <td>@user.Social.Email</td>
             <td>@user.Social.Network</td>
             <td>@user.Social.FirstName</td>
             <td>@user.Social.LastName</td>
-
             <td>@user.LastLoginDate</td>
             <td>@user.RegistrationDate</td>
         </tr>
     }
+    </tbody>
 </table>
+
+<div>
+    <ul class="pagination pagination-sm">
+        @for (var i = 1; i <= pageResultUser.TotalPages; i++)
+        {
+            if (pageResultUser.Page == i)
+            {
+                <li class="page-item active">
+                    <a class="page-link"
+                       asp-controller="User"
+                       asp-action="GetUsers"
+
+                       asp-route-OrderBy="@usersFilterForm.OrderBy"
+                       asp-route-Id="@usersFilterForm.Id"
+                       asp-route-Nickname="@usersFilterForm.Nickname"
+                       asp-route-Role="@usersFilterForm.Role"
+                       asp-route-Email="@usersFilterForm.Email"
+                       asp-route-Network="@usersFilterForm.Network"
+                       asp-route-FirstName="@usersFilterForm.FirstName"
+                       asp-route-LastName="@usersFilterForm.LastName"
+                       asp-route-Page="@i"
+                       asp-route-PageSize="@pageResultUser.PageSize">
+                        @i
+                    </a>
+                </li>
+            }
+            else
+            {
+                <li class="page-item">
+                    <a class="page-link"
+                       asp-controller="User"
+                       asp-action="GetUsers"
+
+                       asp-route-OrderBy="@usersFilterForm.OrderBy"
+                       asp-route-Id="@usersFilterFormId"
+                       asp-route-Nickname="@usersFilterForm.Nickname"
+                       asp-route-Role="@usersFilterForm.Role"
+                       asp-route-Email="@usersFilterForm.Email"
+                       asp-route-Network="@usersFilterForm.Network"
+                       asp-route-FirstName="@usersFilterForm.FirstName"
+                       asp-route-LastName="@usersFilterForm.LastName"
+                       asp-route-Page="@i"
+                       asp-route-PageSize="@pageResultUser.PageSize">
+                        @i
+                    </a>
+                </li>
+            }
+        }
+    </ul>
+</div>
