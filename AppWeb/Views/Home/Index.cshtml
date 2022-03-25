@@ -1,11 +1,11 @@
 ﻿@using Database.Models
 @using Newtonsoft.Json
 @{
+    ViewData["Title"] = "Home Page";
+    
     var newReviews = (List<Review>) ViewData["NewReviews"]!;
     var topReviews = (List<Review>) ViewData["TopReviews"]!;
-    var topTags = (List<Tag>) ViewData["TopTags"]!;
-
-    ViewData["Title"] = "Home Page";
+    var topTags = (string) ViewData["TopTags"]!;
 }
 
 
@@ -104,11 +104,8 @@ AverageUserRating
     <ul id="tag-cloud">
     </ul>
 </div>
-@{
-    var tags = JsonConvert.SerializeObject(topTags);
-}
 
-<input type="hidden" id="cloudJson" value="@tags"/>
+<input type="hidden" id="cloudJson" value="@topTags"/>
 
 <script>
 let json = document.getElementById('cloudJson').value

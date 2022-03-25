@@ -19,38 +19,44 @@ public class ReviewService : IReviewService
 
     public async Task<List<Review>> GetNewReviewsAsync(CancellationToken token)
     {
-        var reviews = await _reviewRepository.GetAllDescendingAsync(
-            review => review.Id > 0,
-            review => review.CreationDate,
-            token);
-
         var includes = new List<Expression<Func<Review, object>>>()
         {
-            //review => review.Author,
+            review => review.Author,
             review => review.Product,
-            //review => review.Status,
-            //review => review.ReviewLike,
+            review => review.Status,
+            review => review.ReviewLike,
             //review => review.ReviewTag,
-            //review => review.ReviewUserRating
+            review => review.ReviewUserRating
         };
 
-        await _reviewRepository.GetAllIncludeManyDescendingAsync(
+        var reviews = await _reviewRepository.GetAllIncludeManyDescendingAsync(
             review => review.Status.Name != "Deleted",
             includes,
             review => review.CreationDate,
             token);
-        
+
         return reviews.Take(20).ToList();
     }
 
     public async Task<List<Review>> GetTopReviewsAsync(CancellationToken token)
     {
-        var reviews = await _reviewRepository.GetAllDescendingAsync(
-            review => review.Id > 0,
+        var includes = new List<Expression<Func<Review, object>>>()
+        {
+            review => review.Author,
+            review => review.Product,
+            review => review.Status,
+            review => review.ReviewLike,
+            //review => review.ReviewTag,
+            review => review.ReviewUserRating
+        };
+
+        var reviews = await _reviewRepository.GetAllIncludeManyDescendingAsync(
+            review => review.Status.Name != "Deleted",
+            includes,
             review => review.AverageUserRating,
             token);
 
-        return reviews.Take(30).ToList();
+        return reviews.Take(20).ToList();
     }
 
     public async Task<Review?> CreateAsync(ReviewForm reviewForm, CancellationToken token)

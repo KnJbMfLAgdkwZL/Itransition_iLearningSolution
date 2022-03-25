@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using AppWeb.Models;
 using Business.Interfaces.Model;
+using Database.Models;
+using Newtonsoft.Json;
 
 namespace AppWeb.Controllers;
 
@@ -32,10 +34,17 @@ public class HomeController : Controller
 
         ViewData["NewReviews"] = await _reviewService.GetNewReviewsAsync(token);
 
-        var topReviews = await _reviewService.GetTopReviewsAsync(token);
-        ViewData["TopReviews"] = topReviews.Where(review => review.StatusId != status.Id).Take(20).ToList();
-
-        ViewData["TopTags"] = await _tagService.GetTopTagsAsync(token);
+        ViewData["TopReviews"] = await _reviewService.GetTopReviewsAsync(token);
+        
+        var tags = await _tagService.GetTopTagsAsync(token);
+        
+        var settings = new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            Error = (sender, args) => { args.ErrorContext.Handled = true; },
+        };
+        ViewData["TopTags"] = JsonConvert.SerializeObject(tags, Formatting.Indented, settings);
+        
 
         return View();
     }
