@@ -35,7 +35,7 @@ public class ReviewService : IReviewService
             review => review.CreationDate,
             token);
 
-        return reviews.Take(20).ToList();
+        return reviews.Take(10).ToList();
     }
 
     public async Task<List<Review>> GetTopReviewsAsync(CancellationToken token)
@@ -56,7 +56,7 @@ public class ReviewService : IReviewService
             review => review.AverageUserRating,
             token);
 
-        return reviews.Take(20).ToList();
+        return reviews.Take(10).ToList();
     }
 
     public async Task<Review?> CreateAsync(ReviewForm reviewForm, CancellationToken token)
