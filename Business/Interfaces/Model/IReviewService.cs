@@ -5,6 +5,11 @@ namespace Business.Interfaces.Model;
 
 public interface IReviewService
 {
+    void CLearContent(List<Review> reviews);
+    Dictionary<int, string> GetReviewsImage(List<Review> reviews);
+    string? GetImage(string html);
+    string RemoveHtmlTags(string html);
+    string CropStr(string str, int size);
     Task<List<Review>> GetNewReviewsAsync(CancellationToken token);
     Task<List<Review>> GetTopReviewsAsync(CancellationToken token);
     Task<Review?> CreateAsync(ReviewForm reviewForm, CancellationToken token);
