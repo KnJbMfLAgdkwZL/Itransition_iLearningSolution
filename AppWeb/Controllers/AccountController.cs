@@ -31,8 +31,8 @@ public class AccountController : Controller
 
     public IActionResult Login()
     {
-        return RedirectToAction("LoginTmp", "Account");
-        //return View();
+        //return RedirectToAction("LoginTmp", "Account");
+        return View();
     }
 
     [HttpPost]
