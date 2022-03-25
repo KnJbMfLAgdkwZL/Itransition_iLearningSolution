@@ -223,6 +223,7 @@ public class ReviewController : Controller
             return BadRequest("Wrong reviewId");
         }
 
+        ViewData["IsUserLike"] = false;
         var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user != null)
         {
@@ -245,8 +246,7 @@ public class ReviewController : Controller
 
         ViewData["review"] = review;
         ViewData["tags"] = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
-        ViewData["IsUserLike"] = false;
-
+        
         return View();
     }
 
