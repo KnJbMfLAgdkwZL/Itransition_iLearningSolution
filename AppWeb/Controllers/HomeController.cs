@@ -30,11 +30,10 @@ public class HomeController : Controller
             return BadRequest("StatusReview Deleted not found");
         }
 
-        var newReviews = await _reviewService.GetNewReviewsAsync(token);
-        ViewData["NewReviews"] = newReviews.Where(review => review.StatusId != status.Id).ToList();
+        ViewData["NewReviews"] = await _reviewService.GetNewReviewsAsync(token);
 
         var topReviews = await _reviewService.GetTopReviewsAsync(token);
-        ViewData["TopReviews"] = topReviews.Where(review => review.StatusId != status.Id).ToList();
+        ViewData["TopReviews"] = topReviews.Where(review => review.StatusId != status.Id).Take(20).ToList();
 
         ViewData["TopTags"] = await _tagService.GetTopTagsAsync(token);
 

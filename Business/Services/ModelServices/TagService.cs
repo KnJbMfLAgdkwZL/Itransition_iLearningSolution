@@ -18,7 +18,7 @@ public class TagService : ITagService
 
     public async Task<List<Tag>> GetTopTagsAsync(CancellationToken token)
     {
-        var tags = await _tagRepository.GetAllAsyncDescending(
+        var tags = await _tagRepository.GetAllDescendingAsync(
             tag => tag.Name != string.Empty,
             tag => tag.Amount,
             token);
@@ -28,7 +28,7 @@ public class TagService : ITagService
 
     public async Task<List<Tag>> GetTopTagsAsync(string search, CancellationToken token)
     {
-        var tags = await _tagRepository.GetAllAsyncDescending(
+        var tags = await _tagRepository.GetAllDescendingAsync(
             tag => EF.Functions.Like(tag.Name, $"%{search}%"),
             tag => tag.Amount,
             token);

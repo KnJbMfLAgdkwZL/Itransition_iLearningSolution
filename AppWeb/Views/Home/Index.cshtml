@@ -13,8 +13,37 @@
 <h1>New Reviews:</h1>
 @foreach (var v in newReviews)
 {
+    <div class="card border-light mb-3" style="max-width: 20rem;">
+        <div class="card-header">
+            Header
+        </div>
+        <div class="card-body">
+            <h4 class="card-title">
+                Light card title
+            </h4>
+            <p class="card-text">
+                Some quick example text to build on the card title and make up the bulk of the card's content.
+            </p>
+        </div>
+    </div>
+    
     <div>@v.Id | @v.Title | @v.AverageUserRating | @v.CreationDate</div>
 }
+
+Id
+ProductId
+AuthorId
+StatusId
+ProductName
+Title
+Content
+DateTime CreationDate
+DateTime RedactionDate
+DateTime DeletionDate
+AuthorAssessment
+AverageUserRating
+
+    
 
 
 <hr/>
@@ -26,7 +55,31 @@
 
 
 <hr/>
+<a asp-controller="Account" asp-action="Login">Login</a>
+<br/>
+<a asp-controller="Account" asp-action="Logout">Logout</a>
+<br/>
 
+@{
+    var name = User.Identity?.Name;
+
+    var uid = User.FindFirst("Uid")?.Value;
+    var email = User.FindFirst("Email")?.Value;
+    var network = User.FindFirst("Network")?.Value;
+}
+
+<div>Uid: @uid | Email: @email | Network: @network</div>
+
+
+<div>
+    <a asp-controller="User" asp-action="GetUsers">Admin Users</a>
+</div>
+<div>
+    <a asp-controller="User" asp-action="GetUserReviews">User PersonalPage</a>
+</div>
+
+
+<hr/>
 
 <style>
 #tag-cloud {
@@ -34,7 +87,7 @@
 }
 #tag-cloud li {
     display: inline-block;
-    padding-right: 40px;
+    padding-right: 20px;
 }
 #tag-cloud li:nth-last-child(1) {
     padding-right: 0px;
@@ -47,7 +100,6 @@
 }
 </style>
 
-<h1>Top Tags:</h1>
 <div id="wrapper-tag-cloud">
     <ul id="tag-cloud">
     </ul>
@@ -88,31 +140,3 @@ for (let v of shuffledArray) {
 }
 ulTag.innerHTML = liTags
 </script>
-
-
-<hr/>
-<a asp-controller="Account" asp-action="Login">Login</a>
-<br/>
-<a asp-controller="Account" asp-action="Logout">Logout</a>
-<br/>
-
-@{
-    var name = User.Identity?.Name;
-
-    var uid = User.FindFirst("Uid")?.Value;
-    var email = User.FindFirst("Email")?.Value;
-    var network = User.FindFirst("Network")?.Value;
-}
-
-<div>Uid: @uid</div>
-<div>Email: @email</div>
-<div>Network: @network</div>
-
-
-<div>
-    <a asp-controller="User" asp-action="GetUsers">Admin Users</a>
-</div>
-
-<div>
-    <a asp-controller="User" asp-action="GetUserReviews">User PersonalPage</a>
-</div>
