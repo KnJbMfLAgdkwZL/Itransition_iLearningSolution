@@ -1,10 +1,12 @@
-﻿// Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
-
-// Write your JavaScript code.
-
-tagAdd = document.getElementById("tagAdd")
-TagsRecoms = document.getElementById("TagsRecoms")
+﻿function TagRecomendationInit(tagAddId, TagsRecomsId) {
+    tagAdd = document.getElementById(tagAddId)
+    tagAdd.oninput = GetTags
+    tagAdd.onfocus = GetTags
+    tagAdd.onblur = function () {
+        TagsRecomHide()
+    }
+    TagsRecoms = document.getElementById(TagsRecomsId)
+}
 
 function GetTags() {
     if (this.value.length >= 3) {
@@ -41,12 +43,6 @@ function TagsRecomShow(data) {
     data.forEach(v => str += `<div class="TagsRecom" onMouseDown="TagsRecomClick(this)">${v.Name}</div>`)
     TagsRecoms.innerHTML = str
     TagsRecoms.style.display = 'inline-block'
-}
-
-tagAdd.oninput = GetTags
-tagAdd.onfocus = GetTags
-tagAdd.onblur = function () {
-    TagsRecomHide()
 }
 
 function TagsRecomClick(el) {
@@ -133,3 +129,40 @@ function getCaretGlobalCoordinates(Desired_ID) {
         window.getCaretCoordinates = getCaretCoordinates;
     }
 }());
+
+function MainPageLoadTopTags(id) {
+    fetch("/Tag/GetTopTags", {
+        method: "GET"
+    }).then((response) => {
+        return response.json();
+    }).then((data) => {
+        if (data.length > 0) {
+            let ulTag = document.getElementById(id)
+            let minFontSize = 1
+            let maxFontSize = 2
+            let liTags = ""
+            let weights = []
+            for (let v of data) {
+                if (!weights.includes(v.Amount)) {
+                    weights.push(v.Amount)
+                }
+            }
+            weights.sort((a, b) => a - b)
+            let shuffledArray = data.sort((a, b) => 0.5 - Math.random());
+            for (let v of shuffledArray) {
+                let title = v.Name
+                let url = 'google.com'
+                let m = weights.indexOf(v.Amount) + 1
+                let a = ((m - weights[0]) / (weights.length - weights[0]))
+                let dif = (maxFontSize - minFontSize)
+                let font_size = a * dif + minFontSize
+                liTags = liTags.concat(`<li>
+              	<a href="${url}" style="font-size: ${font_size}em;">
+                  	${title} [${v.Amount}]
+                  </a>
+              </li>`)
+            }
+            ulTag.innerHTML = liTags
+        }
+    })
+}

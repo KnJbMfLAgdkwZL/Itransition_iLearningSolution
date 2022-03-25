@@ -1,56 +1,228 @@
 ﻿@using Database.Models
-@using Newtonsoft.Json
 @{
     ViewData["Title"] = "Home Page";
-    
+
     var newReviews = (List<Review>) ViewData["NewReviews"]!;
     var topReviews = (List<Review>) ViewData["TopReviews"]!;
-    var topTags = (string) ViewData["TopTags"]!;
+
+    var newReviewsImage = (Dictionary<int, string?>) ViewData["newReviewsImage"]!;
+    var topReviewsImage = (Dictionary<int, string?>) ViewData["topReviewsImage"]!;
 }
 
 
+<h6>New Reviews:</h6>
 <hr/>
-<h1>New Reviews:</h1>
+
 @foreach (var v in newReviews)
 {
-    <div class="card border-light mb-3" style="max-width: 20rem;">
+    <div class="card border-light mb-5">
         <div class="card-header">
-            Header
+            <h5>
+                <a asp-controller="Product" asp-action="Get" asp-route-id="@v.Product.Id" class="Reviews-url">
+                    @v.Product.Name
+                </a>
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    <small class="text-primary">@v.Product.Name</small>
+                </a>
+            </h5>
         </div>
+
         <div class="card-body">
             <h4 class="card-title">
-                Light card title
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    @v.Title
+                </a>
             </h4>
-            <p class="card-text">
-                Some quick example text to build on the card title and make up the bulk of the card's content.
-            </p>
+
+            <div class="reviewsContent mb-2">
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    <p class="card-text card-text-Review">
+                        @if (newReviewsImage.ContainsKey(v.Id))
+                        {
+                            var src = newReviewsImage[v.Id];
+                            <img src="@src" class="ReviewsImage" alt=""/>
+                        }
+                        @v.Content
+                    </p>
+                </a>
+            </div>
+
+            <div class="reviewsTags">
+                @{
+                    var tagsCount = 0;
+                    foreach (var reviewTag in v.ReviewTag)
+                    {
+                        tagsCount++;
+                        <a asp-controller="Tag" asp-action="Get" asp-route-id="@reviewTag.Tag.Id" class="Reviews-url">
+                            <span class="badge bg-secondary">
+                                @reviewTag.Tag.Name
+                            </span>
+                        </a>
+                        if (tagsCount > 5)
+                        {
+                            break;
+                        }
+                    }
+
+                }
+            </div>
+
+            <div>
+                @for (var i = 1; i <= 5; i++)
+                {
+                    if (i <= v.AuthorAssessment)
+                    {
+                        <span class="fullStar">★</span>
+                    }
+                    else
+                    {
+                        <span class="emptyStar">☆</span>
+                    }
+                }
+
+                <div class="reviewsUserRating">
+                    <img id="Like" class="like" src="/like_black.svg" alt=""/> @v.ReviewLike.Count
+                    User Rating:
+                    @if (v.AverageUserRating >= 4)
+                    {
+                        <span class="badge rounded-pill bg-success">@v.AverageUserRating</span>
+                    }
+                    @if (v.AverageUserRating > 2.8 && v.AverageUserRating < 4)
+                    {
+                        <span class="badge rounded-pill bg-warning">@v.AverageUserRating</span>
+                    }
+                    @if (v.AverageUserRating <= 2.8)
+                    {
+                        <span class="badge rounded-pill bg-danger">@v.AverageUserRating</span>
+                    }
+                </div>
+
+            </div>
+
+            @{
+                var time = v.CreationDate;
+                /*if (time.Ticks != v.RedactionDate.Ticks)
+                {
+                    time = v.RedactionDate;
+                }*/
+            }
+
+            <h6>
+                <a asp-controller="User" asp-action="Get" asp-route-id="@v.Author.Id" class="Reviews-url">
+                    @v.Author.Nickname
+                </a> | @time
+            </h6>
+
         </div>
     </div>
-    
-    <div>@v.Id | @v.Title | @v.AverageUserRating | @v.CreationDate</div>
 }
 
-Id
-ProductId
-AuthorId
-StatusId
-ProductName
-Title
-Content
-DateTime CreationDate
-DateTime RedactionDate
-DateTime DeletionDate
-AuthorAssessment
-AverageUserRating
 
-    
-
-
+<h6>Top Reviews:</h6>
 <hr/>
-<h1>Top Reviews:</h1>
+
 @foreach (var v in topReviews)
 {
-    <div>@v.Id | @v.Title | @v.AverageUserRating | @v.CreationDate</div>
+    <div class="card border-light mb-5">
+        <div class="card-header">
+            <h5>
+                <a asp-controller="Product" asp-action="Get" asp-route-id="@v.Product.Id" class="Reviews-url">
+                    @v.Product.Name
+                </a>
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    <small class="text-primary">@v.Product.Name</small>
+                </a>
+            </h5>
+        </div>
+
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    @v.Title
+                </a>
+            </h4>
+
+            <div class="reviewsContent mb-2">
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    <p class="card-text card-text-Review">
+                        @if (topReviewsImage.ContainsKey(v.Id))
+                        {
+                            var src = topReviewsImage[v.Id];
+                            <img src="@src" class="ReviewsImage" alt=""/>
+                        }
+                        @v.Content
+                    </p>
+                </a>
+            </div>
+
+            <div class="reviewsTags">
+                @{
+                    var tagsCount = 0;
+                    foreach (var reviewTag in v.ReviewTag)
+                    {
+                        tagsCount++;
+                        <a asp-controller="Tag" asp-action="Get" asp-route-id="@reviewTag.Tag.Id" class="Reviews-url">
+                            <span class="badge bg-secondary">
+                                @reviewTag.Tag.Name
+                            </span>
+                        </a>
+                        if (tagsCount > 5)
+                        {
+                            break;
+                        }
+                    }
+
+                }
+            </div>
+
+            <div>
+                @for (var i = 1; i <= 5; i++)
+                {
+                    if (i <= v.AuthorAssessment)
+                    {
+                        <span class="fullStar">★</span>
+                    }
+                    else
+                    {
+                        <span class="emptyStar">☆</span>
+                    }
+                }
+
+                <div class="reviewsUserRating">
+                    <img id="Like" class="like" src="/like_black.svg" alt=""/> @v.ReviewLike.Count
+                    User Rating:
+                    @if (v.AverageUserRating >= 4)
+                    {
+                        <span class="badge rounded-pill bg-success">@v.AverageUserRating</span>
+                    }
+                    @if (v.AverageUserRating > 2.8 && v.AverageUserRating < 4)
+                    {
+                        <span class="badge rounded-pill bg-warning">@v.AverageUserRating</span>
+                    }
+                    @if (v.AverageUserRating <= 2.8)
+                    {
+                        <span class="badge rounded-pill bg-danger">@v.AverageUserRating</span>
+                    }
+                </div>
+
+            </div>
+
+            @{
+                var time = v.CreationDate;
+                /*if (time.Ticks != v.RedactionDate.Ticks)
+                {
+                    time = v.RedactionDate;
+                }*/
+            }
+
+            <h6>
+                <a asp-controller="User" asp-action="Get" asp-route-id="@v.Author.Id" class="Reviews-url">
+                    @v.Author.Nickname
+                </a> | @time
+            </h6>
+
+        </div>
+    </div>
 }
 
 
@@ -80,60 +252,14 @@ AverageUserRating
 
 
 <hr/>
-
-<style>
-#tag-cloud {
-    display: block;
-}
-#tag-cloud li {
-    display: inline-block;
-    padding-right: 20px;
-}
-#tag-cloud li:nth-last-child(1) {
-    padding-right: 0px;
-}
-#tag-cloud li a {
-    color: grey;
-}
-#tag-cloud li a:hover {
-    color: black;
-}
-</style>
-
 <div id="wrapper-tag-cloud">
     <ul id="tag-cloud">
+
     </ul>
 </div>
 
-<input type="hidden" id="cloudJson" value="@topTags"/>
-
 <script>
-let json = document.getElementById('cloudJson').value
-let data = JSON.parse(json)
-let ulTag = document.getElementById("tag-cloud")
-let minFontSize = 1
-let maxFontSize = 2
-let liTags = ""
-let weights = []
-for (let v of data) {
-    if (!weights.includes(v.Amount)) {
-        weights.push(v.Amount)
-    }
+window.onload = () => {
+    MainPageLoadTopTags("tag-cloud")
 }
-weights.sort((a, b) => a - b)
-let shuffledArray = data.sort((a, b) => 0.5 - Math.random());
-for (let v of shuffledArray) {
-    let title = v.Name
-    let url = v.url
-    let m = weights.indexOf(v.Amount) + 1
-    let a = ((m - weights[0]) / (weights.length - weights[0]))
-    let dif = (maxFontSize - minFontSize)
-    let font_size = a * dif + minFontSize
-    liTags = liTags.concat(`<li>
-            	<a href="${url}" style="font-size: ${font_size}em;">
-                	${title} [${v.Amount}]
-                </a>
-            </li>`)
-}
-ulTag.innerHTML = liTags
 </script>

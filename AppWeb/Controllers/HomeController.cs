@@ -2,49 +2,31 @@
 using Microsoft.AspNetCore.Mvc;
 using AppWeb.Models;
 using Business.Interfaces.Model;
-using Database.Models;
-using Newtonsoft.Json;
 
 namespace AppWeb.Controllers;
 
 public class HomeController : Controller
 {
     private readonly IReviewService _reviewService;
-    private readonly ITagService _tagService;
-    private readonly IStatusReviewService _statusReviewService;
 
     public HomeController(
-        IReviewService reviewService,
-        ITagService tagService,
-        IStatusReviewService statusReviewService
+        IReviewService reviewService
     )
     {
         _reviewService = reviewService;
-        _tagService = tagService;
-        _statusReviewService = statusReviewService;
     }
 
     public async Task<IActionResult> IndexAsync(CancellationToken token)
     {
-        var status = await _statusReviewService.GetAsync("Deleted", token);
-        if (status == null)
-        {
-            return BadRequest("StatusReview Deleted not found");
-        }
+        var newReviews = await _reviewService.GetNewReviewsAsync(token);
+        ViewData["newReviewsImage"] = _reviewService.GetReviewsImage(newReviews);
+        _reviewService.CLearContent(newReviews);
+        ViewData["NewReviews"] = newReviews;
 
-        ViewData["NewReviews"] = await _reviewService.GetNewReviewsAsync(token);
-
-        ViewData["TopReviews"] = await _reviewService.GetTopReviewsAsync(token);
-        
-        var tags = await _tagService.GetTopTagsAsync(token);
-        
-        var settings = new JsonSerializerSettings()
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            Error = (sender, args) => { args.ErrorContext.Handled = true; },
-        };
-        ViewData["TopTags"] = JsonConvert.SerializeObject(tags, Formatting.Indented, settings);
-        
+        var topReviews = await _reviewService.GetTopReviewsAsync(token);
+        ViewData["topReviewsImage"] = _reviewService.GetReviewsImage(topReviews);
+        _reviewService.CLearContent(topReviews);
+        ViewData["TopReviews"] = topReviews;
 
         return View();
     }

@@ -1,20 +1,77 @@
 using System.Linq.Expressions;
+using System.Text;
+using System.Text.RegularExpressions;
 using Business.Dto.Frontend.FromForm;
 using Business.Interfaces.Model;
+using Business.Interfaces.Tools;
 using DataAccess.Interfaces;
 using Database.Models;
+using HtmlAgilityPack;
 
 namespace Business.Services.ModelServices;
 
 public class ReviewService : IReviewService
 {
     private readonly IGeneralRepository<Review> _reviewRepository;
+    private readonly IClearHtmlService _clearHtmlService;
 
     public ReviewService(
-        IGeneralRepository<Review> reviewRepository
+        IGeneralRepository<Review> reviewRepository,
+        IClearHtmlService clearHtmlService
     )
     {
         _reviewRepository = reviewRepository;
+        _clearHtmlService = clearHtmlService;
+    }
+
+    public string? GetImage(string html)
+    {
+        var document = new HtmlDocument();
+        document.LoadHtml(html);
+
+        var img = document.DocumentNode.Descendants("img")
+            .Where(e =>
+            {
+                var src = e.GetAttributeValue("src", null) ?? "";
+                return !string.IsNullOrEmpty(src);
+            }).FirstOrDefault();
+
+        return img?.GetAttributeValue("src", null);
+    }
+
+    public string RemoveHtmlTags(string html)
+    {
+        var str = _clearHtmlService.UnHtml(html);
+
+        var document = new HtmlDocument();
+        document.LoadHtml(str);
+        str = HtmlEntity.DeEntitize(document.DocumentNode.InnerText);
+
+        str = Regex.Replace(str, "<.*?>", " ");
+        str = Regex.Replace(str, @"&nbsp;", " ");
+        str = Regex.Replace(str, @"\s{2,}", " ");
+        str = Regex.Replace(str, @"[^\w;&#@.:/\\?=|%!() -]", " ");
+
+        str = str.Replace("  ", " ");
+        str = str.Trim();
+
+        return str;
+    }
+
+    public string CropStr(string str, int size)
+    {
+        var words = str.Split(" ");
+        var stringBuilder = new StringBuilder();
+        foreach (var word in words)
+        {
+            stringBuilder.Append($" {word}");
+            if (stringBuilder.Length >= size)
+            {
+                break;
+            }
+        }
+
+        return stringBuilder.ToString().Trim();
     }
 
     public async Task<List<Review>> GetNewReviewsAsync(CancellationToken token)
@@ -38,6 +95,30 @@ public class ReviewService : IReviewService
         return reviews.Take(10).ToList();
     }
 
+    public Dictionary<int, string> GetReviewsImage(List<Review> reviews)
+    {
+        var reviewsImage = new Dictionary<int, string>();
+        foreach (var review in reviews)
+        {
+            var src = GetImage(review.Content);
+            if (src != null)
+            {
+                reviewsImage.Add(review.Id, src);
+            }
+        }
+
+        return reviewsImage;
+    }
+
+    public void CLearContent(List<Review> reviews)
+    {
+        foreach (var review in reviews)
+        {
+            var str = RemoveHtmlTags(review.Content);
+            review.Content = CropStr(str, 1000);
+        }
+    }
+
     public async Task<List<Review>> GetTopReviewsAsync(CancellationToken token)
     {
         var includes = new List<Expression<Func<Review, object>>>()
@@ -53,7 +134,7 @@ public class ReviewService : IReviewService
         var reviews = await _reviewRepository.GetAllIncludeManyDescendingAsync(
             review => review.Status.Name != "Deleted",
             includes,
-            review => review.AverageUserRating,
+            review => review.ReviewUserRating.Sum(reviewUserRating => reviewUserRating.Assessment),
             token);
 
         return reviews.Take(10).ToList();

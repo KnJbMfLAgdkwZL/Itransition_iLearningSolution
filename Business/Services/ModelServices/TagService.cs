@@ -44,7 +44,7 @@ public class TagService : ITagService
             tagModel = await _tagRepository.AddAsync(new Tag()
             {
                 Name = name,
-                Amount = 0
+                Amount = 1
             }, token);
         }
         else

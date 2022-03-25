@@ -29,4 +29,35 @@ public class TagController : Controller
 
         return Ok(jsonResponse);
     }
+
+    public async Task<IActionResult> GetAsync([FromRoute] int id, CancellationToken token)
+    {
+        return Ok();
+    }
+
+    public async Task<IActionResult> GetTopTags(CancellationToken token)
+    {
+        var tagsModels = await _tagService.GetTopTagsAsync(token);
+
+        var tags = new List<object>();
+        foreach (var tag in tagsModels)
+        {
+            tags.Add(new
+            {
+                Id = tag.Id,
+                Amount = tag.Amount,
+                Name = tag.Name
+            });
+        }
+
+        var settings = new JsonSerializerSettings()
+        {
+            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+            Error = (sender, args) => { args.ErrorContext.Handled = true; },
+        };
+
+        var json = JsonConvert.SerializeObject(tags, Formatting.Indented, settings);
+
+        return Ok(json);
+    }
 }

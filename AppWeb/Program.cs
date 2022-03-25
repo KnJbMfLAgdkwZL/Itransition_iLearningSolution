@@ -2,8 +2,10 @@ using AppWeb.AuthorizationHandler;
 using Business.Dto.Options;
 using Business.Interfaces;
 using Business.Interfaces.Model;
+using Business.Interfaces.Tools;
 using Business.Services;
 using Business.Services.ModelServices;
+using Business.Services.Tools;
 using DataAccess.Interfaces;
 using DataAccess.Repositories;
 using Database.DbContexts;
@@ -64,6 +66,7 @@ builder.Services.AddScoped<IClaimsService, ClaimsService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IUserSocialService, UserSocialService>();
 builder.Services.AddScoped<IUploadService, UploadService>();
+builder.Services.AddScoped<IClearHtmlService, ClearHtmlServiceService>();
 
 // Add services to the container.
 builder.Services.AddControllers();

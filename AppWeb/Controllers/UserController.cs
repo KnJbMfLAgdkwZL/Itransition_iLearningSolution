@@ -32,6 +32,11 @@ public class UserController : Controller
         _accountService = accountService;
     }
 
+    public async Task<IActionResult> GetAsync([FromRoute] int id, CancellationToken token)
+    {
+        return Ok();
+    }
+
     [Authorize(Roles = "Admin, User")]
     public async Task<IActionResult> GetUserReviewsAsync([FromRoute] int id, CancellationToken token)
     {
