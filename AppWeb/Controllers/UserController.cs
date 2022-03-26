@@ -32,9 +32,10 @@ public class UserController : Controller
         _accountService = accountService;
     }
 
-    public async Task<IActionResult> GetAsync([FromRoute] int id, CancellationToken token)
+    public IActionResult GetAsync([FromRoute] int id)
     {
-        return Ok();
+        ViewData["id"] = id;
+        return View();
     }
 
     [Authorize(Roles = "Admin, User")]

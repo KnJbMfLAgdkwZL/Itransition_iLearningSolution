@@ -1,0 +1,17 @@
+@{
+    ViewBag.Title = "User Reviews";
+    Layout = "_Layout";
+    var id = (int) ViewData["id"]!;
+}
+
+<h2 class="ReviewsTitle">User Reviews:</h2>
+<hr/>
+<div id="UserReviews"></div>
+
+<script>
+window.onload = () => {
+    let id = '@id'
+    let url = `/Review/GetReviewsByAuthor?id=${id}`
+    GetReview(url, 'UserReviews')
+}
+</script>
