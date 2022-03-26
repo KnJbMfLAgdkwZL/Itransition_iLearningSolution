@@ -166,3 +166,13 @@ function MainPageLoadTopTags(id) {
         }
     })
 }
+
+function GetReview(page, id) {
+    fetch(page, {
+        method: "GET"
+    }).then((response) => {
+        return response.text();
+    }).then((data) => {
+        document.getElementById(id).innerHTML = data
+    })
+}

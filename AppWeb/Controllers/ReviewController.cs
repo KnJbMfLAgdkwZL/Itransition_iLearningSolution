@@ -43,6 +43,28 @@ public class ReviewController : Controller
         _accountService = accountService;
     }
 
+    public async Task<IActionResult> GetNewReviewsAsync(CancellationToken token)
+    {
+        var reviews = await _reviewService.GetNewReviewsAsync(token);
+
+        ViewData["reviewsImage"] = _reviewService.GetReviewsImage(reviews);
+        _reviewService.CLearContent(reviews);
+        ViewData["reviews"] = reviews;
+        ViewData["title"] = "New Reviews:";
+        return PartialView("_GetReviews");
+    }
+
+    public async Task<IActionResult> GetTopReviewsAsync(CancellationToken token)
+    {
+        var reviews = await _reviewService.GetTopReviewsAsync(token);
+
+        ViewData["reviewsImage"] = _reviewService.GetReviewsImage(reviews);
+        _reviewService.CLearContent(reviews);
+        ViewData["reviews"] = reviews;
+        ViewData["title"] = "Top Reviews:";
+        return PartialView("_GetReviews");
+    }
+
     [Authorize(Roles = "Admin, User")]
     [HttpGet]
     public async Task<IActionResult> CreateOrUpdateAsync([FromQuery] int userId, [FromQuery] int reviewId,
@@ -66,7 +88,7 @@ public class ReviewController : Controller
         ViewData["userId"] = userId;
         ViewData["reviewId"] = reviewId;
         ViewData["Role"] = user.Role.Name;
-        
+
         ViewData["productGroups"] = await _productGroupService.GetAllAsync(token);
 
         var statusReviews = await _statusReviewService.GetAllAsync(token);
@@ -100,7 +122,7 @@ public class ReviewController : Controller
             }
 
             ViewData["review"] = review;
-            
+
             var tags = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
             var tagsNames = tags.Select(tag => tag.Tag.Name).ToList();
             ViewData["tags"] = JsonConvert.SerializeObject(tagsNames);
@@ -142,7 +164,7 @@ public class ReviewController : Controller
         }
 
         Review? review = null;
-        
+
         if (reviewForm.AuthorId <= 0 && reviewForm.Id <= 0) // Create
         {
             if (currentUser.Role.Name == "Admin" && reviewForm.UserId > 0) // Admin Created on behalf User
@@ -195,7 +217,7 @@ public class ReviewController : Controller
         {
             await _reviewUserRatingService.AddAssessmentAsync(review.Id, review.AuthorId, review.AuthorAssessment,
                 token);
-            
+
             await _reviewTagService.DeleteTagsAsync(review.Id, token);
 
             var tags = JsonConvert.DeserializeObject<List<string>>(reviewForm.TagsInput);
@@ -204,7 +226,7 @@ public class ReviewController : Controller
                 foreach (var tagName in tags)
                 {
                     var tag = await _tagService.AddOrIncrementAsync(tagName, token);
-                    
+
                     await _reviewTagService.AddTagToReviewAsync(review.Id, tag.Id, token);
                 }
             }
@@ -246,7 +268,7 @@ public class ReviewController : Controller
 
         ViewData["review"] = review;
         ViewData["tags"] = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
-        
+
         return View();
     }
 
@@ -282,7 +304,7 @@ public class ReviewController : Controller
         }
 
         review.StatusId = statusReview.Id;
-        
+
         await _reviewService.UpdateAsync(review, token);
 
         return View();

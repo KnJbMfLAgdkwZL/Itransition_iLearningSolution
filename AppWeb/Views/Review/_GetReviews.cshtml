@@ -1,0 +1,95 @@
+@using Database.Models
+@{
+    Layout = null;
+    var reviews = (List<Review>) ViewData["reviews"]!;
+    var reviewsImage = (Dictionary<int, string?>) ViewData["reviewsImage"]!;
+    var title = (string) ViewData["title"]!;
+}
+<h2 class="ReviewsTitle">@title</h2>
+<hr/>
+@foreach (var v in reviews)
+{
+    <div class="card border-light mb-5">
+        <div class="card-header">
+            <h5>
+                <a asp-controller="Product" asp-action="Get" asp-route-id="@v.Product.Id" class="Reviews-url">
+                    @v.Product.Name
+                </a>
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    <small class="text-primary">@v.Product.Name</small>
+                </a>
+            </h5>
+        </div>
+        <div class="card-body">
+            <h4 class="card-title">
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    @v.Title
+                </a>
+            </h4>
+            <div class="reviewsContent mb-2">
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                    <p class="card-text card-text-Review">
+                        @if (reviewsImage.ContainsKey(v.Id))
+                        {
+                            var src = reviewsImage[v.Id];
+                            <img src="@src" class="ReviewsImage" alt=""/>
+                        }
+                        @v.Content
+                    </p>
+                </a>
+            </div>
+            <div class="reviewsTags">
+                @{
+                    var tagsCount = 0;
+                    foreach (var reviewTag in v.ReviewTag)
+                    {
+                        tagsCount++;
+                        <a asp-controller="Tag" asp-action="Get" asp-route-id="@reviewTag.Tag.Id" class="Reviews-url">
+                            <span class="badge bg-secondary">
+                                @reviewTag.Tag.Name
+                            </span>
+                        </a>
+                        if (tagsCount > 5)
+                        {
+                            break;
+                        }
+                    }
+                }
+            </div>
+            <div>
+                @for (var i = 1; i <= 5; i++)
+                {
+                    if (i <= v.AuthorAssessment)
+                    {
+                        <span class="fullStar">★</span>
+                    }
+                    else
+                    {
+                        <span class="emptyStar">☆</span>
+                    }
+                }
+                <div class="reviewsUserRating">
+                    <img id="Like" class="like" src="/like_black.svg" alt=""/> @v.ReviewLike.Count
+                    User Rating:
+                    @if (v.AverageUserRating >= 4)
+                    {
+                        <span class="badge rounded-pill bg-success">@v.AverageUserRating</span>
+                    }
+                    @if (v.AverageUserRating > 2.8 && v.AverageUserRating < 4)
+                    {
+                        <span class="badge rounded-pill bg-warning">@v.AverageUserRating</span>
+                    }
+                    @if (v.AverageUserRating <= 2.8)
+                    {
+                        <span class="badge rounded-pill bg-danger">@v.AverageUserRating</span>
+                    }
+                </div>
+            </div>
+            <h6>
+                <a asp-controller="User" asp-action="Get" asp-route-id="@v.Author.Id" class="Reviews-url">
+                    @v.Author.Nickname
+                </a> | @v.CreationDate
+            </h6>
+        </div>
+    </div>
+}

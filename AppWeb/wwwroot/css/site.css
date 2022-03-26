@@ -79,3 +79,7 @@ body {
 #tag-cloud li a:hover {
     color: black;
 }
+
+.ReviewsTitle {
+    color: cornflowerblue;
+}
