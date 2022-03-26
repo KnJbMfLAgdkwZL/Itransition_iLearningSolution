@@ -82,7 +82,7 @@ public class ReviewService : IReviewService
             review => review.Product,
             review => review.Status,
             review => review.ReviewLike,
-            //review => review.ReviewTag,
+            review => review.ReviewTag,
             review => review.ReviewUserRating
         };
 
@@ -127,7 +127,7 @@ public class ReviewService : IReviewService
             review => review.Product,
             review => review.Status,
             review => review.ReviewLike,
-            //review => review.ReviewTag,
+            review => review.ReviewTag,
             review => review.ReviewUserRating
         };
 
@@ -148,7 +148,7 @@ public class ReviewService : IReviewService
             review => review.Product,
             review => review.Status,
             review => review.ReviewLike,
-            //review => review.ReviewTag,
+            review => review.ReviewTag,
             review => review.ReviewUserRating
         };
 

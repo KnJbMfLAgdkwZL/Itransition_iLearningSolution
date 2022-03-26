@@ -43,9 +43,14 @@ public class ReviewController : Controller
         _accountService = accountService;
     }
 
-    private void SetReviews(List<Review> reviews)
+    private async Task SetReviews(List<Review> reviews, CancellationToken token)
     {
         ViewData["reviewsImage"] = _reviewService.GetReviewsImage(reviews);
+        foreach (var review in reviews)
+        {
+            review.ReviewTag = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
+        }
+
         _reviewService.CLearContent(reviews);
         ViewData["reviews"] = reviews;
     }
@@ -53,14 +58,14 @@ public class ReviewController : Controller
     public async Task<IActionResult> GetNewReviewsAsync(CancellationToken token)
     {
         var reviews = await _reviewService.GetNewReviewsAsync(token);
-        SetReviews(reviews);
+        await SetReviews(reviews, token);
         return PartialView("_GetReviews");
     }
 
     public async Task<IActionResult> GetTopReviewsAsync(CancellationToken token)
     {
         var reviews = await _reviewService.GetTopReviewsAsync(token);
-        SetReviews(reviews);
+        await SetReviews(reviews, token);
         return PartialView("_GetReviews");
     }
 
@@ -73,7 +78,7 @@ public class ReviewController : Controller
         }
 
         var reviews = await _reviewService.GetReviewsByIdAsync(reviewsId, token);
-        SetReviews(reviews);
+        await SetReviews(reviews, token);
         return PartialView("_GetReviews");
     }
 
