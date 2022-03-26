@@ -9,17 +9,17 @@
     <div class="card border-light mb-5">
         <div class="card-header">
             <h5>
-                <a asp-controller="Product" asp-action="Get" asp-route-id="@v.Product.Id" class="Reviews-url">
+                <a asp-controller="Product" asp-action="Get" asp-route-id="@v.Product.Id" class="Reviews-url hoverBold">
                     @v.Product.Name
                 </a>
-                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
-                    <small class="text-primary">@v.Product.Name</small>
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url hoverBold">
+                    <small class="text-primary">@v.ProductName</small>
                 </a>
             </h5>
         </div>
         <div class="card-body">
             <h4 class="card-title">
-                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url">
+                <a asp-controller="Review" asp-action="Get" asp-route-id="@v.Id" class="Reviews-url hoverBold">
                     @v.Title
                 </a>
             </h4>
@@ -41,7 +41,7 @@
                     foreach (var reviewTag in v.ReviewTag)
                     {
                         tagsCount++;
-                        <a asp-controller="Tag" asp-action="Get" asp-route-id="@reviewTag.Tag.Id" class="Reviews-url">
+                        <a asp-controller="Tag" asp-action="Get" asp-route-id="@reviewTag.Tag.Id" class="Reviews-url hoverBold">
                             <span class="badge bg-secondary">
                                 @reviewTag.Tag.Name
                             </span>
@@ -83,7 +83,7 @@
                 </div>
             </div>
             <h6>
-                <a asp-controller="User" asp-action="Get" asp-route-id="@v.Author.Id" class="Reviews-url">
+                <a asp-controller="User" asp-action="Get" asp-route-id="@v.Author.Id" class="Reviews-url hoverBold">
                     @v.Author.Nickname
                 </a> | @v.CreationDate
             </h6>
