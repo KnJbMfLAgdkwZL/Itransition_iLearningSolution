@@ -304,8 +304,8 @@ public class ReviewController : Controller
             }
         }
 
+        review.ReviewTag = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
         ViewData["review"] = review;
-        ViewData["tags"] = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
 
         return View();
     }

@@ -1,37 +1,94 @@
 @using Database.Models
+@using Microsoft.AspNetCore.Html
 @{
-    ViewBag.Title = "title";
-    Layout = "_Layout";
     var review = (Review) ViewData["review"]!;
-    var tags = (List<ReviewTag>) ViewData["tags"]!;
     var isUserLike = (bool) ViewData["IsUserLike"]!;
+
+    ViewBag.Title = $"Review | {review.Title} | {review.ProductName}";
+    Layout = "_Layout";
 }
 
-<input type="hidden" id="Id" name="Id" value="@review.Id"/>
-<h2>@review.Title</h2>
-<h4>@review.ProductName</h4>
 
-<a href="/@review.AuthorId" id="Author">@review.Author.Nickname</a>
+<div class="card border-light mb-5">
+    <div class="card-header">
+        <h5>
+            <a asp-controller="Product" asp-action="Get" asp-route-id="@review.Product.Id" class="Reviews-url hoverBold">
+                @review.Product.Name
+            </a>
+            <a asp-controller="Review" asp-action="Get" asp-route-id="@review.Id" class="Reviews-url hoverBold">
+                <small class="text-primary">@review.ProductName</small>
+            </a>
+        </h5>
+    </div>
+    <div class="card-body">
+        <h4 class="card-title">
+            <a asp-controller="Review" asp-action="Get" asp-route-id="@review.Id" class="Reviews-url hoverBold">
+                @review.Title
+            </a>
+        </h4>
+        <div class="reviewsContent mb-2">
+            <a asp-controller="Review" asp-action="Get" asp-route-id="@review.Id" class="Reviews-url">
+                <p class="card-text card-text-Review">
+                    @(new HtmlString(review.Content))
+                </p>
+            </a>
+        </div>
+        <div class="reviewsTags">
+            @{
+                var tagsCount = 0;
+                foreach (var reviewTag in review.ReviewTag)
+                {
+                    tagsCount++;
+                    <a asp-controller="Tag" asp-action="Get" asp-route-id="@reviewTag.Tag.Id" class="Reviews-url hoverBold">
+                        <span class="badge bg-secondary">
+                            @reviewTag.Tag.Name
+                        </span>
+                    </a>
+                    if (tagsCount > 5)
+                    {
+                        break;
+                    }
+                }
+            }
+        </div>
+        <div>
+            @for (var i = 1; i <= 5; i++)
+            {
+                if (i <= review.AuthorAssessment)
+                {
+                    <span class="fullStar">★</span>
+                }
+                else
+                {
+                    <span class="emptyStar">☆</span>
+                }
+            }
+            <div class="reviewsUserRating">
+                <img id="Like" class="like" src="/like_black.svg" alt=""/> @review.ReviewLike.Count
+                User Rating:
+                @if (review.AverageUserRating >= 4)
+                {
+                    <span class="badge rounded-pill bg-success">@review.AverageUserRating</span>
+                }
+                @if (review.AverageUserRating > 2.8 && review.AverageUserRating < 4)
+                {
+                    <span class="badge rounded-pill bg-warning">@review.AverageUserRating</span>
+                }
+                @if (review.AverageUserRating <= 2.8)
+                {
+                    <span class="badge rounded-pill bg-danger">@review.AverageUserRating</span>
+                }
+            </div>
+        </div>
+        <h6>
+            <a asp-controller="User" asp-action="Get" asp-route-id="@review.Author.Id" class="Reviews-url hoverBold">
+                @review.Author.Nickname
+            </a> | @review.CreationDate
+        </h6>
+    </div>
+</div>
 
-<a href="/@review.ProductId" id="Product">@review.Product.Name</a>
 
-<div id="Content">@review.Content</div>
-
-@if (review.CreationDate != review.RedactionDate)
-{
-    //m.RedactionDate
-}
-else if (review.CreationDate != review.DeletionDate)
-{
-    //@m.DeletionDate
-}
-else
-{
-    //m.CreationDate
-}
-
-AuthorAssessment = @review.AuthorAssessment
-AverageUserRating = @review.AverageUserRating
 
 @if (review.Status.Name == "Common")
 {
@@ -42,15 +99,10 @@ AverageUserRating = @review.AverageUserRating
     }
 }
 
-ReviewLike: @review.ReviewLike.Count
-
-ReviewTag:
-@foreach (var v in tags)
-{
-    <span>@v.Tag.Name</span>
-}
 
 
+<hr/>
+<input type="hidden" id="Id" name="Id" value="@review.Id"/>
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
     <select name="UserRating" id="UserRating">
@@ -66,7 +118,6 @@ ReviewTag:
             fetch(`/ReviewUserRating/Set?reviewId=@review.Id&assessment=${this.value}`, {method: "GET"})
         }
     </script>
-
 
     <img id="Like" class="like" src="" alt=""/>
     <style>
