@@ -83,3 +83,7 @@ body {
 .ReviewsTitle {
     color: cornflowerblue;
 }
+
+.hoverBold:hover {
+    font-weight: bold;
+}

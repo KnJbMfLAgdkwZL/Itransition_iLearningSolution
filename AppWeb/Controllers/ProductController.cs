@@ -4,8 +4,9 @@ namespace AppWeb.Controllers;
 
 public class ProductController : Controller
 {
-    public IActionResult GetAsync([FromRoute] int id, CancellationToken token)
+    public IActionResult GetAsync([FromRoute] int id)
     {
-        return Ok();
+        ViewData["id"] = id;
+        return View();
     }
 }
