@@ -1,0 +1,17 @@
+@{
+    ViewBag.Title = "Tag Reviews";
+    Layout = "_Layout";
+    var tagId = (int) ViewData["tagId"]!;
+}
+
+<h2 class="ReviewsTitle">Tag Reviews:</h2>
+<hr/>
+<div id="TagReviews"></div>
+
+<script>
+window.onload = () => {
+    let id = '@tagId'
+    let url = `/Review/GetReviewsByTag?id=${id}`
+    GetReview(url, 'TagReviews')
+}
+</script>

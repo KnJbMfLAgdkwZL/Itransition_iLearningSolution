@@ -30,9 +30,10 @@ public class TagController : Controller
         return Ok(jsonResponse);
     }
 
-    public async Task<IActionResult> GetAsync([FromRoute] int id, CancellationToken token)
+    public IActionResult Get([FromRoute] int id)
     {
-        return Ok();
+        ViewData["tagId"] = id;
+        return View();
     }
 
     public async Task<IActionResult> GetTopTags(CancellationToken token)

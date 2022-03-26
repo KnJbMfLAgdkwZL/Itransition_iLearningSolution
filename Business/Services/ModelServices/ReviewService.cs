@@ -162,6 +162,30 @@ public class ReviewService : IReviewService
         return reviews.Take(10).ToList();
     }
 
+    public async Task<List<Review>> GetReviewsByTagAsync(int id, CancellationToken token)
+    {
+        var includes = new List<Expression<Func<Review, object>>>()
+        {
+            review => review.Author,
+            review => review.Product,
+            review => review.Status,
+            review => review.ReviewLike,
+            review => review.ReviewTag,
+            review => review.ReviewUserRating
+        };
+
+        var reviews = await _reviewRepository.GetAllIncludeManyDescendingAsync(
+            review =>
+                review.Status.Name != "Deleted" &&
+                review.ReviewTag.Any(tag => tag.TagId == id),
+            includes,
+            review => review.ReviewUserRating.Sum(reviewUserRating => reviewUserRating.Assessment),
+            token);
+
+        return reviews.Take(100).ToList();
+    }
+
+
     public async Task<Review?> CreateAsync(ReviewForm reviewForm, CancellationToken token)
     {
         var review = new Review()

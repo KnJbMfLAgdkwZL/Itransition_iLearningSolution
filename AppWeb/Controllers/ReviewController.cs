@@ -82,6 +82,13 @@ public class ReviewController : Controller
         return PartialView("_GetReviews");
     }
 
+    public async Task<IActionResult> GetReviewsByTagAsync(int id, CancellationToken token)
+    {
+        var reviews = await _reviewService.GetReviewsByTagAsync(id, token);
+        await SetReviews(reviews, token);
+        return PartialView("_GetReviews");
+    }
+
     [Authorize(Roles = "Admin, User")]
     [HttpGet]
     public async Task<IActionResult> CreateOrUpdateAsync([FromQuery] int userId, [FromQuery] int reviewId,
