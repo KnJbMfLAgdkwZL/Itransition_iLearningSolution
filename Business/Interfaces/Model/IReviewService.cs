@@ -12,6 +12,7 @@ public interface IReviewService
     string CropStr(string str, int size);
     Task<List<Review>> GetNewReviewsAsync(CancellationToken token);
     Task<List<Review>> GetTopReviewsAsync(CancellationToken token);
+    Task<List<Review>> GetReviewsByIdAsync(List<int> reviewsId, CancellationToken token);
     Task<Review?> CreateAsync(ReviewForm reviewForm, CancellationToken token);
     Task<Review?> UpdateAsync(ReviewForm reviewForm, Review review, CancellationToken token);
     Task<Review> UpdateAsync(Review review, CancellationToken token);

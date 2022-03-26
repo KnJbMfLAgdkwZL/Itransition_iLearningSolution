@@ -1,22 +1,18 @@
-@model System.Collections.Generic.List<Database.Models.Review>
-
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = "Search Result Reviews";
     Layout = "_Layout";
+    var reviewsId = (string) ViewData["reviewsId"]!;
 }
 
-<h2>Searc Result</h2>
+<h2 class="ReviewsTitle">Search Result Reviews:</h2>
+<hr/>
+<div id="searchResultReviews"></div>
+<input type="hidden" id="reviewsId" value="@reviewsId"/>
 
-@foreach (var review in Model)
-{
-    <div>Id: @review.Id</div>
-    <div>ProductId: @review.ProductId</div>
-    <div>AuthorId: @review.AuthorId</div>
-    <div>StatusId: @review.StatusId</div>
-    <div>ProductName: @review.ProductName</div>
-    <div>Title: @review.Title</div>
-    <div>Content: @review.Content</div>
-    <div>AuthorAssessment: @review.AuthorAssessment</div>
-    <div>AverageUserRating: @review.AverageUserRating</div>
-    <hr/>
+<script>
+window.onload = () => {
+    let reviewsId = document.getElementById('reviewsId').value
+    let url = `/Review/GetReviewsById?json=${reviewsId}`
+    GetReview(url, 'searchResultReviews')
 }
+</script>

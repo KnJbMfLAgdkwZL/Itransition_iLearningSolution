@@ -3,10 +3,7 @@
     Layout = null;
     var reviews = (List<Review>) ViewData["reviews"]!;
     var reviewsImage = (Dictionary<int, string?>) ViewData["reviewsImage"]!;
-    var title = (string) ViewData["title"]!;
 }
-<h2 class="ReviewsTitle">@title</h2>
-<hr/>
 @foreach (var v in reviews)
 {
     <div class="card border-light mb-5">

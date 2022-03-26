@@ -43,25 +43,37 @@ public class ReviewController : Controller
         _accountService = accountService;
     }
 
-    public async Task<IActionResult> GetNewReviewsAsync(CancellationToken token)
+    private void SetReviews(List<Review> reviews)
     {
-        var reviews = await _reviewService.GetNewReviewsAsync(token);
-
         ViewData["reviewsImage"] = _reviewService.GetReviewsImage(reviews);
         _reviewService.CLearContent(reviews);
         ViewData["reviews"] = reviews;
-        ViewData["title"] = "New Reviews:";
+    }
+
+    public async Task<IActionResult> GetNewReviewsAsync(CancellationToken token)
+    {
+        var reviews = await _reviewService.GetNewReviewsAsync(token);
+        SetReviews(reviews);
         return PartialView("_GetReviews");
     }
 
     public async Task<IActionResult> GetTopReviewsAsync(CancellationToken token)
     {
         var reviews = await _reviewService.GetTopReviewsAsync(token);
+        SetReviews(reviews);
+        return PartialView("_GetReviews");
+    }
 
-        ViewData["reviewsImage"] = _reviewService.GetReviewsImage(reviews);
-        _reviewService.CLearContent(reviews);
-        ViewData["reviews"] = reviews;
-        ViewData["title"] = "Top Reviews:";
+    public async Task<IActionResult> GetReviewsByIdAsync(string json, CancellationToken token)
+    {
+        var reviewsId = JsonConvert.DeserializeObject<List<int>>(json);
+        if (reviewsId == null)
+        {
+            return BadRequest("Wrong json, reviewsId is null");
+        }
+
+        var reviews = await _reviewService.GetReviewsByIdAsync(reviewsId, token);
+        SetReviews(reviews);
         return PartialView("_GetReviews");
     }
 

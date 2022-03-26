@@ -42,12 +42,7 @@ public class TagController : Controller
         var tags = new List<object>();
         foreach (var tag in tagsModels)
         {
-            tags.Add(new
-            {
-                Id = tag.Id,
-                Amount = tag.Amount,
-                Name = tag.Name
-            });
+            tags.Add(new {tag.Id, tag.Amount, tag.Name});
         }
 
         var settings = new JsonSerializerSettings()
