@@ -64,7 +64,8 @@
                 }
             }
             <div class="reviewsUserRating">
-                <img id="Like" class="like" src="/like_black.svg" alt=""/> @review.ReviewLike.Count
+                <img id="likeImg" class="like" src="/like_black.svg" alt=""/>
+                <span id="likeCount">@review.ReviewLike.Count</span>
                 User Rating:
                 @if (review.AverageUserRating >= 4)
                 {
@@ -89,7 +90,6 @@
 </div>
 
 
-
 @if (review.Status.Name == "Common")
 {
     <span>Comments:</span>
@@ -98,7 +98,6 @@
         //v.Content;
     }
 }
-
 
 
 <hr/>
@@ -119,38 +118,41 @@
         }
     </script>
 
-    <img id="Like" class="like" src="" alt=""/>
     <style>
         .like {
             cursor: pointer;
         }
     </style>
     <script>
-        let like = document.getElementById("Like")
+        let likeImg = document.getElementById("likeImg")
+        let likeCount = document.getElementById("likeCount")
         let isUserLike = @isUserLike.ToString().ToLower()
         
         let likeSrc = "/like_white.svg";
         if (isUserLike) {
             likeSrc = "/like_black.svg";
         }
-        like.src = likeSrc
+        likeImg.src = likeSrc
         
-        like.onclick = function () {
-            let fetchHref = "/Like/Add?reviewId=@review.Id"
+        likeImg.onclick = function () {
+            let fetchUrl = "/Like/Add?reviewId=@review.Id"
             if (isUserLike) {
-                fetchHref = "/Like/Remove?reviewId=@review.Id"
+                fetchUrl = "/Like/Remove?reviewId=@review.Id"
             }
-            fetch(fetchHref, {
+            fetch(fetchUrl, {
                 method: "GET"
             }).then((response) => {
                 if (response.ok) {
                     if (isUserLike) {
-                        like.src = "/like_white.svg"
+                        likeImg.src = "/like_white.svg"
                     } else {
-                        like.src = "/like_black.svg"
+                        likeImg.src = "/like_black.svg"
                     }
                     isUserLike = !isUserLike
+                    return response.text()
                 }
+            }).then((data) => {
+                likeCount.innerText = data
             })
         }
     </script>

@@ -44,8 +44,7 @@ public class UserService : IUserService
         var user = await GetUserByIdAsync(id, token);
         if (user != null)
         {
-            user.ReviewsLikes = count;
-
+            user.ReviewsLikes += count;
             await _userRepository.UpdateAsync(user, token);
         }
     }

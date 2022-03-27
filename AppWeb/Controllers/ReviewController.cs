@@ -49,6 +49,7 @@ public class ReviewController : Controller
         foreach (var review in reviews)
         {
             review.ReviewTag = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
+            review.ReviewLike = review.ReviewLike.Where(like => like.IsSet).ToList();
         }
 
         _reviewService.CLearContent(reviews);
@@ -305,6 +306,7 @@ public class ReviewController : Controller
         }
 
         review.ReviewTag = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
+        review.ReviewLike = review.ReviewLike.Where(like => like.IsSet).ToList();
         ViewData["review"] = review;
 
         return View();

@@ -48,7 +48,7 @@ public class LikeController : Controller
         }
 
         error = null;
-        
+
         return review;
     }
 
@@ -66,12 +66,15 @@ public class LikeController : Controller
             return errorReview!;
         }
 
+        var like = 0;
         if (action == "Add")
         {
+            like++;
             await _reviewLikeService.AddAsync(reviewId, user.Id, token);
         }
         else if (action == "Remove")
         {
+            like--;
             await _reviewLikeService.RemoveAsync(reviewId, user.Id, token);
         }
         else
@@ -80,9 +83,9 @@ public class LikeController : Controller
         }
 
         var count = await _reviewLikeService.GetLikesCountAsync(reviewId, token);
-        
-        await _userService.UpdateReviewsLikesAsync(user.Id, count, token);
 
-        return Ok();
+        await _userService.UpdateReviewsLikesAsync(user.Id, like, token);
+
+        return Ok(count);
     }
 }
