@@ -114,15 +114,6 @@
 </div>
 
 
-@if (review.Status.Name == "Common")
-{
-    <span>Comments:</span>
-    foreach (var v in review.Comment)
-    {
-        //v.Content;
-    }
-}
-
 
 <hr/>
 <input type="hidden" id="Id" name="Id" value="@review.Id"/>
@@ -175,4 +166,15 @@
             })
         }
     </script>
+}
+
+
+
+@if (review.Status.Name == "Common")
+{
+    <span>Comments:</span>
+    foreach (var v in review.Comment)
+    {
+        //v.Content;
+    }
 }
