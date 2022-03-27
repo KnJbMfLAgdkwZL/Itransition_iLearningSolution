@@ -1,18 +1,20 @@
 @using Database.Models
 @model dynamic
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = _localizer["Admin User"];
     Layout = "_Layout";
     var user = (User) ViewData["user"]!;
     var roles = (List<Role>) ViewData["roles"]!;
 }
 
-<h2>Admin User</h2>
+<h2>@_localizer["Admin User"]</h2>
 
 <a asp-controller="User" asp-action="GetUserReviews"
    asp-route-id="@user.Id">
-    Get User Reviews
+    @_localizer["Get User Reviews"]
 </a> <br/>
 
 <form asp-action="UpdateUser" asp-controller="User"
@@ -21,12 +23,13 @@
     <input type="hidden" name="Id" value="@user.Id"/>
     Id : @user.Id <br/>
 
-    RegistrationDate : @user.RegistrationDate <br/>
-    LastLoginDate : @user.LastLoginDate <br/>
-    ReviewsLikes : @user.ReviewsLikes <br/>
+    
+    @_localizer["RegistrationDate"]: @user.RegistrationDate <br/>
+    @_localizer["LastLoginDate"]: @user.LastLoginDate <br/>
+    @_localizer["ReviewsLikes"]: @user.ReviewsLikes <br/>
 
-    Nickname : <input type="text" name="Nickname" value="@user.Nickname"/> <br/>
-    Role.Name :
+    @_localizer["Nickname"]: <input type="text" name="Nickname" value="@user.Nickname"/> <br/>
+    @_localizer["Role_Name"]:
     <select name="RoleId">
         @{
             foreach (var v in roles)
@@ -44,13 +47,13 @@
     </select>
     <br/>
 
-    Social.Email : @user.Social.Email <br/>
-    Social.Network : @user.Social.Network <br/>
-    Social.FirstName : @user.Social.FirstName <br/>
-    Social.LastName : @user.Social.LastName <br/>
+    @_localizer["Social_Email"]: @user.Social.Email <br/>
+    @_localizer["Social_Network"]: @user.Social.Network <br/>
+    @_localizer["Social_FirstName"]: @user.Social.FirstName <br/>
+    @_localizer["Social_LastName"]: @user.Social.LastName <br/>
 
-    Comment.Count : @user.Comment.Count <br/>
-    Review.Count : @user.Review.Count <br/>
+    @_localizer["Comment.Count"]: @user.Comment.Count <br/>
+        @_localizer["Review.Count"]: @user.Review.Count <br/>
 
-    <input type="submit" value="Update User">
+    <input type="submit" value="@_localizer["Update User"]">
 </form>

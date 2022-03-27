@@ -1,4 +1,7 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer _localizer
+@{
     var theme = "bootstrap_Sandstone.css";
     var themIco = "/moon-stars-fill.svg";
     var themeCookies = Context.Request.Cookies["Theme"];
@@ -14,8 +17,20 @@
             themIco = "/sun.svg";
         }
     }
-}
 
+    var cultureItems = new List<SelectListItem>()
+    {
+        new() {Value = "ru", Text = "Русский"},
+        new() {Value = "en", Text = "English"}
+    };
+    foreach (var cultureItem in cultureItems)
+    {
+        if (cultureItem.Value == CultureInfo.CurrentCulture.Name)
+        {
+            cultureItem.Selected = true;
+        }
+    }
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -42,10 +57,57 @@
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
 
                 <ul class="navbar-nav flex-grow-1">
+
                     <li class="nav-item">
-                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">
+                            @_localizer["Home"]
+                        </a>
                     </li>
+
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        if (User.IsInRole("Admin") || User.IsInRole("User"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="User" asp-action="GetUserReviews">
+                                    @_localizer["GetUserReviews"]
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="Review" asp-action="CreateOrUpdate">
+                                    @_localizer["CreateOrUpdate"]
+                                </a>
+                            </li>
+                        }
+                        if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-controller="User" asp-action="GetUsers">
+                                    @_localizer["Admin.GetUsers"]
+                                </a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">
+                                @_localizer["Logout"]
+                            </a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">
+                                @_localizer["Login"]
+                            </a>
+                        </li>
+                    }
                 </ul>
+                
+                @_localizer["Language:"] 
+                <select asp-items="cultureItems"
+                        id="culture"
+                        onchange="document.location = `/Home/SetLanguage?culture=${this.value}`">
+                </select>
 
                 <img id="themeIco" class="themeIco" src="@themIco" alt="" onclick="ChangeUiTheme()"/>
 

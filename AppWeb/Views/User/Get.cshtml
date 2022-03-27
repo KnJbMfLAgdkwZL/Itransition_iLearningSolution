@@ -1,10 +1,12 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
 @{
-    ViewBag.Title = "User Reviews";
+    ViewBag.Title = _localizer["User Reviews"];
     Layout = "_Layout";
     var id = (int) ViewData["id"]!;
 }
 
-<h2 class="ReviewsTitle">User Reviews:</h2>
+<h2 class="ReviewsTitle">@_localizer["User Reviews"]</h2>
 <hr/>
 <div id="UserReviews"></div>
 

@@ -2,9 +2,11 @@
 @using DataAccess.Dto
 @using Business.Dto.Frontend.FromForm
 @model dynamic
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = _localizer["List Of Users"];
     Layout = "_Layout";
 
     var orderBy = new List<string>()
@@ -32,7 +34,9 @@
     }
 }
 
-<h2 class="mb-3">Admin Users</h2>
+<h2 class="mb-3">
+    @_localizer["List Of Users"]
+</h2>
 
 <form
     asp-controller="User"
@@ -41,7 +45,9 @@
     class="mb-5">
 
     <div class="form-group row col-sm-3 mb-1">
-        <label for="OrderBy" class="col-sm-4 col-form-label">Order By:</label>
+        <label for="OrderBy" class="col-sm-4 col-form-label">
+            @_localizer["Order By"]
+        </label>
         <div class="col-sm-8">
             <select class="form-control form-control-sm form-select"
                     name="OrderBy"
@@ -75,7 +81,7 @@
     <div class="form-group row col-sm-3 mb-1">
         <div>
             <input type="text" class="form-control form-control-sm"
-                   placeholder="Nickname"
+                   placeholder="@_localizer["Nickname"]"
                    name="Nickname"
                    value="@usersFilterForm.Nickname"/>
         </div>
@@ -83,7 +89,7 @@
     <div class="form-group row col-sm-3 mb-1">
         <div>
             <input type="text" class="form-control form-control-sm"
-                   placeholder="Role"
+                   placeholder="@_localizer["Role"]"
                    name="Role"
                    value="@usersFilterForm.Role"/>
         </div>
@@ -91,7 +97,7 @@
     <div class="form-group row col-sm-3 mb-1">
         <div>
             <input type="text" class="form-control form-control-sm"
-                   placeholder="Email"
+                   placeholder="@_localizer["Email"]"
                    name="Email"
                    value="@usersFilterForm.Email"/>
         </div>
@@ -99,7 +105,7 @@
     <div class="form-group row col-sm-3 mb-1">
         <div>
             <input type="text" class="form-control form-control-sm"
-                   placeholder="Network"
+                   placeholder="@_localizer["Network"]"
                    name="Network"
                    value="@usersFilterForm.Network"/>
         </div>
@@ -107,7 +113,7 @@
     <div class="form-group row col-sm-3 mb-1">
         <div>
             <input type="text" class="form-control form-control-sm"
-                   placeholder="FirstName"
+                   placeholder="@_localizer["FirstName"]"
                    name="FirstName"
                    value="@usersFilterForm.FirstName"/>
         </div>
@@ -115,14 +121,14 @@
     <div class="form-group row col-sm-3 mb-1">
         <div>
             <input type="text" class="form-control form-control-sm"
-                   placeholder="LastName"
+                   placeholder="@_localizer["LastName"]"
                    name="LastName"
                    value="@usersFilterForm.LastName"/>
         </div>
     </div>
     <div class="form-group row col-sm-3 mb-1">
         <div>
-            <input type="submit" class="btn btn-primary btn-sm form-control-sm" value="Filter"/>
+            <input type="submit" class="btn btn-primary btn-sm form-control-sm" value="@_localizer["Filter"]"/>
         </div>
     </div>
 </form>
@@ -131,15 +137,15 @@
     <thead>
     <tr>
         <th scope="col">Id</th>
-        <th scope="col">Nickname</th>
-        <th scope="col">ReviewsLikes</th>
-        <th scope="col">Role</th>
-        <th scope="col">Email</th>
-        <th scope="col">Network</th>
-        <th scope="col">FirstName</th>
-        <th scope="col">LastName</th>
-        <th scope="col">LastLoginDate</th>
-        <th scope="col">RegistrationDate</th>
+        <th scope="col">@_localizer["Nickname"]</th>
+        <th scope="col">@_localizer["ReviewsLikes"]</th>
+        <th scope="col">@_localizer["Role"]</th>
+        <th scope="col">@_localizer["Email"]</th>
+        <th scope="col">@_localizer["Network"]</th>
+        <th scope="col">@_localizer["FirstName"]</th>
+        <th scope="col">@_localizer["LastName"]</th>
+        <th scope="col">@_localizer["LastLoginDate"]</th>
+        <th scope="col">@_localizer["RegistrationDate"]</th>
     </tr>
     </thead>
 

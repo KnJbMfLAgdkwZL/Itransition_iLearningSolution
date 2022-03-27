@@ -15,26 +15,134 @@
     </ItemGroup>
 
     <ItemGroup>
-      <EmbeddedResource Update="Resources\Views\Home\Index.ru.resx">
+      <EmbeddedResource Update="Resources\Views\Account\Login.resx">
         <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Index.ru.Designer.cs</LastGenOutput>
+        <LastGenOutput>Login.Designer.cs</LastGenOutput>
       </EmbeddedResource>
-      <EmbeddedResource Update="Resources\Views\Home\Index.en.resx">
+      <EmbeddedResource Update="Resources\Views\Home\Index.resx">
         <Generator>ResXFileCodeGenerator</Generator>
-        <LastGenOutput>Index.en.Designer.cs</LastGenOutput>
+        <LastGenOutput>Index.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Product\Get.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Get.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Review\CreateOrUpdate.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>CreateOrUpdate.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Review\Delete.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Delete.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Review\Get.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Get.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Review\_GetReviews.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>_GetReviews.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Search\FullTextSearch.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>FullTextSearch.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Shared\_Layout.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>_Layout.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\Tag\Get.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Get.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\User\Get.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Get.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\User\GetUser.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>GetUser.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\User\GetUserReviews.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>GetUserReviews.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Resources\Views\User\GetUsers.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>GetUsers.Designer.cs</LastGenOutput>
       </EmbeddedResource>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Resources\Views\Home\Index.ru.Designer.cs">
+      <Compile Update="Resources\Views\Account\Login.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
-        <DependentUpon>Index.ru.resx</DependentUpon>
+        <DependentUpon>Login.resx</DependentUpon>
       </Compile>
-      <Compile Update="Resources\Views\Home\Index.en.Designer.cs">
+      <Compile Update="Resources\Views\Home\Index.Designer.cs">
         <DesignTime>True</DesignTime>
         <AutoGen>True</AutoGen>
-        <DependentUpon>Index.en.resx</DependentUpon>
+        <DependentUpon>Index.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Product\Get.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Get.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Review\CreateOrUpdate.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>CreateOrUpdate.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Review\Delete.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Delete.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Review\Get.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Get.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Review\_GetReviews.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>_GetReviews.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Search\FullTextSearch.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>FullTextSearch.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Shared\_Layout.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>_Layout.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\Tag\Get.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Get.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\User\Get.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Get.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\User\GetUser.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GetUser.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\User\GetUserReviews.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GetUserReviews.resx</DependentUpon>
+      </Compile>
+      <Compile Update="Resources\Views\User\GetUsers.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>GetUsers.resx</DependentUpon>
       </Compile>
     </ItemGroup>
 

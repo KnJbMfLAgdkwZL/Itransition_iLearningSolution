@@ -1,8 +1,9 @@
 @using Database.Models
 @model dynamic
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
 
 @{
-    ViewBag.Title = "title";
     Layout = "_Layout";
     var statusReviews = (List<StatusReview>) ViewData["statusReviews"]!;
     var productGroups = (List<ProductGroup>) ViewData["productGroups"]!;
@@ -47,14 +48,14 @@
         authorAssessment = review.AuthorAssessment;
     }
 
+    var action = (reviewId <= 0) ? _localizer["Create"] : _localizer["Update"];
 
-    var action = (reviewId <= 0) ? "Create" : "Update";
+    ViewBag.Title = action + " " + _localizer["Review"];
 }
 
 <h2>
-    @role
     @action
-    Review
+    @_localizer["Review"]
 </h2>
 
 @if (reviewId > 0)
@@ -63,7 +64,7 @@
        asp-action="Delete"
        asp-route-id="@id"
        class="btn btn-outline-danger btn-s">
-        Delete
+        @_localizer["Delete"]
     </a>
     <br/>
 }
@@ -71,7 +72,7 @@
 <form asp-controller="Review" asp-action="CreateOrUpdate" method="POST" asp-anti-forgery="true">
 
     <div class="form-group row col-sm-8 mb-3">
-        <label for="StatusReviewId" class="col-sm-2 col-form-label">Status Review:</label>
+        <label for="StatusReviewId" class="col-sm-2 col-form-label">@_localizer["Status Review:"]</label>
         <div class="col-sm-5">
             <select
                 name="StatusReviewId"
@@ -95,7 +96,7 @@
     </div>
 
     <div class="form-group row col-sm-8 mb-3">
-        <label for="ProductId" class="col-sm-2 col-form-label">Product:</label>
+        <label for="ProductId" class="col-sm-2 col-form-label">@_localizer["Product:"]</label>
         <div class="col-sm-5">
             <select
                 name="ProductId"
@@ -119,7 +120,9 @@
     </div>
 
     <div class="form-group row col-sm-8 mb-3">
-        <label for="ProductName" class="col-sm-2 col-form-label">Product Name:</label>
+        <label for="ProductName" class="col-sm-2 col-form-label">
+            @_localizer["Product Name:"]
+        </label>
         <div class="col-sm-5">
             <input type="text"
                    class="form-control"
@@ -132,7 +135,9 @@
     </div>
 
     <div class="form-group row col-sm-8 mb-3">
-        <label for="Title" class="col-sm-2 col-form-label">Title:</label>
+        <label for="Title" class="col-sm-2 col-form-label">
+            @_localizer["Title:"]
+        </label>
         <div class="col-sm-5">
             <input type="text"
                    class="form-control"
@@ -146,7 +151,9 @@
 
     <div class="form-group row col-sm-8 mb-3">
         <input type="hidden" name="TagsInput" id="tagsInput" value="@tags">
-        <label for="tagsInput" class="col-sm-2 col-form-label">Tags:</label>
+        <label for="tagsInput" class="col-sm-2 col-form-label">
+            @_localizer["Tags:"]
+        </label>
         <div class="col-sm-5">
             <input type="text" class="form-control" placeholder="Tags" id="tagAdd">
         </div>
@@ -162,7 +169,9 @@
     </div>
 
     <div class="form-group row col-sm-8 mb-3">
-        <label for="Content" class="col-sm-2 col-form-label">Content:</label>
+        <label for="Content" class="col-sm-2 col-form-label">
+            @_localizer["Content:"]
+        </label>
         <div>
             <textarea class="form-control" 
             rows="3"
@@ -173,7 +182,9 @@
     </div>
 
     <div class="form-group row col-sm-8 mb-3">
-        <label for="Title" class="col-sm-3 align-self-center">Author Assessment:</label>
+        <label for="Title" class="col-sm-3 align-self-center">
+            @_localizer["Author Assessment:"]
+        </label>
         <div class="col-sm-9 align-middle">
             <span class="star-cb-group   form-control-plaintext">
                 @{
@@ -199,7 +210,7 @@
     <input type="hidden" name="Id" id="Id" value="@id"/>
     <input type="hidden" name="UserId" id="UserId" value="@userId"/>
     <input type="hidden" name="ReviewId" id="ReviewId" value="@reviewId"/>
-    
+
     <div class="form-group row col-sm-8 mb-5">
         <input type="submit" class="btn btn-primary btn-lg col-sm-3" value="@action"/>
     </div>

@@ -1,40 +1,14 @@
 ﻿@using Microsoft.AspNetCore.Mvc.Localization
-@using System.Globalization
 @inject IViewLocalizer _localizer
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = _localizer["Home Page"];
 }
 
-<h1>@_localizer["heloworld"]</h1>
-
-@{
-    var cultureItems = new List<SelectListItem>()
-    {
-        new() {Value = "ru", Text = "Русский"},
-        new() {Value = "en", Text = "English"}
-    };
-    foreach (var cultureItem in cultureItems)
-    {
-        if (cultureItem.Value == CultureInfo.CurrentCulture.Name)
-        {
-            cultureItem.Selected = true;
-        }
-    }
-
-}
-
-Language:
-<select asp-items="cultureItems"
-        id="culture"
-        onchange="document.location = `/Home/SetLanguage?culture=${this.value}`">
-</select>
-
-
-<h2 class="ReviewsTitle">New Reviews:</h2>
+<h2 class="ReviewsTitle">@_localizer["New Reviews:"]</h2>
 <hr/>
 <div id="newReviews"></div>
 
-<h2 class="ReviewsTitle">Top Reviews:</h2>
+<h2 class="ReviewsTitle">@_localizer["Top Reviews:"]</h2>
 <hr/>
 <div id="topReviews"></div>
 
@@ -50,26 +24,3 @@ window.onload = () => {
     MainPageLoadTopTags("tag-cloud")
 }
 </script>
-
-
-<hr/>
-<a asp-controller="Account" asp-action="Login">Login</a>
-<br/>
-<a asp-controller="Account" asp-action="Logout">Logout</a>
-<br/>
-
-@{
-    var name = User.Identity?.Name;
-    var uid = User.FindFirst("Uid")?.Value;
-    var email = User.FindFirst("Email")?.Value;
-    var network = User.FindFirst("Network")?.Value;
-}
-
-<div>Uid: @uid | Email: @email | Network: @network | Name: @name</div>
-
-<div>
-    <a asp-controller="User" asp-action="GetUsers">Admin Users</a>
-</div>
-<div>
-    <a asp-controller="User" asp-action="GetUserReviews">User PersonalPage</a>
-</div>

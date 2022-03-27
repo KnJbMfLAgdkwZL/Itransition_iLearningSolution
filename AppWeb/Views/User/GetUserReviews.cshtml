@@ -1,15 +1,17 @@
 @using Database.Models
 @model dynamic
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
 
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = _localizer["User Reviews"];
     Layout = "_Layout";
     var reviews = (List<Review>) ViewData["reviews"]!;
     var productGroups = (Dictionary<int, ProductGroup>) ViewData["productGroups"]!;
     var userId = (int) ViewData["userId"]!;
 }
 
-<h2>User Reviews</h2>
+<h2>@_localizer["User Reviews"]</h2>
 
 <style>
 th {
@@ -21,15 +23,19 @@ th {
     <a asp-controller="Review" asp-action="CreateOrUpdate"
        asp-route-userId="@userId"
        asp-route-reviewId="0">
-        Create Review
+        @_localizer["Create Review"]
     </a>
 </p>
 
 <p>
-    <strong>Click the headers to sort the table.</strong>
+    <strong>
+        @_localizer["Click the headers to sort the table."]
+    </strong>
 </p>
 
-<p>First click, the sorting is ascending (A to Z). Click again, the sorting will be descending (Z to A).</p>
+<p>
+    @_localizer["First click, the sorting is ascending (A to Z). Click again, the sorting will be descending (Z to A)."]
+</p>
 
 <table class="table table-hover" id="myTable">
     <thead>
@@ -42,56 +48,56 @@ th {
         </th>
         <th>
             <div class="form-group">
-                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Product"/>
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="@_localizer["Product"]"/>
             </div>
         </th>
         <th>
             <div class="form-group">
-                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Status"/>
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="@_localizer["Status"]"/>
             </div>
         </th>
         <th>
             <div class="form-group">
-                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Name"/>
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="@_localizer["Name"]"/>
             </div>
         </th>
         <th>
             <div class="form-group">
-                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Title"/>
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="@_localizer["Title"]"/>
             </div>
         </th>
         <th>
             <div class="form-group">
-                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Creation"/>
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="@_localizer["Creation"]"/>
             </div>
         </th>
         <th>
             <div class="form-group">
-                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Redaction"/>
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="@_localizer["Redaction"]"/>
             </div>
         </th>
         <th>
             <div class="form-group">
-                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="Author Assessment"/>
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="@_localizer["Author Assessment"]"/>
             </div>
         </th>
         <th>
             <div class="form-group">
-                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="User Assessment"/>
+                <input type="text" class="form-control form-control-sm SearchInput" onkeyup="myFunction()" placeholder="@_localizer["User Assessment"]"/>
             </div>
         </th>
     </tr>
 
     <tr>
         <th scope="col" onclick="sortTable(0, 'int')">Id</th>
-        <th scope="col" onclick="sortTable(1)">Product</th>
-        <th scope="col" onclick="sortTable(2)">Status</th>
-        <th scope="col" onclick="sortTable(3)">ProductName</th>
-        <th scope="col" onclick="sortTable(4)">Title</th>
-        <th scope="col" onclick="sortTable(5)">CreationDate</th>
-        <th scope="col" onclick="sortTable(6)">RedactionDate</th>
-        <th scope="col" onclick="sortTable(7)">AuthorAssessment</th>
-        <th scope="col" onclick="sortTable(8)">AverageUserRating</th>
+        <th scope="col" onclick="sortTable(1)">@_localizer["Product"]</th>
+        <th scope="col" onclick="sortTable(2)">@_localizer["Status"]</th>
+        <th scope="col" onclick="sortTable(3)">@_localizer["ProductName"]</th>
+        <th scope="col" onclick="sortTable(4)">@_localizer["Title"]</th>
+        <th scope="col" onclick="sortTable(5)">@_localizer["CreationDate"]</th>
+        <th scope="col" onclick="sortTable(6)">@_localizer["RedactionDate"]</th>
+        <th scope="col" onclick="sortTable(7)">@_localizer["AuthorAssessment"]</th>
+        <th scope="col" onclick="sortTable(8)">@_localizer["AverageUserRating"]</th>
     </tr>
     
     </thead>

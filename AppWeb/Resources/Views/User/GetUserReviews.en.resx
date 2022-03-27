@@ -1,0 +1,65 @@
+<root>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Author Assessment" xml:space="preserve">
+        <value>Author Assessment</value>
+    </data>
+    <data name="AuthorAssessment" xml:space="preserve">
+        <value>AuthorAssessment</value>
+    </data>
+    <data name="AverageUserRating" xml:space="preserve">
+        <value>AverageUserRating</value>
+    </data>
+    <data name="Click the headers to sort the table." xml:space="preserve">
+        <value>Click the headers to sort the table.</value>
+    </data>
+    <data name="Create Review" xml:space="preserve">
+        <value>Create Review</value>
+    </data>
+    <data name="Creation" xml:space="preserve">
+        <value>Creation</value>
+    </data>
+    <data name="CreationDate" xml:space="preserve">
+        <value>CreationDate</value>
+    </data>
+    <data name="First click, the sorting is ascending (A to Z). Click again, the sorting will be descending (Z to A)." xml:space="preserve">
+        <value>First click, the sorting is ascending (A to Z). Click again, the sorting will be descending (Z to A).</value>
+    </data>
+    <data name="Name" xml:space="preserve">
+        <value>Name</value>
+    </data>
+    <data name="Product" xml:space="preserve">
+        <value>Product</value>
+    </data>
+    <data name="ProductName" xml:space="preserve">
+        <value>ProductName</value>
+    </data>
+    <data name="Redaction" xml:space="preserve">
+        <value>Redaction</value>
+    </data>
+    <data name="RedactionDate" xml:space="preserve">
+        <value>RedactionDate</value>
+    </data>
+    <data name="Status" xml:space="preserve">
+        <value>Status</value>
+    </data>
+    <data name="Title" xml:space="preserve">
+        <value>Title</value>
+    </data>
+    <data name="User Assessment" xml:space="preserve">
+        <value>User Assessment</value>
+    </data>
+    <data name="User Reviews" xml:space="preserve">
+        <value>User Reviews</value>
+    </data>
+</root>

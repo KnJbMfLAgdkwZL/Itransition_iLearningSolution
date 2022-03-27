@@ -1,5 +1,7 @@
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = _localizer["login"];
     Layout = "_Layout";
 }
 

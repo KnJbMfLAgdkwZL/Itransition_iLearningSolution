@@ -1,9 +1,10 @@
 @model dynamic
-
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
 @{
-    ViewBag.Title = "title";
+    ViewBag.Title = _localizer["Review Deleted"];
     Layout = "_Layout";
 }
 
-<h2>Review Deleted</h2>
+<h2>@_localizer["Review Deleted"]</h2>
 

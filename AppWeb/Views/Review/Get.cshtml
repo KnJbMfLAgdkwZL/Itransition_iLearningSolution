@@ -1,12 +1,15 @@
 @using Database.Models
 @using Microsoft.AspNetCore.Html
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer _localizer
+
 @{
     var review = (Review) ViewData["review"]!;
     var isUserLike = (bool) ViewData["IsUserLike"]!;
 
     var assessment = (byte?) ViewData["Assessment"]!;
 
-    ViewBag.Title = $"Review | {review.Title} | {review.ProductName}";
+    ViewBag.Title = $"{_localizer["Review"]} | {review.Title} | {review.ProductName}";
     Layout = "_Layout";
 }
 
@@ -68,7 +71,7 @@
             <div class="reviewsUserRating">
                 <img id="likeImg" class="like" src="/like_black.svg" alt=""/>
                 <span id="likeCount">@review.ReviewLike.Count</span>
-                User Rating:
+                @_localizer["User Rating:"]
                 @if (review.AverageUserRating >= 4)
                 {
                     <span class="badge rounded-pill bg-success">@review.AverageUserRating</span>

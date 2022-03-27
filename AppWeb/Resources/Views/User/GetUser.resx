@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<root>
+    <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+        <xsd:element name="root" msdata:IsDataSet="true">
+            
+        </xsd:element>
+    </xsd:schema>
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="version">
+        <value>1.3</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    </resheader>
+    <data name="Admin User" xml:space="preserve">
+        <value>Admin User</value>
+        <comment>Admin User</comment>
+    </data>
+    <data name="Get User Reviews" xml:space="preserve">
+        <value>Get User Reviews</value>
+        <comment>Get User Reviews</comment>
+    </data>
+    <data name="RegistrationDate" xml:space="preserve">
+        <value>RegistrationDate</value>
+        <comment>RegistrationDate</comment>
+    </data>
+    <data name="LastLoginDate" xml:space="preserve">
+        <value>LastLoginDate</value>
+        <comment>LastLoginDate</comment>
+    </data>
+    <data name="ReviewsLikes" xml:space="preserve">
+        <value>ReviewsLikes</value>
+        <comment>ReviewsLikes</comment>
+    </data>
+    <data name="Nickname" xml:space="preserve">
+        <value>Nickname</value>
+        <comment>Nickname</comment>
+    </data>
+    <data name="Role_Name" xml:space="preserve">
+        <value>Role_Name</value>
+        <comment>Role_Name</comment>
+    </data>
+    <data name="Social_Email" xml:space="preserve">
+        <value>Social_Email</value>
+        <comment>Social_Email</comment>
+    </data>
+    <data name="Social_Network" xml:space="preserve">
+        <value>Social_Network</value>
+        <comment>Social_Network</comment>
+    </data>
+    <data name="Social_FirstName" xml:space="preserve">
+        <value>Social_FirstName</value>
+        <comment>Social_FirstName</comment>
+    </data>
+    <data name="Social_LastName" xml:space="preserve">
+        <value>Social_LastName</value>
+        <comment>Social_LastName</comment>
+    </data>
+    <data name="Comment.Count" xml:space="preserve">
+        <value>Comment.Count</value>
+        <comment>Comment.Count</comment>
+    </data>
+    <data name="Review.Count" xml:space="preserve">
+        <value>Review.Count</value>
+        <comment>Review.Count</comment>
+    </data>
+    <data name="Update User" xml:space="preserve">
+        <value>Update User</value>
+        <comment>Update User</comment>
+    </data>
+</root>
