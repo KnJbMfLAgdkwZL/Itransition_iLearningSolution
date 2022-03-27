@@ -31,7 +31,16 @@ public class ReviewUserRatingService : IReviewUserRatingService
     {
         var ratings = await _reviewUserRatingRepository.GetAllAsync(
             rating => rating.ReviewId == reviewId, token);
-        
+
         return (float) ratings.Average(v => v.Assessment);
+    }
+
+    public async Task<ReviewUserRating?> GetAsync(int reviewId, int userId, CancellationToken token)
+    {
+        return await _reviewUserRatingRepository.GetOneAsync(
+            rating =>
+                rating.ReviewId == reviewId &&
+                rating.UserId == userId,
+            token);
     }
 }

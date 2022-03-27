@@ -4,6 +4,8 @@
     var review = (Review) ViewData["review"]!;
     var isUserLike = (bool) ViewData["IsUserLike"]!;
 
+    var assessment = (byte?) ViewData["Assessment"]!;
+
     ViewBag.Title = $"Review | {review.Title} | {review.ProductName}";
     Layout = "_Layout";
 }
@@ -79,6 +81,28 @@
                 {
                     <span class="badge rounded-pill bg-danger">@review.AverageUserRating</span>
                 }
+                
+                @if (User.Identity != null && User.Identity.IsAuthenticated)
+                {
+                    <span class="star-cb-group   form-control-plaintext">
+                        @{
+                            for (var i = 5; i > 0; i--)
+                            {
+                                if (assessment != null && i == assessment)
+                                {
+                                    <input type="radio" checked="" id="rating-@i" name="UserRating" class="UserRating" value="@i"/>
+                                    <label for="rating-@i">@i</label>
+                                }
+                                else
+                                {
+                                    <input type="radio" id="rating-@i" name="UserRating" class="UserRating" value="@i"/>
+                                    <label for="rating-@i">@i</label>
+                                }
+                            }
+                        }
+                    </span>
+                }
+                
             </div>
         </div>
         <h6>
@@ -104,17 +128,12 @@
 <input type="hidden" id="Id" name="Id" value="@review.Id"/>
 @if (User.Identity != null && User.Identity.IsAuthenticated)
 {
-    <select name="UserRating" id="UserRating">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
-    </select>
     <script>
-        let userRating = document.getElementById("UserRating")
-        userRating.onclick = function () {
-            fetch(`/ReviewUserRating/Set?reviewId=@review.Id&assessment=${this.value}`, {method: "GET"})
+        let UserRating = document.getElementsByClassName('UserRating')
+        for (let v of UserRating) {
+            v.onclick = function () {
+                fetch(`/ReviewUserRating/Set?reviewId=@review.Id&assessment=${this.value}`, {method: "GET"})
+            }
         }
     </script>
 

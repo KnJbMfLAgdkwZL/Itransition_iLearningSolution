@@ -285,10 +285,17 @@ public class ReviewController : Controller
         }
 
         ViewData["IsUserLike"] = false;
+        ViewData["Assessment"] = null;
         var user = _accountService.GetAuthorizedUser(HttpContext, out var error, token);
         if (user != null)
         {
             ViewData["IsUserLike"] = await _reviewLikeService.IsUserLikeReviewAsync(user.Id, id, token);
+
+            var reviewUserRating = await _reviewUserRatingService.GetAsync(review.Id, user.Id, token);
+            if (reviewUserRating != null)
+            {
+                ViewData["Assessment"] = reviewUserRating.Assessment;
+            }
         }
 
         var statusReview = await _statusReviewService.GetAsync("Deleted", token);
@@ -308,7 +315,6 @@ public class ReviewController : Controller
         review.ReviewTag = await _reviewTagService.GetTagsNamesAsync(review.Id, token);
         review.ReviewLike = review.ReviewLike.Where(like => like.IsSet).ToList();
         ViewData["review"] = review;
-
         return View();
     }
 
