@@ -41,7 +41,7 @@ public class LikeController : Controller
 
     private Review? GetOneReview(int reviewId, out IActionResult? error, CancellationToken token)
     {
-        var review = _reviewService.GetOneAsync(reviewId, token).Result;
+        var review = _reviewService.GetOneIncludesAsync(reviewId, token).Result;
         if (review == null)
         {
             error = BadRequest("Review not found");
@@ -84,7 +84,7 @@ public class LikeController : Controller
 
         var count = await _reviewLikeService.GetLikesCountAsync(reviewId, token);
 
-        await _userService.UpdateReviewsLikesAsync(user.Id, like, token);
+        await _userService.UpdateReviewsLikesAsync(review.Author.Id, like, token);
 
         return Ok(count);
     }
