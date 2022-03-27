@@ -167,12 +167,29 @@ function MainPageLoadTopTags(id) {
     })
 }
 
+let loading = 0
+
+function LoadingGif(val) {
+    let loadingDiv = document.getElementsByClassName('loading')[0]
+    let body = document.getElementsByTagName('body')[0]
+    loading += val
+    if (loading > 0) {
+        body.style.overflow = "hidden"
+        loadingDiv.style.display = "block"
+    } else {
+        loadingDiv.style.display = "none"
+        body.style.overflow = "visible"
+    }
+}
+
 function GetReview(page, id) {
+    LoadingGif(+1)
     fetch(page, {
         method: "GET"
     }).then((response) => {
         return response.text();
     }).then((data) => {
         document.getElementById(id).innerHTML = data
+        LoadingGif(-1)
     })
 }
