@@ -193,3 +193,40 @@ function GetReview(page, id) {
         LoadingGif(-1)
     })
 }
+
+function getCookie(name) {
+    const value = `; ${document.cookie}`;
+    const parts = value.split(`; ${name}=`);
+    if (parts.length === 2) return parts.pop().split(';').shift();
+}
+
+function setCookie(name, value, days = 7) {
+    let expires = "";
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toUTCString();
+    }
+    document.cookie = name + "=" + (value || "") + expires + "; path=/";
+}
+
+function CheckUiThemeCookie() {
+    let value = getCookie("Theme")
+    if (!value) {
+        setCookie("Theme", "bootstrap_Sandstone.css")
+    }
+}
+
+CheckUiThemeCookie()
+
+function ChangeUiTheme() {
+    let value = getCookie("Theme")
+    if (value) {
+        if (value === "bootstrap_Sandstone.css") {
+            setCookie("Theme", "bootstrap_Slate.css")
+        } else if (value === "bootstrap_Slate.css") {
+            setCookie("Theme", "bootstrap_Sandstone.css")
+        }
+    }
+    window.location.reload()
+}

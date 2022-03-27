@@ -1,4 +1,22 @@
-﻿<!DOCTYPE html>
+﻿@{
+    var theme = "bootstrap_Sandstone.css";
+    var themIco = "/moon-stars-fill.svg";
+    var themeCookies = Context.Request.Cookies["Theme"];
+    if (themeCookies != null)
+    {
+        theme = $"/css/{themeCookies}";
+        if (themeCookies == "bootstrap_Sandstone.css")
+        {
+            themIco = "/moon-stars-fill.svg";
+        }
+        else if (themeCookies == "bootstrap_Slate.css")
+        {
+            themIco = "/sun.svg";
+        }
+    }
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8"/>
@@ -6,14 +24,12 @@
     <title>@ViewData["Title"] - AppWeb</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
-
-    <link rel="stylesheet" href="~/css/bootstrap_Sandstone.css" asp-append-version="true"/>
-
+    <link rel="stylesheet" href="@theme" asp-append-version="true"/>
 </head>
 <body>
 <div class="loading"></div>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light box-shadow mb-3">
         <div class="container-fluid">
 
             <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">AppWeb</a>
@@ -30,6 +46,8 @@
                         <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                     </li>
                 </ul>
+
+                <img id="themeIco" class="themeIco" src="@themIco" alt="" onclick="ChangeUiTheme()"/>
 
                 <form class="d-flex" asp-action="FullTextSearch" asp-controller="Search"
                       method="GET"
