@@ -1,3 +1,4 @@
+using System.Globalization;
 using AppWeb.AuthorizationHandler;
 using Business.Dto.Options;
 using Business.Interfaces;
@@ -12,6 +13,7 @@ using Database.DbContexts;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Localization;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -68,9 +70,11 @@ builder.Services.AddScoped<IUserSocialService, UserSocialService>();
 builder.Services.AddScoped<IUploadService, UploadService>();
 builder.Services.AddScoped<IClearHtmlService, ClearHtmlServiceService>();
 
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
+
 // Add services to the container.
-builder.Services.AddControllers();
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllers().AddViewLocalization();
+builder.Services.AddControllersWithViews().AddViewLocalization();
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -85,6 +89,18 @@ else
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+var supportedCultures = new[]
+{
+    new CultureInfo("en"),
+    new CultureInfo("ru"),
+};
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture("en"),
+    SupportedCultures = supportedCultures,
+    SupportedUICultures = supportedCultures
+});
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

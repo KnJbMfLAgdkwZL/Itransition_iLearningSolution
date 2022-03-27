@@ -1,6 +1,34 @@
-﻿@{
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using System.Globalization
+@inject IViewLocalizer _localizer
+@{
     ViewData["Title"] = "Home Page";
 }
+
+<h1>@_localizer["heloworld"]</h1>
+
+@{
+    var cultureItems = new List<SelectListItem>()
+    {
+        new() {Value = "ru", Text = "Русский"},
+        new() {Value = "en", Text = "English"}
+    };
+    foreach (var cultureItem in cultureItems)
+    {
+        if (cultureItem.Value == CultureInfo.CurrentCulture.Name)
+        {
+            cultureItem.Selected = true;
+        }
+    }
+
+}
+
+Language:
+<select asp-items="cultureItems"
+        id="culture"
+        onchange="document.location = `/Home/SetLanguage?culture=${this.value}`">
+</select>
+
 
 <h2 class="ReviewsTitle">New Reviews:</h2>
 <hr/>
