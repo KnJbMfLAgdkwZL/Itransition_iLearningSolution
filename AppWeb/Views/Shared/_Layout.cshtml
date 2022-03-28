@@ -103,11 +103,15 @@
                     }
                 </ul>
                 
-                @_localizer["Language:"] 
-                <select asp-items="cultureItems"
-                        id="culture"
-                        onchange="document.location = `/Home/SetLanguage?culture=${this.value}`">
-                </select>
+                <div class="form-group row ">
+                    <div>
+                        <select asp-items="cultureItems"
+                                class="form-control form-control-sm form-select"
+                                id="culture"
+                                onchange="document.location = `/Home/SetLanguage?culture=${this.value}`">
+                        </select>
+                    </div>
+                </div>
 
                 <img id="themeIco" class="themeIco" src="@themIco" alt="" onclick="ChangeUiTheme()"/>
 
