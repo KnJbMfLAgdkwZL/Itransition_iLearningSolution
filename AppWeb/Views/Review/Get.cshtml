@@ -84,7 +84,7 @@
                 {
                     <span class="badge rounded-pill bg-danger">@review.AverageUserRating</span>
                 }
-                
+
                 @if (User.Identity != null && User.Identity.IsAuthenticated)
                 {
                     <span class="star-cb-group   form-control-plaintext">
@@ -105,7 +105,7 @@
                         }
                     </span>
                 }
-                
+
             </div>
         </div>
         <h6>
@@ -115,7 +115,6 @@
         </h6>
     </div>
 </div>
-
 
 
 <hr/>
@@ -171,13 +170,98 @@
     </script>
 }
 
-
-
 @if (review.Status.Name == "Common")
 {
-    <span>Comments:</span>
-    foreach (var v in review.Comment)
-    {
-        //v.Content;
+    <h2>@_localizer["Comments"]</h2>
+    <div>
+        <div class="bs-component mb-5">
+            <div class="list-group" id="reviewComments">
+            </div>
+        </div>
+
+        @if (User.Identity != null && User.Identity.IsAuthenticated)
+        {
+            <div class="form-group row col-sm-6 mb-5">
+                <div class="mb-3">
+                    <label class="form-label">@_localizer["Message"]</label>
+                    <textarea class="form-control" 
+                        id="Message"
+                        minlength="1"
+                        maxlength="3000"
+                        rows="7"></textarea>
+                </div>
+                <div class="form-group row col-sm-3 mb-1">
+                    <div>
+                        <button id="SendMessage"
+                                onclick="SendMessageClick()"
+                                type="button"
+                                class="btn btn-outline-primary btn-sm">
+                            @_localizer["Send Message"]
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <script>
+            function SendMessageClick() {
+                let reviewId = @review.Id
+                let message = document.getElementById('Message')
+                let content = message.value
+                message.value = ""
+                if (content.length > 0 && content.length < 3000) {
+                    fetch('@Url.Action("CreateComment", "Comment")', {
+                        method: 'POST',
+                        headers: {
+                              'Accept': 'application/json',
+                              'Content-Type': 'application/json'
+                        }, 
+                        body: JSON.stringify({
+                            ReviewId: reviewId, 
+                            Content: content
+                        })
+                    }).then((response) => {
+                        if (response.ok) {
+                            GetComments()
+                        }
+                    })
+                }
+            }
+            </script>
+        }
+
+    </div>
+    <script>
+    let commentsCount = 0
+    function GetComments() {
+        fetch("/Comment/GetComments?reviewId=@review.Id", {
+            method: "GET"
+        }).then((response) => {
+            if (response.ok) {
+                return response.json()
+            }
+        }).then((data) => {
+            if (commentsCount !== data.length) {
+                commentsCount = data.length
+                RenderComments(data)
+            }
+        })
     }
+    function RenderComments(data) {
+        let comments = document.getElementById('reviewComments')
+        let str = ``
+        for (let v of data) {
+            let date = new Date(v.Date)
+            let dateStr = date.toLocaleTimeString() + ' ' + date.toLocaleDateString()
+            str += `<div class="list-group-item list-group-item-action flex-column align-items-start active mb-2">`
+            str += `<div class="d-flex w-100 justify-content-between">`
+            str += `<h6 class="mb-1">${v.User.Nickname}</h6>`
+            str += `<small>${dateStr}</small>`
+            str += `</div>`
+            str += `<p class="mb-1">${v.Content}</p>`
+            str += `</div>`
+        }
+        comments.innerHTML = str
+    }
+    GetComments()
+    setTimeout(GetComments, 5000)
+    </script>
 }

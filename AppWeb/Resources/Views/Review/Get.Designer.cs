@@ -56,5 +56,23 @@ namespace AppWeb.Resources.Views.Review {
                 return ResourceManager.GetString("User Rating:", resourceCulture);
             }
         }
+        
+        internal static string Send_Message {
+            get {
+                return ResourceManager.GetString("Send Message", resourceCulture);
+            }
+        }
+        
+        internal static string Message {
+            get {
+                return ResourceManager.GetString("Message", resourceCulture);
+            }
+        }
+        
+        internal static string Comments {
+            get {
+                return ResourceManager.GetString("Comments", resourceCulture);
+            }
+        }
     }
 }

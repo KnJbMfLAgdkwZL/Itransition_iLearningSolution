@@ -39,6 +39,7 @@ public partial class MasterContext : DbContext
                 .HasMaxLength(3000)
                 .IsUnicode(false)
                 .HasColumnName("content");
+            entity.Property(e => e.Date).HasColumnName("date");
             entity.Property(e => e.ReviewId).HasColumnName("reviewId");
             entity.Property(e => e.UserId).HasColumnName("userId");
 
