@@ -151,7 +151,7 @@ function MainPageLoadTopTags(id) {
             let shuffledArray = data.sort((a, b) => 0.5 - Math.random());
             for (let v of shuffledArray) {
                 let title = v.Name
-                let url = 'google.com'
+                let url = `/Tag/Get/${v.Id}`
                 let m = weights.indexOf(v.Amount) + 1
                 let a = ((m - weights[0]) / (weights.length - weights[0]))
                 let dif = (maxFontSize - minFontSize)
