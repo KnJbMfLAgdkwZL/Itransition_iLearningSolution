@@ -1,3 +1,85 @@
+Condition of the course project
+IT IS REQUIRED TO DEVELOP A SITE TO MANAGE RECOMMENDATIONS "WHAT TO SEE / WHAT TO READ / WHAT TO PLAY ETC."
+
+On the platform of your specialization (ASP.NET Core MVC), ORM and relational database (MySQL, SQL Server), Bootstrap is required.
+
+Unauthenticated users can only access read-only mode (
+search available,
+creation of reviews is not available,
+You can't read or leave comments
+put likes and ratings).
+
+Authenticated users have access to everything except the admin panel.
+
+In the basic version, the admin panel is a list of users (as links to their pages).
+The administrator sees each page of the user and each "review" as its creator (for example, he can edit or create a new "review" on behalf of the user from his page).
+
+It is required to support login through social networks (at least two of any).
+
+Full-text search on the site is available on each page (
+search results are always reviews,
+for example, if the text is found in a comment, which should be possible, then a link to the review is displayed).
+
+Each user has his personal page, where he sees a list of his reviews (
+table with filtering and sorting,
+the ability to create/delete/edit a review/open in view mode).
+
+Each review consists of:
+names,
+
+"group" (from a fixed set, for example, "Movies", "Books", "Games", etc.),
+
+tags (several tags are entered, auto-completion is required - when the user starts entering a tag, a list with
+variants of words that have already been introduced earlier on the site),
+
+review text (with support for markdown formatting), up to three illustrations (storage in the cloud) and ratings from the author of 5-b. scale.
+
+
+All pictures are saved in the cloud, loaded by drag-and-drop.
+
+The main page displays: the latest added reviews, reviews with the highest ratings, tag cloud.
+
+When the review is opened in Reading View (or by other users), *comments (required with an asterisk) are displayed below the review.
+
+Each user can put down a "rating" (from 1 to 5 stars) to the product (no more than one from one user per review) - the average user rating is displayed next to the title of the review everywhere on the site. Those. There is "author rating" and "user rating".
+
+Also, the user can like the review itself (no more than one per review from one user), these likes are added up for all reviews and are displayed next to the user's name.
+
+If two users describe the same movie, it is not related in any way (see requirements with an asterisk).
+
+The site must support two languages: Russian and English (the user chooses and the choice is saved). The language refers only to the UI, the content is not translated.
+
+The site must support two designs (themes): light and dark (the user chooses and the choice is saved).
+
+Necessarily:
+Bootstrap
+support for different resolutions (including phone),
+ORM for data access (Entity Framework Core),
+engine for full-text search (or by means of the database, or a separate engine - NOT FULL SCAN with selects).
+
+Requirements with an asterisk (only optional, on 10/10, after the implementation of the remaining requirements):
+
+* Comments are displayed below the review in view mode at the end.
+Comments are linear, you cannot comment on a comment, a new one is added only "in the tail".
+Automatic loading of comments - if I have a page with comments open and someone else adds a new one, it automatically appears for me (a delay of 2-5 seconds is possible).
+
+* Advanced admin panel, which allows you to manage users (view, block, delete, appoint others as admins).
+
+* Ability to download an arbitrary number of illustrations.
+
+* Possibility to "link" different reviews for one product from different users (show links from one to the rest) and calculate the average rating for reviews.
+
+IMPORTANT:
+Do not copy any garbage from code dumps. It’s better to do less, but figure it out yourself in order to be able to answer how to change / add something on the fly.
+Curators accept a huge number of the same type of projects and have probably seen most of the posted garbage on the topic.
+As always, not everything can be done, but it's better to figure out a small part yourself than roll everything from a "friend from the Internet."
+
+
+
+
+
+
+
 Условие курсового проекта
 ТРЕБУЕТСЯ РАЗРАБОТАТЬ САЙТ ДЛЯ УПРАВЛЕНИЯ РЕКОМЕНLАЦИЯМИ "ЧЁ ПОСМОТРЕТЬ/ЧЁ ПОЧИТАТЬ/ВО ЧТО ПОИГРАТЬ И Т.Д."
 
